@@ -1,0 +1,26 @@
+{
+  "name": "msu-prototipo-fase1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prototipo de fase I de la Mesa de Servicios Universitarios: HTML, CSS y JavaScript sin frameworks contra una API simulada con json-server.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node scripts/preparar-db.js && node servidor/servidor.js",
+    "api": "node scripts/preparar-db.js && node servidor/servidor.js",
+    "reset": "node scripts/restablecer.js",
+    "semilla": "node scripts/generar-semilla.js",
+    "test": "node --test tests/unit/reglas.test.js tests/unit/indicadores.test.js",
+    "test:e2e": "playwright test"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
+  },
+  "dependencies": {
+    "express": "^4.22.3",
+    "json-server": "^0.17.4"
+  }
+}

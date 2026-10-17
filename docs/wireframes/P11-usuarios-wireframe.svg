@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1774" height="982" viewBox="0 0 1774 982" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="1774" height="982" fill="#ffffff"/>
+<text x="24" y="38" font-size="22" font-weight="bold" fill="#000">P11 Usuarios — wireframe</text>
+<text x="24" y="64" font-size="14" fill="#666666">Administrador · Escritorio 1366 px · baja fidelidad · contenido ilustrativo</text>
+<rect x="23" y="91" width="1368" height="862" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="24" y="92" width="1366" height="56" rx="0" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="104" width="32" height="32" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M40 104 L72 136 M72 104 L40 136" stroke="#bdbdbd" stroke-width="1"/>
+<text x="84" y="126" font-size="17" fill="#222222" text-anchor="start" font-weight="bold">Mesa de Servicios · UNMSM</text>
+<circle cx="1140" cy="120" r="12" fill="#fff" stroke="#666666"/>
+<text x="1140" y="124" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">2</text>
+<text x="1158" y="125" font-size="13" fill="#666666" text-anchor="start">Avisos</text>
+<circle cx="1220" cy="120" r="14" fill="#fff" stroke="#666666"/>
+<text x="1240" y="118" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Luis Gutiérrez Pinto</text>
+<text x="1240" y="134" font-size="12" fill="#666666" text-anchor="start">Administrador  ▾</text>
+<rect x="24" y="148" width="232" height="804" rx="0" fill="#f4f4f4" stroke="#666666" stroke-width="1.2"/>
+<text x="44" y="178" font-size="11" fill="#666666" text-anchor="start" font-weight="bold">MENÚ</text>
+<rect x="34" y="194" width="212" height="36" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.2"/>
+<rect x="34" y="194" width="4" height="36" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="48" y="205" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="217" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Usuarios</text>
+<rect x="48" y="249" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="261" font-size="14" fill="#222222" text-anchor="start">Configuración y auditoría</text>
+<rect x="48" y="293" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="305" font-size="14" fill="#222222" text-anchor="start">Notificaciones</text>
+<rect x="48" y="337" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="349" font-size="14" fill="#222222" text-anchor="start">Perfil</text>
+<text x="44" y="932" font-size="13" fill="#666666" text-anchor="start">Cerrar sesión</text>
+<text x="288" y="196" font-size="24" fill="#222222" text-anchor="start" font-weight="bold">Usuarios</text>
+<rect x="1168.40625" y="172" width="189.59375" height="38" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="1263.203125" y="196.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">+ Nueva cuenta interna</text>
+<text x="288" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Rol</text>
+<rect x="288" y="236" width="180" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="298" y="259.0" font-size="13" fill="#222222" text-anchor="start">Todos</text>
+<text x="450" y="259.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="484" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Área</text>
+<rect x="484" y="236" width="200" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="494" y="259.0" font-size="13" fill="#222222" text-anchor="start">Todas</text>
+<text x="666" y="259.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="700" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Estado</text>
+<rect x="700" y="236" width="160" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="710" y="259.0" font-size="13" fill="#222222" text-anchor="start">Activos</text>
+<text x="842" y="259.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="876" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Buscar</text>
+<rect x="876" y="236" width="260" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="886" y="259.0" font-size="13" fill="#bdbdbd" text-anchor="start">Nombre o correo</text>
+<rect x="288" y="288" width="1070" height="258" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<rect x="288" y="288" width="1070" height="38" rx="4" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<text x="300" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Nombre</text>
+<text x="500" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Correo</text>
+<text x="740" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Rol</text>
+<text x="850" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Área</text>
+<text x="1020" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Estado</text>
+<text x="1120" y="312.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Acciones</text>
+<text x="300" y="353.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Carla Huamán Torres</text>
+<text x="500" y="353.0" font-size="13" fill="#222222" text-anchor="start">carla.huaman@demo.edu.pe</text>
+<text x="740" y="353.0" font-size="13" fill="#222222" text-anchor="start">Técnico</text>
+<text x="850" y="353.0" font-size="13" fill="#222222" text-anchor="start">Soporte informático</text>
+<rect x="1018" y="337.0" width="54.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1045.0078125" y="352.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Activa</text>
+<rect x="1116" y="334.0" width="75.671875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1153.8359375" y="353.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Editar</text>
+<rect x="1199.671875" y="334.0" width="106.796875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1253.0703125" y="353.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Desactivar</text>
+<line x1="288" y1="370" x2="1358" y2="370" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="397.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Diego Salazar Núñez</text>
+<text x="500" y="397.0" font-size="13" fill="#222222" text-anchor="start">diego.salazar@demo.edu.pe</text>
+<text x="740" y="397.0" font-size="13" fill="#222222" text-anchor="start">Técnico</text>
+<text x="850" y="397.0" font-size="13" fill="#222222" text-anchor="start">Soporte informático</text>
+<rect x="1018" y="381.0" width="54.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1045.0078125" y="396.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Activa</text>
+<rect x="1116" y="378.0" width="75.671875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1153.8359375" y="397.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Editar</text>
+<rect x="1199.671875" y="378.0" width="106.796875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1253.0703125" y="397.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Desactivar</text>
+<line x1="288" y1="414" x2="1358" y2="414" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="441.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Pedro Vargas Lino</text>
+<text x="500" y="441.0" font-size="13" fill="#222222" text-anchor="start">pedro.vargas@demo.edu.pe</text>
+<text x="740" y="441.0" font-size="13" fill="#222222" text-anchor="start">Técnico</text>
+<text x="850" y="441.0" font-size="13" fill="#222222" text-anchor="start">Mantenimiento</text>
+<rect x="1018" y="425.0" width="54.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1045.0078125" y="440.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Activa</text>
+<rect x="1116" y="422.0" width="75.671875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1153.8359375" y="441.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Editar</text>
+<rect x="1199.671875" y="422.0" width="106.796875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1253.0703125" y="441.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Desactivar</text>
+<line x1="288" y1="458" x2="1358" y2="458" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="485.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Ana Castillo Vera</text>
+<text x="500" y="485.0" font-size="13" fill="#222222" text-anchor="start">ana.castillo@demo.edu.pe</text>
+<text x="740" y="485.0" font-size="13" fill="#222222" text-anchor="start">Supervisor</text>
+<text x="850" y="485.0" font-size="13" fill="#222222" text-anchor="start">—</text>
+<rect x="1018" y="469.0" width="54.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1045.0078125" y="484.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Activa</text>
+<rect x="1116" y="466.0" width="75.671875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1153.8359375" y="485.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Editar</text>
+<rect x="1199.671875" y="466.0" width="106.796875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1253.0703125" y="485.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Desactivar</text>
+<line x1="288" y1="502" x2="1358" y2="502" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="529.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Lucía Ramos Quispe</text>
+<text x="500" y="529.0" font-size="13" fill="#222222" text-anchor="start">lucia.ramos@demo.edu.pe</text>
+<text x="740" y="529.0" font-size="13" fill="#222222" text-anchor="start">Solicitante</text>
+<text x="850" y="529.0" font-size="13" fill="#222222" text-anchor="start">—</text>
+<rect x="1018" y="513.0" width="54.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1045.0078125" y="528.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Activa</text>
+<rect x="1116" y="510.0" width="75.671875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1153.8359375" y="529.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Editar</text>
+<rect x="1199.671875" y="510.0" width="106.796875" height="28" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1253.0703125" y="529.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Desactivar</text>
+<rect x="24" y="92" width="1366" height="860" fill="#000" fill-opacity="0.28"/>
+<circle cx="234" cy="217" r="12" fill="#000"/>
+<text x="234" y="221.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<circle cx="1146.40625" cy="191" r="12" fill="#000"/>
+<text x="1146.40625" y="195.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<rect x="367" y="392" width="680" height="520" rx="8" fill="#fff" stroke="#222222" stroke-width="2"/>
+<text x="391" y="432" font-size="18" fill="#222222" text-anchor="start" font-weight="bold">Desactivar cuenta de Carla Huamán Torres (Técnico)</text>
+<rect x="391" y="450" width="632" height="50" rx="4" fill="#e4e4e4" stroke="#222222" stroke-width="1.5"/>
+<text x="407" y="472" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">(!) Tiene 3 solicitudes pendientes. Reasígnalas a otro técnico</text>
+<text x="407" y="490" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">activo del área antes de desactivar la cuenta.</text>
+<circle cx="1033" cy="412" r="12" fill="#000"/>
+<text x="1033" y="416.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<rect x="391" y="518" width="632" height="166" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<rect x="391" y="518" width="632" height="34" rx="4" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<text x="403" y="540.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Código</text>
+<text x="553" y="540.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Estado</text>
+<text x="693" y="540.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Nuevo técnico</text>
+<text x="403" y="579.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0004</text>
+<rect x="551" y="563.0" width="72.0" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="587.0" y="578.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Asignada</text>
+<rect x="689" y="559.0" width="326" height="30" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="699" y="579.0" font-size="13" fill="#222222" text-anchor="start">Diego Salazar Núñez</text>
+<text x="997" y="579.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<line x1="391" y1="596" x2="1023" y2="596" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="403" y="623.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0013</text>
+<rect x="551" y="607.0" width="85.984375" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="593.9921875" y="622.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">En atención</text>
+<rect x="689" y="603.0" width="326" height="30" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="699" y="623.0" font-size="13" fill="#222222" text-anchor="start">Miguel Torres Ríos</text>
+<text x="997" y="623.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<line x1="391" y1="640" x2="1023" y2="640" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="403" y="667.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0015</text>
+<rect x="551" y="651.0" width="85.984375" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="593.9921875" y="666.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">En atención</text>
+<rect x="689" y="647.0" width="326" height="30" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="699" y="667.0" font-size="13" fill="#bdbdbd" text-anchor="start">Elegir técnico…</text>
+<text x="997" y="667.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="391" y="717" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Motivo *</text>
+<rect x="391" y="724" width="632" height="44" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="401" y="751.0" font-size="13" fill="#222222" text-anchor="start">Fin de contrato del técnico</text>
+<text x="391" y="792" font-size="12" fill="#666666" text-anchor="start">La reasignación conserva En atención y no reinicia fechas. Al confirmar, se revoca la sesión.</text>
+<circle cx="1033" cy="788" r="12" fill="#000"/>
+<text x="1033" y="792.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<rect x="783" y="832" width="240" height="38" rx="5" fill="#bdbdbd" stroke="none" stroke-width="1.2"/>
+<text x="903.0" y="856.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">Reasignar y desactivar</text>
+<rect x="653" y="832" width="116" height="38" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="711.0" y="856.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Cancelar</text>
+<text x="391" y="856" font-size="12" fill="#666666" text-anchor="start">Se habilita al elegir técnico</text>
+<text x="391" y="872" font-size="12" fill="#666666" text-anchor="start">para todos los casos.</text>
+<rect x="1420" y="92" width="330" height="860" fill="#fafafa" stroke="#666666" stroke-dasharray="6 4"/>
+<text x="1438" y="126" font-size="16" font-weight="bold" fill="#000">Notas de diseño (tabla 22)</text>
+<circle cx="1450" cy="157" r="12" fill="#000"/>
+<text x="1450" y="161.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="1472" y="162" font-size="13" fill="#222222">El mantenimiento de cuentas está separado</text>
+<text x="1472" y="180" font-size="13" fill="#222222">del trabajo operativo: el administrador no ve</text>
+<text x="1472" y="198" font-size="13" fill="#222222">la bandeja de casos.</text>
+<circle cx="1450" cy="227" r="12" fill="#000"/>
+<text x="1450" y="231.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="1472" y="232" font-size="13" fill="#222222">Altas internas con rol y área; el área es</text>
+<text x="1472" y="250" font-size="13" fill="#222222">obligatoria para el técnico.</text>
+<circle cx="1450" cy="279" r="12" fill="#000"/>
+<text x="1450" y="283.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="1472" y="284" font-size="13" fill="#222222">Desactivar a un técnico con casos</text>
+<text x="1472" y="302" font-size="13" fill="#222222">pendientes exige reasignarlos antes de</text>
+<text x="1472" y="320" font-size="13" fill="#222222">confirmar.</text>
+<circle cx="1450" cy="349" r="12" fill="#000"/>
+<text x="1450" y="353.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="1472" y="354" font-size="13" fill="#222222">Cambiar el rol o desactivar revoca la sesión</text>
+<text x="1472" y="372" font-size="13" fill="#222222">vigente de esa cuenta.</text>
+</svg>

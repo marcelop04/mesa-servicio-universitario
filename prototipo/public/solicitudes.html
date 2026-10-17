@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solicitudes · Mesa de Servicios Universitarios</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <!-- P05 Mis solicitudes, P07 Bandeja del supervisor y P08 Bandeja técnica (PR04, responsable: Marcelo). -->
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <div class="app">
+    <header class="cabecera" id="cabecera"></header>
+    <nav class="menu" id="menu" aria-label="Menú principal"></nav>
+    <main class="contenido" id="contenido" tabindex="-1">
+      <div class="encabezado-pagina">
+        <div>
+          <h1 id="titulo-listado">Solicitudes</h1>
+          <p class="subtitulo" id="subtitulo-listado"></p>
+        </div>
+        <div class="acciones" id="acciones-listado"></div>
+      </div>
+
+      <section class="panel" aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros" class="solo-lectores">Filtros</h2>
+        <form id="form-filtros" class="filtros" novalidate>
+          <div class="campo">
+            <label for="filtro-estado">Estado</label>
+            <select id="filtro-estado" name="estado"><option value="">Todos los estados</option></select>
+          </div>
+          <div class="campo">
+            <label for="filtro-categoria">Categoría</label>
+            <select id="filtro-categoria" name="categoria_id"><option value="">Todas las categorías</option></select>
+          </div>
+          <div class="campo">
+            <label for="filtro-orden">Ordenar por</label>
+            <select id="filtro-orden" name="orden">
+              <option value="recientes">Más recientes</option>
+              <option value="antiguedad">Antigüedad (más antiguas primero)</option>
+              <option value="prioridad">Prioridad</option>
+              <option value="vencimiento">Vencimiento de resolución</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="filtro-tamano">Por página</label>
+            <select id="filtro-tamano" name="tamaño">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div class="acciones">
+            <button type="submit" class="boton boton--primario">Filtrar</button>
+            <button type="button" class="boton" id="limpiar-filtros">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <section aria-labelledby="titulo-resultados">
+        <div class="encabezado-pagina">
+          <h2 id="titulo-resultados">Resultados</h2>
+          <button type="button" class="boton boton--pequeno" id="actualizar">Actualizar</button>
+        </div>
+        <div id="resultados" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="js/paginas/solicitudes.js"></script>
+</body>
+</html>

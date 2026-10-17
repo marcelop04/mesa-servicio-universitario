@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1774" height="890" viewBox="0 0 1774 890" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="1774" height="890" fill="#ffffff"/>
+<text x="24" y="38" font-size="22" font-weight="bold" fill="#000">P02 Inicio de sesión — wireframe</text>
+<text x="24" y="64" font-size="14" fill="#666666">Público · Escritorio 1366 px · baja fidelidad · contenido ilustrativo</text>
+<rect x="23" y="91" width="1368" height="770" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="24" y="92" width="1366" height="56" rx="0" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="104" width="32" height="32" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M40 104 L72 136 M72 104 L40 136" stroke="#bdbdbd" stroke-width="1"/>
+<text x="84" y="126" font-size="17" fill="#222222" text-anchor="start" font-weight="bold">Mesa de Servicios · UNMSM</text>
+<circle cx="354" cy="120" r="12" fill="#000"/>
+<text x="354" y="124.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<rect x="497" y="212" width="420" height="540" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<rect x="679.0" y="240" width="56" height="56" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M679.0 240 L735.0 296 M735.0 240 L679.0 296" stroke="#bdbdbd" stroke-width="1"/>
+<text x="707.0" y="332" font-size="24" fill="#222222" text-anchor="middle" font-weight="bold">Iniciar sesión</text>
+<text x="707.0" y="356" font-size="13" fill="#666666" text-anchor="middle">Accede con tu correo y contraseña</text>
+<rect x="529" y="376" width="356" height="44" rx="4" fill="#e4e4e4" stroke="#222222" stroke-width="2"/>
+<text x="545" y="403" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">(!) Correo o contraseña incorrectos.</text>
+<circle cx="901" cy="398" r="12" fill="#000"/>
+<text x="901" y="402.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="529" y="451" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Correo *</text>
+<rect x="529" y="458" width="356" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="539" y="481.0" font-size="13" fill="#222222" text-anchor="start">lucia.ramos@demo.edu.pe</text>
+<text x="529" y="523" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Contraseña *</text>
+<rect x="529" y="530" width="356" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="539" y="553.0" font-size="13" fill="#222222" text-anchor="start">••••••••</text>
+<text x="873" y="553" font-size="12" fill="#666666" text-anchor="end">Mostrar</text>
+<rect x="529" y="590" width="356" height="42" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="707.0" y="616.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">Ingresar</text>
+<line x1="529" y1="658" x2="885" y2="658" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="707.0" y="688" font-size="14" fill="#222222" text-anchor="middle">¿Aún no tienes cuenta?  Regístrate</text>
+<line x1="752.5234375" y1="692" x2="817.0859375" y2="692" stroke="#222222" stroke-width="1.2"/>
+<circle cx="857.0" cy="683" r="12" fill="#000"/>
+<text x="857.0" y="687.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<circle cx="517" cy="444" r="12" fill="#000"/>
+<text x="517" y="448.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<rect x="1420" y="92" width="330" height="768" fill="#fafafa" stroke="#666666" stroke-dasharray="6 4"/>
+<text x="1438" y="126" font-size="16" font-weight="bold" fill="#000">Notas de diseño (tabla 22)</text>
+<circle cx="1450" cy="157" r="12" fill="#000"/>
+<text x="1450" y="161.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="1472" y="162" font-size="13" fill="#222222">Separa las credenciales de la navegación</text>
+<text x="1472" y="180" font-size="13" fill="#222222">operativa: pantalla pública sin menú lateral</text>
+<text x="1472" y="198" font-size="13" fill="#222222">ni datos de casos.</text>
+<circle cx="1450" cy="227" r="12" fill="#000"/>
+<text x="1450" y="231.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="1472" y="232" font-size="13" fill="#222222">Un solo mensaje de error genérico; no indica</text>
+<text x="1472" y="250" font-size="13" fill="#222222">si falló el correo o la contraseña.</text>
+<circle cx="1450" cy="279" r="12" fill="#000"/>
+<text x="1450" y="283.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="1472" y="284" font-size="13" fill="#222222">Enlace visible al registro (P01), que solo</text>
+<text x="1472" y="302" font-size="13" fill="#222222">crea cuentas de solicitante.</text>
+<circle cx="1450" cy="331" r="12" fill="#000"/>
+<text x="1450" y="335.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="1472" y="336" font-size="13" fill="#222222">Etiquetas visibles, marca de obligatorio y</text>
+<text x="1472" y="354" font-size="13" fill="#222222">foco visible al usar el teclado.</text>
+</svg>

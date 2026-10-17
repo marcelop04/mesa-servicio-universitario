@@ -1,0 +1,47 @@
+# Configuración por variables de entorno (RNF02: secretos fuera del repositorio).
+# Los valores por defecto solo sirven para el entorno local de desarrollo.
+spring:
+  application:
+    name: msu-backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8}
+    username: ${DB_USER:msu}
+    password: ${DB_PASSWORD:msu_local}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    time-zone: UTC
+    # Mismos nombres que el diccionario de datos y la API simulada del prototipo (sección 12.4).
+    property-naming-strategy: SNAKE_CASE
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+  servlet:
+    session:
+      timeout: 2h
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+
+springdoc:
+  api-docs:
+    path: /api/v1/openapi
+  swagger-ui:
+    path: /swagger-ui.html
+
+msu:
+  datos-demo:
+    # GB07: crea una cuenta de prueba por rol si no existen. Desactivar en despliegues reales.
+    habilitado: ${DATOS_DEMO:true}
+    password: ${DEMO_PASSWORD:Demo12345!}
