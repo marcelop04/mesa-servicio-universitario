@@ -1,0 +1,20 @@
+# Dependencias y compilados
+node_modules/
+dist/
+target/
+*.class
+
+# Datos de ejecución local
+prototipo/db.json
+uploads/
+*.log
+
+# Entorno y editores
+.env
+.env.*
+!.env.example
+.idea/
+*.iml
+.DS_Store
+test-results/
+playwright-report/

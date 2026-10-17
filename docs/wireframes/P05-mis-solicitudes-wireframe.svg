@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1774" height="902" viewBox="0 0 1774 902" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="1774" height="902" fill="#ffffff"/>
+<text x="24" y="38" font-size="22" font-weight="bold" fill="#000">P05 Mis solicitudes — wireframe</text>
+<text x="24" y="64" font-size="14" fill="#666666">Solicitante · Escritorio 1366 px · baja fidelidad · contenido ilustrativo</text>
+<rect x="23" y="91" width="1368" height="782" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="24" y="92" width="1366" height="56" rx="0" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="104" width="32" height="32" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M40 104 L72 136 M72 104 L40 136" stroke="#bdbdbd" stroke-width="1"/>
+<text x="84" y="126" font-size="17" fill="#222222" text-anchor="start" font-weight="bold">Mesa de Servicios · UNMSM</text>
+<circle cx="1140" cy="120" r="12" fill="#fff" stroke="#666666"/>
+<text x="1140" y="124" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">2</text>
+<text x="1158" y="125" font-size="13" fill="#666666" text-anchor="start">Avisos</text>
+<circle cx="1220" cy="120" r="14" fill="#fff" stroke="#666666"/>
+<text x="1240" y="118" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Lucía Ramos Quispe</text>
+<text x="1240" y="134" font-size="12" fill="#666666" text-anchor="start">Solicitante  ▾</text>
+<rect x="24" y="148" width="232" height="724" rx="0" fill="#f4f4f4" stroke="#666666" stroke-width="1.2"/>
+<text x="44" y="178" font-size="11" fill="#666666" text-anchor="start" font-weight="bold">MENÚ</text>
+<rect x="34" y="194" width="212" height="36" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.2"/>
+<rect x="34" y="194" width="4" height="36" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="48" y="205" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="217" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Mis solicitudes</text>
+<rect x="48" y="249" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="261" font-size="14" fill="#222222" text-anchor="start">Nueva solicitud</text>
+<rect x="48" y="293" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="305" font-size="14" fill="#222222" text-anchor="start">Notificaciones</text>
+<rect x="48" y="337" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="349" font-size="14" fill="#222222" text-anchor="start">Perfil</text>
+<text x="44" y="852" font-size="13" fill="#666666" text-anchor="start">Cerrar sesión</text>
+<text x="288" y="196" font-size="24" fill="#222222" text-anchor="start" font-weight="bold">Mis solicitudes</text>
+<rect x="1206.515625" y="172" width="151.484375" height="38" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="1282.2578125" y="196.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">+ Nueva solicitud</text>
+<circle cx="1184.515625" cy="191" r="12" fill="#000"/>
+<text x="1184.515625" y="195.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="288" y="235" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Estado</text>
+<rect x="288" y="242" width="220" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="298" y="265.0" font-size="13" fill="#222222" text-anchor="start">Todos</text>
+<text x="490" y="265.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="524" y="235" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Categoría</text>
+<rect x="524" y="242" width="260" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="534" y="265.0" font-size="13" fill="#222222" text-anchor="start">Todas</text>
+<text x="766" y="265.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<text x="800" y="235" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Buscar por código</text>
+<rect x="800" y="242" width="260" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="810" y="265.0" font-size="13" fill="#bdbdbd" text-anchor="start">MSU-2026-…</text>
+<rect x="1076" y="242" width="129.328125" height="38" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1140.6640625" y="266.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Limpiar filtros</text>
+<circle cx="1268" cy="260" r="12" fill="#000"/>
+<text x="1268" y="264.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<rect x="288" y="312" width="1070" height="268" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<rect x="288" y="312" width="1070" height="38" rx="4" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<text x="300" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Código ▾</text>
+<text x="440" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Estado</text>
+<text x="590" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Prioridad</text>
+<text x="710" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Categoría</text>
+<text x="910" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Ubicación</text>
+<text x="1130" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Registrada</text>
+<text x="1240" y="336.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Responsable</text>
+<text x="300" y="378.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0006</text>
+<rect x="438" y="362.0" width="80.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="478.0078125" y="377.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Registrada</text>
+<rect x="588" y="362.0" width="40.671875" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="608.3359375" y="377.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Alta</text>
+<text x="710" y="378.0" font-size="13" fill="#222222" text-anchor="start">Equipo de cómputo</text>
+<text x="910" y="378.0" font-size="13" fill="#222222" text-anchor="start">Pab. B · Lab. cómputo 2</text>
+<text x="1130" y="378.0" font-size="13" fill="#222222" text-anchor="start">14/10/2026</text>
+<text x="1240" y="378.0" font-size="13" fill="#222222" text-anchor="start">Sin asignar</text>
+<line x1="288" y1="396" x2="1358" y2="396" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="424.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0004</text>
+<rect x="438" y="408.0" width="72.0" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="474.0" y="423.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Asignada</text>
+<rect x="588" y="408.0" width="40.671875" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="608.3359375" y="423.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Alta</text>
+<text x="710" y="424.0" font-size="13" fill="#222222" text-anchor="start">Conectividad y red</text>
+<text x="910" y="424.0" font-size="13" fill="#222222" text-anchor="start">Biblioteca · Sala de lectura</text>
+<text x="1130" y="424.0" font-size="13" fill="#222222" text-anchor="start">13/10/2026</text>
+<text x="1240" y="424.0" font-size="13" fill="#222222" text-anchor="start">Carla Huamán</text>
+<line x1="288" y1="442" x2="1358" y2="442" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="470.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0002</text>
+<rect x="438" y="454.0" width="68.015625" height="22" rx="11" fill="#e4e4e4" stroke="#222222" stroke-width="1.2"/>
+<text x="472.0078125" y="469.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Resuelta</text>
+<rect x="588" y="454.0" width="52.0" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="614.0" y="469.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Media</text>
+<text x="710" y="470.0" font-size="13" fill="#222222" text-anchor="start">Software académico</text>
+<text x="910" y="470.0" font-size="13" fill="#222222" text-anchor="start">Pab. B · Lab. cómputo 1</text>
+<text x="1130" y="470.0" font-size="13" fill="#222222" text-anchor="start">12/10/2026</text>
+<text x="1240" y="470.0" font-size="13" fill="#222222" text-anchor="start">Carla Huamán</text>
+<line x1="288" y1="488" x2="1358" y2="488" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="516.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0001</text>
+<rect x="438" y="500.0" width="63.359375" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="469.6796875" y="515.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Cerrada</text>
+<rect x="588" y="500.0" width="52.0" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="614.0" y="515.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Media</text>
+<text x="710" y="516.0" font-size="13" fill="#222222" text-anchor="start">Impresoras y escáneres</text>
+<text x="910" y="516.0" font-size="13" fill="#222222" text-anchor="start">Pab. B · Lab. cómputo 1</text>
+<text x="1130" y="516.0" font-size="13" fill="#222222" text-anchor="start">01/10/2026</text>
+<text x="1240" y="516.0" font-size="13" fill="#222222" text-anchor="start">Carla Huamán</text>
+<line x1="288" y1="534" x2="1358" y2="534" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="300" y="562.0" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0007</text>
+<rect x="438" y="546.0" width="78.015625" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="477.0078125" y="561.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Cancelada</text>
+<rect x="588" y="546.0" width="43.34375" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="609.671875" y="561.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Baja</text>
+<text x="710" y="562.0" font-size="13" fill="#222222" text-anchor="start">Limpieza de ambientes</text>
+<text x="910" y="562.0" font-size="13" fill="#222222" text-anchor="start">Pab. A · Aula 101</text>
+<text x="1130" y="562.0" font-size="13" fill="#222222" text-anchor="start">30/09/2026</text>
+<text x="1240" y="562.0" font-size="13" fill="#222222" text-anchor="start">—</text>
+<circle cx="274" cy="330" r="12" fill="#000"/>
+<text x="274" y="334.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="288" y="610" font-size="13" fill="#666666" text-anchor="start">Mostrando 1–5 de 12 solicitudes</text>
+<rect x="1006" y="592" width="98.46875" height="32" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1055.234375" y="613.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">‹ Anterior</text>
+<rect x="1114" y="592" width="32" height="32" rx="4" fill="#222222" stroke="#222222" stroke-width="1.2"/>
+<text x="1130" y="613" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">1</text>
+<rect x="1154" y="592" width="32" height="32" rx="4" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1170" y="613" font-size="13" fill="#222222" text-anchor="middle" font-weight="bold">2</text>
+<rect x="1194" y="592" width="32" height="32" rx="4" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="1210" y="613" font-size="13" fill="#222222" text-anchor="middle" font-weight="bold">3</text>
+<rect x="1238" y="592" width="107.53125" height="32" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1291.765625" y="613.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Siguiente ›</text>
+<circle cx="986" cy="608" r="12" fill="#000"/>
+<text x="986" y="612.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="288" y="650" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Variantes del listado</text>
+<rect x="288" y="660" width="520" height="170" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="304" y="686" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Lista vacía</text>
+<rect x="478" y="700" width="140" height="50" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M478 700 L618 750 M618 700 L478 750" stroke="#bdbdbd" stroke-width="1"/>
+<text x="548" y="772" font-size="13" fill="#222222" text-anchor="middle">Aún no tienes solicitudes registradas.</text>
+<rect x="478" y="782" width="139.421875" height="32" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="547.7109375" y="803.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">Nueva solicitud</text>
+<circle cx="788" cy="680" r="12" fill="#000"/>
+<text x="788" y="684.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<rect x="838" y="660" width="520" height="170" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="854" y="686" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Error al cargar</text>
+<text x="854" y="720" font-size="13" fill="#222222" text-anchor="start">(!) No se pudo cargar el listado. Revisa tu conexión.</text>
+<rect x="854" y="736" width="105.203125" height="32" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="906.6015625" y="757.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Reintentar</text>
+<text x="854" y="800" font-size="12" fill="#666666" text-anchor="start">Cargando: filas grises de marcador de posición.</text>
+<rect x="854" y="810" width="300" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1420" y="92" width="330" height="780" fill="#fafafa" stroke="#666666" stroke-dasharray="6 4"/>
+<text x="1438" y="126" font-size="16" font-weight="bold" fill="#000">Notas de diseño (tabla 22)</text>
+<circle cx="1450" cy="157" r="12" fill="#000"/>
+<text x="1450" y="161.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="1472" y="162" font-size="13" fill="#222222">Prioriza código y estado: son las dos</text>
+<text x="1472" y="180" font-size="13" fill="#222222">primeras columnas, con estado y prioridad</text>
+<text x="1472" y="198" font-size="13" fill="#222222">en texto.</text>
+<circle cx="1450" cy="227" r="12" fill="#000"/>
+<text x="1450" y="231.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="1472" y="232" font-size="13" fill="#222222">Filtros por estado y categoría, más</text>
+<text x="1472" y="250" font-size="13" fill="#222222">búsqueda por código.</text>
+<circle cx="1450" cy="279" r="12" fill="#000"/>
+<text x="1450" y="283.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="1472" y="284" font-size="13" fill="#222222">Botón Nueva solicitud siempre visible en la</text>
+<text x="1472" y="302" font-size="13" fill="#222222">cabecera del listado.</text>
+<circle cx="1450" cy="331" r="12" fill="#000"/>
+<text x="1450" y="335.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="1472" y="336" font-size="13" fill="#222222">Paginación con total de resultados.</text>
+<circle cx="1450" cy="365" r="12" fill="#000"/>
+<text x="1450" y="369.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<text x="1472" y="370" font-size="13" fill="#222222">Mensaje de lista vacía con acción directa;</text>
+<text x="1472" y="388" font-size="13" fill="#222222">también hay estados de carga y de error con</text>
+<text x="1472" y="406" font-size="13" fill="#222222">reintento.</text>
+</svg>
