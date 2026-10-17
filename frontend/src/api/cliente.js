@@ -17,6 +17,8 @@ const MENSAJES = {
   403: 'No tiene permiso para realizar esta operación.',
   404: 'El recurso solicitado no existe.',
   409: 'Otro usuario modificó estos datos o la operación entra en conflicto. Recargue y revise el cambio.',
+  413: 'El archivo supera el tamaño máximo permitido.',
+  415: 'El tipo de archivo no está admitido.',
   500: 'Ocurrió un error inesperado. Intente nuevamente.',
 };
 
@@ -83,7 +85,9 @@ async function leerCuerpo(respuesta) {
 
 async function ejecutar(metodo, ruta, { cuerpo, parametros, senal } = {}, reintentoCsrf = false) {
   const cabeceras = { Accept: 'application/json' };
-  if (cuerpo !== undefined) cabeceras['Content-Type'] = 'application/json';
+  // Con FormData el navegador fija el Content-Type multipart con su separador.
+  const esArchivo = typeof FormData !== 'undefined' && cuerpo instanceof FormData;
+  if (cuerpo !== undefined && !esArchivo) cabeceras['Content-Type'] = 'application/json';
 
   let respuesta;
   try {
@@ -94,7 +98,7 @@ async function ejecutar(metodo, ruta, { cuerpo, parametros, senal } = {}, reinte
     respuesta = await fetch(construirUrl(ruta, parametros), {
       method: metodo,
       headers: cabeceras,
-      body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+      body: cuerpo === undefined || esArchivo ? cuerpo : JSON.stringify(cuerpo),
       credentials: 'include',
       signal: senal,
     });
@@ -122,4 +126,10 @@ export const api = {
   post: (ruta, cuerpo, opciones) => ejecutar('POST', ruta, { ...opciones, cuerpo }),
   put: (ruta, cuerpo, opciones) => ejecutar('PUT', ruta, { ...opciones, cuerpo }),
   del: (ruta, opciones) => ejecutar('DELETE', ruta, opciones),
+  /** POST multipart: subir(ruta, { archivo: File }) (HU06). */
+  subir: (ruta, campos, opciones) => {
+    const datos = new FormData();
+    Object.entries(campos).forEach(([clave, valor]) => datos.append(clave, valor));
+    return ejecutar('POST', ruta, { ...opciones, cuerpo: datos });
+  },
 };

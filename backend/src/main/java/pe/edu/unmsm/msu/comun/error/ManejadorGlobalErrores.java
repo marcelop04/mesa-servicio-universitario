@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pe.edu.unmsm.msu.comun.web.FiltroCorrelacion;
 
@@ -46,6 +50,25 @@ public class ManejadorGlobalErrores {
         log.warn("Violación de integridad: {}", ex.getMostSpecificCause().getMessage());
         return responder(HttpStatus.CONFLICT, "CONFLICTO_INTEGRIDAD",
                 "La operación entra en conflicto con datos existentes.", List.of(), req);
+    }
+
+    /** HU24 BDD 2: otra petición confirmó antes un cambio sobre la misma solicitud (control optimista). */
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    ResponseEntity<ApiError> conflictoVersion(OptimisticLockingFailureException ex, HttpServletRequest req) {
+        return responder(HttpStatus.CONFLICT, "CONFLICTO_VERSION",
+                "Otro usuario modificó estos datos. Recargue y revise el cambio antes de continuar.", List.of(), req);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    ResponseEntity<ApiError> archivoGrande(MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        return responder(HttpStatus.PAYLOAD_TOO_LARGE, "ARCHIVO_GRANDE", "La imagen supera el máximo de 5 MB.",
+                List.of(), req);
+    }
+
+    @ExceptionHandler({MissingServletRequestPartException.class, MultipartException.class})
+    ResponseEntity<ApiError> archivoAusente(Exception ex, HttpServletRequest req) {
+        return responder(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Revise los campos marcados.",
+                List.of(new ErrorCampo("archivo", "Seleccione una imagen JPEG o PNG.")), req);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

@@ -47,7 +47,7 @@ public class Usuario {
     @Column(name = "creado_en", nullable = false)
     private Instant creadoEn;
 
-    /** Se incrementa al cambiar el rol o desactivar la cuenta para revocar sesiones anteriores. */
+    /** Se incrementa al cambiar el rol, desactivar la cuenta o cambiar la contraseña para revocar sesiones. */
     @Column(name = "version_autorizacion", nullable = false)
     private int versionAutorizacion;
 
@@ -70,6 +70,11 @@ public class Usuario {
 
     public boolean esTecnico() {
         return Rol.TECNICO.equals(rol.getCodigo());
+    }
+
+    /** HU03: solo se guarda el hash; la contraseña nunca se almacena ni se devuelve. */
+    public void cambiarPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public void revocarAutorizacion() {

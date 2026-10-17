@@ -3,10 +3,15 @@ spring:
     url: jdbc:h2:mem:msu;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
     username: sa
     password:
-  flyway:
-    locations: classpath:db/migration,classpath:db/test
 
 msu:
+  tareas:
+    # Las pruebas ejecutan el cierre automático con un instante controlado.
+    habilitadas: false
+  archivos:
+    directorio: target/archivos-prueba
   datos-demo:
     habilitado: true
     password: Demo12345!
+    # Cada prueba crea sus propias solicitudes con SolicitudesDePrueba.
+    solicitudes: false

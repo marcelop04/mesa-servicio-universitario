@@ -1,0 +1,50 @@
+# Levanta todo el sistema con un solo comando:  docker compose up --build
+#   Aplicación: http://localhost:8081   ·   Swagger: http://localhost:8080/swagger-ui.html
+# Las credenciales son solo para desarrollo local (RNF02: en despliegue se pasan por variables de entorno).
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-raiz_local}
+      MYSQL_DATABASE: mesa_servicios
+      MYSQL_USER: ${DB_USER:-msu}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-msu_local}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-datos:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-raiz_local}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-msu}
+      DB_PASSWORD: ${DB_PASSWORD:-msu_local}
+      DATOS_DEMO: ${DATOS_DEMO:-true}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-Demo12345!}
+      ARCHIVOS_DIR: /app/archivos
+      JWT_SECRET: ${JWT_SECRET:-solo-desarrollo-cambie-este-secreto-de-32-bytes}
+    volumes:
+      - evidencias:/app/archivos
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+
+volumes:
+  mysql-datos:
+  evidencias:

@@ -33,8 +33,7 @@ class AdminCatalogosTest extends PruebaApi {
 
     @Test
     void bdd1CategoriaDesactivadaNoSeOfreceYSeConserva() throws Exception {
-        jdbc.update("INSERT INTO solicitud (codigo, categoria_id, estado_codigo) VALUES ('MSU-2026-0002', ?, 'CERRADA')",
-                proyector);
+        pruebas.crearConEstado(proyector, "CERRADA", null);
 
         mvc.perform(delete("/api/v1/admin/catalogos/categorias/" + proyector).session(admin).with(xsrf()))
                 .andExpect(status().isOk())
@@ -100,8 +99,7 @@ class AdminCatalogosTest extends PruebaApi {
     @Test
     void categoriaUsadaNoCambiaDeArea() throws Exception {
         long mantenimiento = jdbc.queryForObject("SELECT id FROM area WHERE nombre = 'Mantenimiento'", Long.class);
-        jdbc.update("INSERT INTO solicitud (codigo, categoria_id, estado_codigo) VALUES ('MSU-2026-0003', ?, 'REGISTRADA')",
-                proyector);
+        pruebas.crearConEstado(proyector, "REGISTRADA", null);
         mvc.perform(put("/api/v1/admin/catalogos/categorias/" + proyector).session(admin).with(xsrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"area_id\":%d}".formatted(mantenimiento)))
                 .andExpect(status().isConflict())

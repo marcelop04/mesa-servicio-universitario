@@ -48,5 +48,12 @@ const { datos, cargando, error, recargar } = useConsulta(() => api.get('/solicit
 |---|---|---|
 | P11 Usuarios (HU20) | `/admin/usuarios` | Gabriel · terminada |
 | P12 Configuración (HU21) | `/admin/configuracion` | Gabriel · catálogos terminados; políticas (HU22) y auditoría (HU23) pendientes |
-| P02 Inicio de sesión | `/login` | Mínima y provisional; la definitiva es de David (DV07) |
-| P01, P03 a P10 | ver `src/layout/navegacion.js` | Reservadas con su responsable |
+| P01 Registro (HU01) | `/registro` | David · terminada |
+| P02 Inicio de sesión (HU02) | `/login` | David · terminada (JWT en cookie HttpOnly) |
+| P03 Perfil (HU03) | `/perfil` | David · terminada |
+| P04 Nueva solicitud (HU04) | `/solicitudes/nueva` | Alex · terminada |
+| P05 Mis solicitudes (HU05) | `/solicitudes` | Alex · terminada (filtros en LocalStorage) |
+| P06 Seguimiento (HU05, HU06, HU12, HU23) | `/solicitudes/:id` | Alex (detalle reutilizable) y Emanuel (conformidad e historial) |
+| P07 Bandeja de supervisión (HU07 a HU09) | `/supervision` | Marcelo · terminada |
+| P08 Atención técnica (HU10, HU11) | `/atencion` | Emanuel · terminada |
+| P09 Notificaciones y P10 Dashboard | ver `src/layout/navegacion.js` | Fase III |

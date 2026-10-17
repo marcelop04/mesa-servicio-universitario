@@ -6,20 +6,25 @@ export function Confirmacion({
   ocupado = false, deshabilitado = false, onConfirmar, onCancelar,
 }) {
   const cancelarRef = useRef(null);
+  const alCancelar = useRef(onCancelar);
+  alCancelar.current = onCancelar;
 
+  // El foco va a Cancelar solo al abrir; así el diálogo admite campos (motivos) sin perder el foco al escribir.
   useEffect(() => {
     if (!abierto) return undefined;
     const anterior = document.activeElement;
     cancelarRef.current?.focus();
+    return () => anterior?.focus?.();
+  }, [abierto]);
+
+  useEffect(() => {
+    if (!abierto) return undefined;
     const alPresionar = (e) => {
-      if (e.key === 'Escape' && !ocupado) onCancelar();
+      if (e.key === 'Escape' && !ocupado) alCancelar.current();
     };
     document.addEventListener('keydown', alPresionar);
-    return () => {
-      document.removeEventListener('keydown', alPresionar);
-      anterior?.focus?.();
-    };
-  }, [abierto, ocupado, onCancelar]);
+    return () => document.removeEventListener('keydown', alPresionar);
+  }, [abierto, ocupado]);
 
   if (!abierto) return null;
   return (

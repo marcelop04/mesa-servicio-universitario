@@ -18,3 +18,6 @@ uploads/
 .DS_Store
 test-results/
 playwright-report/
+
+# Evidencias subidas en ejecución local (HU06)
+backend/archivos/

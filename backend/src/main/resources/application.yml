@@ -17,6 +17,11 @@ spring:
           time_zone: UTC
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      # HU06: imágenes de hasta 5 MB (el servicio vuelve a comprobarlo).
+      max-file-size: 5MB
+      max-request-size: 6MB
   jackson:
     time-zone: UTC
     # Mismos nombres que el diccionario de datos y la API simulada del prototipo (sección 12.4).
@@ -26,13 +31,6 @@ server:
   port: ${PORT:8080}
   error:
     include-stacktrace: never
-  servlet:
-    session:
-      timeout: 2h
-      cookie:
-        http-only: true
-        same-site: lax
-        secure: ${COOKIE_SECURE:false}
 
 springdoc:
   api-docs:
@@ -41,7 +39,21 @@ springdoc:
     path: /swagger-ui.html
 
 msu:
+  jwt:
+    # DV04: JWT en cookie HttpOnly. En despliegue JWT_SECRET debe ser un valor aleatorio de 32 bytes o más.
+    secreto: ${JWT_SECRET:solo-desarrollo-cambie-este-secreto-de-32-bytes}
+    duracion: ${JWT_DURACION:PT2H}
+    cookie-segura: ${COOKIE_SECURE:false}
+  tareas:
+    # EM03: revisión del cierre automático a las 72 horas (RNF07: cada cinco minutos).
+    habilitadas: ${TAREAS_HABILITADAS:true}
+    cierre-automatico: ${CIERRE_INTERVALO:PT5M}
+  archivos:
+    # Evidencias fuera de la carpeta pública (RNF11: en Docker es un volumen persistente).
+    directorio: ${ARCHIVOS_DIR:./archivos}
   datos-demo:
     # GB07: crea una cuenta de prueba por rol si no existen. Desactivar en despliegues reales.
     habilitado: ${DATOS_DEMO:true}
     password: ${DEMO_PASSWORD:Demo12345!}
+    # MR07: solicitudes de ejemplo para la bandeja de supervisión, solo si la base no tiene ninguna.
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:true}}

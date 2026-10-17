@@ -93,8 +93,7 @@ class AdminUsuariosTest extends PruebaApi {
 
     @Test
     void bdd2DesactivarTecnicoConCargaSeRechaza() throws Exception {
-        jdbc.update("INSERT INTO solicitud (codigo, categoria_id, estado_codigo, tecnico_id)"
-                + " VALUES ('MSU-2026-0001', 1, 'EN_ATENCION', ?)", tecnicoSoporte);
+        pruebas.crearConEstado(pruebas.categoriaId("Equipo de cómputo"), "EN_ATENCION", tecnicoSoporte);
 
         mvc.perform(put("/api/v1/admin/usuarios/" + tecnicoSoporte).session(admin).with(xsrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":false}"))

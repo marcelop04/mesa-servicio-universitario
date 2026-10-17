@@ -1,7 +1,7 @@
 /*
- * Contexto de sesión: usuario y rol en el estado de React.
- * Base mínima para que el layout por rol (GB01) y las pantallas de administración funcionen;
- * David la completa en DV08 cuando integre el login definitivo con JWT (DV04).
+ * DV08 · Contexto de sesión: usuario y rol en el estado de React.
+ * La sesión vive en la cookie HttpOnly MSU_SESION (JWT, DV04): JavaScript no la lee; al cargar
+ * se pregunta /me y un 401 en cualquier petición limpia el usuario y lleva al inicio de sesión.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { alRecibirError, api } from '../api/cliente.js';
@@ -42,9 +42,12 @@ export function SesionProvider({ children }) {
     }
   }, []);
 
+  /** Tras editar el perfil (HU03) se actualiza el nombre visible sin volver a iniciar sesión. */
+  const actualizarUsuario = useCallback((perfil) => setUsuario(perfil), []);
+
   const valor = useMemo(
-    () => ({ usuario, cargando, iniciarSesion, cerrarSesion }),
-    [usuario, cargando, iniciarSesion, cerrarSesion],
+    () => ({ usuario, cargando, iniciarSesion, cerrarSesion, actualizarUsuario }),
+    [usuario, cargando, iniciarSesion, cerrarSesion, actualizarUsuario],
   );
   return <SesionContext.Provider value={valor}>{children}</SesionContext.Provider>;
 }

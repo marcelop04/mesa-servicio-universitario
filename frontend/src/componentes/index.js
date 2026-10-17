@@ -5,6 +5,7 @@ export { Confirmacion } from './Confirmacion.jsx';
 export {
   Etiqueta, EtiquetaActivo, EtiquetaEstado, EtiquetaRol, EtiquetaPrioridad, NOMBRE_ESTADO, NOMBRE_PRIORIDAD,
 } from './Etiquetas.jsx';
+export { EtiquetaPlazo } from './EtiquetaPlazo.jsx';
 export { Cargando, Mensaje } from './Mensaje.jsx';
 export { Paginacion } from './Paginacion.jsx';
 export { Tabla } from './Tabla.jsx';

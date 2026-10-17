@@ -6,6 +6,7 @@ export const PANTALLAS = {
   P03: { ruta: '/perfil', titulo: 'Mi perfil', subtitulo: 'Datos de tu cuenta y cambio de contraseña.', menu: 'Mi perfil', movil: 'Perfil', icono: 'perfil', responsable: 'David', tarea: 'DV07' },
   P04: { ruta: '/solicitudes/nueva', titulo: 'Nueva solicitud', subtitulo: 'Describe el problema para que el área responsable lo evalúe.', menu: 'Nueva solicitud', movil: 'Nueva', icono: 'mas', responsable: 'Alex', tarea: 'AX04' },
   P05: { ruta: '/solicitudes', titulo: 'Mis solicitudes', subtitulo: 'Consulta el estado y los plazos de tus solicitudes.', menu: 'Mis solicitudes', movil: 'Solicitudes', icono: 'archivo', responsable: 'Alex', tarea: 'AX04' },
+  P06: { ruta: '/solicitudes/:id', titulo: 'Seguimiento de solicitud', subtitulo: 'Estado, plazos, comentarios y evidencias del caso.', menu: 'Detalle', movil: 'Detalle', icono: 'archivo', responsable: 'Alex', tarea: 'AX05' },
   P07: { ruta: '/supervision', titulo: 'Bandeja de supervisión', subtitulo: 'Evalúa, prioriza y asigna las solicitudes de la facultad.', menu: 'Bandeja de supervisión', movil: 'Bandeja', icono: 'archivo', responsable: 'Marcelo', tarea: 'MR07' },
   P08: { ruta: '/atencion', titulo: 'Atención técnica', subtitulo: 'Tus asignaciones, avances y soluciones.', menu: 'Atención técnica', movil: 'Atención', icono: 'archivo', responsable: 'Emanuel', tarea: 'EM05' },
   P09: { ruta: '/notificaciones', titulo: 'Centro de notificaciones', subtitulo: 'Avisos internos sobre tus solicitudes.', menu: 'Notificaciones', movil: 'Avisos', icono: 'campana', responsable: 'Por asignar', tarea: 'HU16' },
@@ -40,8 +41,14 @@ export function inicioDelRol(rol) {
   return menuDelRol(rol)[0]?.ruta ?? '/perfil';
 }
 
+/** Coincidencia exacta o con segmentos dinámicos (/solicitudes/:id). */
+function coincide(patron, ruta) {
+  const a = patron.split('/');
+  const b = ruta.split('/');
+  return a.length === b.length && a.every((parte, i) => parte.startsWith(':') ? /^\d+$/.test(b[i]) : parte === b[i]);
+}
+
 export function pantallaDeRuta(ruta) {
-  return Object.entries(PANTALLAS)
-    .map(([id, p]) => ({ id, ...p }))
-    .find((p) => p.ruta === ruta);
+  const pantallas = Object.entries(PANTALLAS).map(([id, p]) => ({ id, ...p }));
+  return pantallas.find((p) => p.ruta === ruta) ?? pantallas.find((p) => coincide(p.ruta, ruta));
 }

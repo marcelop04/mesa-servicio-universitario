@@ -1,7 +1,7 @@
 /*
- * Inicio de sesión con el diseño de Figma Make (P02).
- * Mínimo y provisional en su lógica: la P02 definitiva es de David (DV07). Mantiene el
- * mensaje de error genérico de HU02. La recuperación de contraseña está fuera de alcance (2.3).
+ * DV07 · P02 Inicio de sesión con el diseño de Figma Make (HU02).
+ * El servidor responde con la cookie HttpOnly del JWT; ante credenciales inválidas o una cuenta
+ * desactivada muestra el mismo mensaje genérico. La recuperación de contraseña está fuera de alcance (2.3).
  */
 import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -18,13 +18,15 @@ const CUENTAS_DEMO = [
 
 export function Login() {
   const { usuario, iniciarSesion } = useSesion();
-  const [correo, setCorreo] = useState('');
+  const estado = useLocation().state;
+  const desde = estado?.desde;
+  const registrado = estado?.registrado;
+  const [correo, setCorreo] = useState(registrado ?? '');
   const [password, setPassword] = useState('');
   const [verPassword, setVerPassword] = useState(false);
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const navegar = useNavigate();
-  const desde = useLocation().state?.desde;
 
   if (usuario) return <Navigate to={inicioDelRol(usuario.rol)} replace />;
 
@@ -59,6 +61,7 @@ export function Login() {
           <p className="antetitulo">Identidad</p>
           <h1 id="titulo-acceso" className="acceso__titulo">Bienvenido de nuevo</h1>
           <p className="acceso__subtitulo">Ingresa tus credenciales institucionales para continuar.</p>
+          {registrado && !error && <Mensaje tipo="exito">Cuenta creada. Ingresa tu contraseña para continuar.</Mensaje>}
           {error && <Mensaje tipo="error">{error}</Mensaje>}
           <form onSubmit={enviar} noValidate style={{ marginTop: error ? 16 : 0 }}>
             <div className="campo">
