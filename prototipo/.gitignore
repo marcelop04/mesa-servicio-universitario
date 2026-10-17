@@ -1,0 +1,4 @@
+# Archivos temporales del prototipo (la base db.json ya está ignorada en la raíz)
+.tmp/
+test-results/
+playwright-report/

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso de demostración · Mesa de Servicios Universitarios</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <!-- P02 simulada (PR01, responsable: Gabriel): acceso con cuentas de demostración por rol. -->
+  <main class="acceso" id="contenido">
+    <div class="acceso__tarjeta">
+      <section class="panel" aria-labelledby="titulo-acceso">
+        <h1 id="titulo-acceso">Mesa de Servicios Universitarios</h1>
+        <p class="subtitulo">Prototipo de fase I · acceso simulado por rol</p>
+        <div class="aviso aviso--info">
+          <p>Elige una cuenta de demostración. El acceso es simulado: no se piden ni se guardan contraseñas, y el rol se conserva solo en esta pestaña del navegador (almacenamiento de sesión). Todos los datos son ficticios.</p>
+        </div>
+        <div id="resumen-errores" class="aviso aviso--error" tabindex="-1" role="alert" hidden></div>
+        <div id="mensaje"></div>
+        <form id="form-acceso" class="formulario" novalidate>
+          <fieldset data-campo="correo">
+            <legend>Cuenta de demostración <span class="obligatorio" aria-hidden="true">*</span><span class="solo-lectores">(obligatorio)</span></legend>
+            <span data-ancla-error hidden></span>
+            <div id="cuentas"><p role="status">Cargando cuentas…</p></div>
+          </fieldset>
+          <div class="acciones">
+            <button class="boton boton--primario" type="submit" id="boton-ingresar">Ingresar</button>
+          </div>
+        </form>
+      </section>
+      <div class="panel" id="panel-demo"></div>
+    </div>
+  </main>
+  <script type="module" src="js/paginas/acceso.js"></script>
+</body>
+</html>

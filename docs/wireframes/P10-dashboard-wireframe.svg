@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1774" height="952" viewBox="0 0 1774 952" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="1774" height="952" fill="#ffffff"/>
+<text x="24" y="38" font-size="22" font-weight="bold" fill="#000">P10 Dashboard — wireframe</text>
+<text x="24" y="64" font-size="14" fill="#666666">Supervisor · Escritorio 1366 px · baja fidelidad · contenido ilustrativo</text>
+<rect x="23" y="91" width="1368" height="832" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="24" y="92" width="1366" height="56" rx="0" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="104" width="32" height="32" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M40 104 L72 136 M72 104 L40 136" stroke="#bdbdbd" stroke-width="1"/>
+<text x="84" y="126" font-size="17" fill="#222222" text-anchor="start" font-weight="bold">Mesa de Servicios · UNMSM</text>
+<circle cx="1140" cy="120" r="12" fill="#fff" stroke="#666666"/>
+<text x="1140" y="124" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">2</text>
+<text x="1158" y="125" font-size="13" fill="#666666" text-anchor="start">Avisos</text>
+<circle cx="1220" cy="120" r="14" fill="#fff" stroke="#666666"/>
+<text x="1240" y="118" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Ana Castillo Vera</text>
+<text x="1240" y="134" font-size="12" fill="#666666" text-anchor="start">Supervisor  ▾</text>
+<rect x="24" y="148" width="232" height="774" rx="0" fill="#f4f4f4" stroke="#666666" stroke-width="1.2"/>
+<text x="44" y="178" font-size="11" fill="#666666" text-anchor="start" font-weight="bold">MENÚ</text>
+<rect x="48" y="205" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="217" font-size="14" fill="#222222" text-anchor="start">Bandeja</text>
+<rect x="34" y="238" width="212" height="36" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.2"/>
+<rect x="34" y="238" width="4" height="36" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="48" y="249" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="261" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Dashboard</text>
+<rect x="48" y="293" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="305" font-size="14" fill="#222222" text-anchor="start">Notificaciones</text>
+<rect x="48" y="337" width="14" height="14" rx="2" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="72" y="349" font-size="14" fill="#222222" text-anchor="start">Perfil</text>
+<text x="44" y="902" font-size="13" fill="#666666" text-anchor="start">Cerrar sesión</text>
+<text x="288" y="196" font-size="24" fill="#222222" text-anchor="start" font-weight="bold">Indicadores</text>
+<text x="288" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Desde</text>
+<rect x="288" y="236" width="170" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="298" y="259.0" font-size="13" fill="#222222" text-anchor="start">01/09/2026</text>
+<text x="474" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Hasta</text>
+<rect x="474" y="236" width="170" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="484" y="259.0" font-size="13" fill="#222222" text-anchor="start">30/09/2026</text>
+<text x="660" y="229" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Área</text>
+<rect x="660" y="236" width="240" height="36" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="670" y="259.0" font-size="13" fill="#222222" text-anchor="start">Todas las áreas</text>
+<text x="882" y="259.0" font-size="13" fill="#666666" text-anchor="start">▾</text>
+<rect x="916" y="236" width="83.453125" height="38" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="957.7265625" y="260.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">Aplicar</text>
+<circle cx="1028" cy="254" r="12" fill="#000"/>
+<text x="1028" y="258.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<rect x="1231.75" y="236" width="126.25" height="38" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="1294.875" y="260.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Exportar CSV</text>
+<circle cx="1209.75" cy="254" r="12" fill="#000"/>
+<text x="1209.75" y="258.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<rect x="288.0" y="292" width="201.2" height="104" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="304.0" y="320" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Registradas</text>
+<text x="304.0" y="362" font-size="30" fill="#222222" text-anchor="start" font-weight="bold">120</text>
+<rect x="304.0" y="376" width="98.83999999999999" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="505.2" y="292" width="201.2" height="104" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="521.2" y="320" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Pendientes</text>
+<text x="521.2" y="362" font-size="30" fill="#222222" text-anchor="start" font-weight="bold">35</text>
+<rect x="521.2" y="376" width="98.83999999999999" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="722.4" y="292" width="201.2" height="104" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="738.4" y="320" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Solucionadas</text>
+<text x="738.4" y="362" font-size="30" fill="#222222" text-anchor="start" font-weight="bold">80</text>
+<rect x="738.4" y="376" width="98.83999999999999" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="939.5999999999999" y="292" width="201.2" height="104" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="955.5999999999999" y="320" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Canceladas</text>
+<text x="955.5999999999999" y="362" font-size="30" fill="#222222" text-anchor="start" font-weight="bold">5</text>
+<rect x="955.5999999999999" y="376" width="98.83999999999999" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1156.8" y="292" width="201.2" height="104" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="1172.8" y="320" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">% solucionado</text>
+<text x="1172.8" y="362" font-size="30" fill="#222222" text-anchor="start" font-weight="bold">69,6 %</text>
+<rect x="1172.8" y="376" width="98.83999999999999" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<circle cx="1344" cy="306" r="12" fill="#000"/>
+<text x="1344" y="310.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<rect x="288.0" y="412" width="255.5" height="92" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="304.0" y="440" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Vencidas activas</text>
+<rect x="304.0" y="454" width="90" height="30" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="559.5" y="412" width="255.5" height="92" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="575.5" y="440" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Tiempo medio de resolución</text>
+<rect x="575.5" y="454" width="90" height="30" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="831.0" y="412" width="255.5" height="92" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="847.0" y="440" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Cumplimiento de resolución</text>
+<rect x="847.0" y="454" width="90" height="30" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1102.5" y="412" width="255.5" height="92" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="1118.5" y="440" font-size="13" fill="#666666" text-anchor="start" font-weight="bold">Satisfacción (n encuestas)</text>
+<rect x="1118.5" y="454" width="90" height="30" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="288.0" y="522" width="346.0" height="330" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="304.0" y="550" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Por categoría</text>
+<line x1="288.0" y1="564" x2="634.0" y2="564" stroke="#bdbdbd" stroke-width="1.2"/>
+<rect x="308.0" y="578" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="398.0" y="570" width="167.4" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="571.4" y="578" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="308.0" y="634" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="398.0" y="626" width="130.2" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="534.2" y="634" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="308.0" y="690" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="398.0" y="682" width="102.30000000000001" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="506.3" y="690" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="308.0" y="746" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="398.0" y="738" width="74.4" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="478.4" y="746" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="308.0" y="802" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="398.0" y="794" width="46.5" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="450.5" y="802" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="650.0" y="522" width="346.0" height="330" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="666.0" y="550" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Por prioridad</text>
+<line x1="650.0" y1="564" x2="996.0" y2="564" stroke="#bdbdbd" stroke-width="1.2"/>
+<rect x="670.0" y="578" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="760.0" y="570" width="55.8" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="821.8" y="578" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="670.0" y="634" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="760.0" y="626" width="148.8" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="914.8" y="634" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="670.0" y="690" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="760.0" y="682" width="176.7" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="942.7" y="690" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="670.0" y="746" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="760.0" y="738" width="93.0" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="859.0" y="746" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1012.0" y="522" width="346.0" height="330" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="1028.0" y="550" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Por técnico actual (incl. Sin asignar)</text>
+<line x1="1012.0" y1="564" x2="1358.0" y2="564" stroke="#bdbdbd" stroke-width="1.2"/>
+<rect x="1032.0" y="578" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1122.0" y="570" width="167.4" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="1295.4" y="578" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1032.0" y="634" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1122.0" y="626" width="130.2" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="1258.2" y="634" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1032.0" y="690" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1122.0" y="682" width="102.30000000000001" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="1230.3" y="690" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1032.0" y="746" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1122.0" y="738" width="74.4" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="1202.4" y="746" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1032.0" y="802" width="80" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="1122.0" y="794" width="46.5" height="24" rx="2" fill="#9a9a9a" stroke="none" stroke-width="1.2"/>
+<rect x="1174.5" y="802" width="24" height="8" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<circle cx="1340.0" cy="544" r="12" fill="#000"/>
+<text x="1340.0" y="548.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="288" y="882" font-size="13" fill="#666666" text-anchor="start">Base: solicitudes registradas en el periodo y área seleccionados (incluye el día de inicio y excluye el posterior al fin).</text>
+<rect x="1420" y="92" width="330" height="830" fill="#fafafa" stroke="#666666" stroke-dasharray="6 4"/>
+<text x="1438" y="126" font-size="16" font-weight="bold" fill="#000">Notas de diseño (tabla 22)</text>
+<circle cx="1450" cy="157" r="12" fill="#000"/>
+<text x="1450" y="161.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="1472" y="162" font-size="13" fill="#222222">Tarjetas y gráficos comparten los mismos</text>
+<text x="1472" y="180" font-size="13" fill="#222222">filtros de periodo y área.</text>
+<circle cx="1450" cy="209" r="12" fill="#000"/>
+<text x="1450" y="213.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="1472" y="214" font-size="13" fill="#222222">Exportación CSV con los filtros aplicados.</text>
+<circle cx="1450" cy="243" r="12" fill="#000"/>
+<text x="1450" y="247.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="1472" y="248" font-size="13" fill="#222222">Cada indicador muestra su base o fórmula;</text>
+<text x="1472" y="266" font-size="13" fill="#222222">un denominador cero se muestra como «Sin</text>
+<text x="1472" y="284" font-size="13" fill="#222222">datos».</text>
+<circle cx="1450" cy="313" r="12" fill="#000"/>
+<text x="1450" y="317.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="1472" y="318" font-size="13" fill="#222222">Distribución por categoría, prioridad y</text>
+<text x="1472" y="336" font-size="13" fill="#222222">técnico actual, incluido Sin asignar.</text>
+</svg>

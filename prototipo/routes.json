@@ -1,0 +1,5 @@
+{
+  "/api/v1/admin/catalogos/*": "/$1",
+  "/api/v1/admin/politicas*": "/politicas$1",
+  "/api/v1/notificaciones*": "/notificaciones$1"
+}

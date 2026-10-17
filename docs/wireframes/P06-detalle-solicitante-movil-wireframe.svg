@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="738" height="1748" viewBox="0 0 738 1748" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="738" height="1748" fill="#ffffff"/>
+<text x="24" y="38" font-size="22" font-weight="bold" fill="#000">P06 Detalle del solicitante (móvil) — wireframe</text>
+<text x="24" y="64" font-size="14" fill="#666666">Solicitante · Móvil 360 px · baja fidelidad · contenido ilustrativo</text>
+<rect x="23" y="91" width="362" height="1628" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="24" y="92" width="360" height="56" rx="0" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="111" width="22" height="3" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="40" y="118" width="22" height="3" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="40" y="125" width="22" height="3" rx="1" fill="#222222" stroke="none" stroke-width="1.2"/>
+<rect x="74" y="106" width="28" height="28" rx="2" fill="#e4e4e4" stroke="#666666" stroke-width="1.2"/>
+<path d="M74 106 L102 134 M102 106 L74 134" stroke="#bdbdbd" stroke-width="1"/>
+<text x="110" y="125" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Mesa de Servicios</text>
+<circle cx="326" cy="120" r="11" fill="#fff" stroke="#666666"/>
+<text x="326" y="124" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">2</text>
+<circle cx="360" cy="120" r="13" fill="#fff" stroke="#666666"/>
+<text x="360" y="124" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">LR</text>
+<circle cx="51" cy="159" r="12" fill="#000"/>
+<text x="51" y="163.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="40" y="184" font-size="12" fill="#666666" text-anchor="start">Mis solicitudes / MSU-2026-0002</text>
+<text x="40" y="216" font-size="22" fill="#222222" text-anchor="start" font-weight="bold">MSU-2026-0002</text>
+<rect x="40" y="228" width="115.34375" height="22" rx="11" fill="#e4e4e4" stroke="#222222" stroke-width="1.2"/>
+<text x="97.671875" y="243.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Estado: Resuelta</text>
+<rect x="163.34375" y="228" width="111.984375" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="219.3359375" y="243.5" font-size="12" fill="#222222" text-anchor="middle" font-weight="bold">Prioridad: Media</text>
+<circle cx="356" cy="208" r="12" fill="#000"/>
+<text x="356" y="212.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="40" y="274" font-size="12" fill="#666666" text-anchor="start">Software académico · Pab. B · Lab. cómputo 1</text>
+<rect x="40" y="286" width="328" height="62" rx="4" fill="#e4e4e4" stroke="#222222" stroke-width="1.5"/>
+<text x="52" y="310" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Próximo paso: confirma la solución o</text>
+<text x="52" y="330" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">reabre antes del 18/10/2026 08:30.</text>
+<rect x="40" y="364" width="328" height="300" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="56" y="392" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Conformidad</text>
+<line x1="40" y1="406" x2="368" y2="406" stroke="#bdbdbd" stroke-width="1.2"/>
+<circle cx="356" cy="366" r="12" fill="#000"/>
+<text x="356" y="370.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="54" y="430" font-size="12" fill="#222222" text-anchor="start" font-weight="bold">Solución de Carla Huamán (15/10 08:30):</text>
+<rect x="54" y="444" width="300" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="54" y="458" width="300" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="54" y="472" width="180.0" height="7" rx="3" fill="#e4e4e4" stroke="none" stroke-width="1.2"/>
+<rect x="54" y="488" width="300" height="42" rx="5" fill="#222222" stroke="none" stroke-width="1.2"/>
+<text x="204.0" y="514.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">Confirmar solución</text>
+<rect x="54" y="540" width="300" height="42" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="204.0" y="566.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Reabrir caso</text>
+<text x="54" y="605" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Motivo de reapertura *</text>
+<rect x="54" y="612" width="300" height="40" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<rect x="40" y="680" width="328" height="110" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="56" y="708" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Responsable</text>
+<line x1="40" y1="722" x2="368" y2="722" stroke="#bdbdbd" stroke-width="1.2"/>
+<circle cx="356" cy="682" r="12" fill="#000"/>
+<text x="356" y="686.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<circle cx="74" cy="754" r="18" fill="#e4e4e4" stroke="#666666"/>
+<text x="102" y="750" font-size="14" fill="#222222" text-anchor="start" font-weight="bold">Carla Huamán Torres</text>
+<text x="102" y="770" font-size="12" fill="#666666" text-anchor="start">Técnica · Soporte informático</text>
+<rect x="40" y="806" width="328" height="268" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="56" y="834" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Plazos</text>
+<line x1="40" y1="848" x2="368" y2="848" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="54" y="874" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Primera atención</text>
+<text x="54" y="892" font-size="12" fill="#666666" text-anchor="start">Límite 13/10 10:30</text>
+<rect x="54" y="898" width="129.96875" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="118.984375" y="913.5" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">Cumplida 12/10 20:30</text>
+<text x="54" y="942" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Resolución</text>
+<text x="54" y="960" font-size="12" fill="#666666" text-anchor="start">Límite 17/10 10:30</text>
+<rect x="54" y="966" width="125.71875" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="116.859375" y="981.5" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">Resuelta 15/10 08:30</text>
+<text x="54" y="1010" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Conformidad (72 h)</text>
+<text x="54" y="1028" font-size="12" fill="#666666" text-anchor="start">Desde la resolución</text>
+<rect x="54" y="1034" width="109.8125" height="22" rx="11" fill="#fff" stroke="#222222" stroke-width="1.2"/>
+<text x="108.90625" y="1049.5" font-size="11" fill="#222222" text-anchor="middle" font-weight="bold">Hasta 18/10 08:30</text>
+<rect x="40" y="1090" width="328" height="370" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="56" y="1118" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Actividad</text>
+<line x1="40" y1="1132" x2="368" y2="1132" stroke="#bdbdbd" stroke-width="1.2"/>
+<circle cx="62" cy="1154" r="6" fill="#fff" stroke="#222222" stroke-width="1.5"/>
+<line x1="62" y1="1160" x2="62" y2="1204" stroke="#666666" stroke-width="1.2"/>
+<text x="78" y="1158" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Registrada</text>
+<text x="78" y="1176" font-size="12" fill="#666666" text-anchor="start">12/10 10:30 · Lucía Ramos</text>
+<circle cx="62" cy="1206" r="6" fill="#fff" stroke="#222222" stroke-width="1.5"/>
+<line x1="62" y1="1212" x2="62" y2="1256" stroke="#666666" stroke-width="1.2"/>
+<text x="78" y="1210" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">En evaluación</text>
+<text x="78" y="1228" font-size="12" fill="#666666" text-anchor="start">12/10 12:30 · Ana Castillo</text>
+<circle cx="62" cy="1258" r="6" fill="#fff" stroke="#222222" stroke-width="1.5"/>
+<line x1="62" y1="1264" x2="62" y2="1308" stroke="#666666" stroke-width="1.2"/>
+<text x="78" y="1262" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Asignada</text>
+<text x="78" y="1280" font-size="12" fill="#666666" text-anchor="start">12/10 13:30 · a Carla Huamán</text>
+<circle cx="62" cy="1310" r="6" fill="#fff" stroke="#222222" stroke-width="1.5"/>
+<line x1="62" y1="1316" x2="62" y2="1360" stroke="#666666" stroke-width="1.2"/>
+<text x="78" y="1314" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">En atención</text>
+<text x="78" y="1332" font-size="12" fill="#666666" text-anchor="start">12/10 20:30 · Carla Huamán</text>
+<circle cx="62" cy="1362" r="6" fill="#fff" stroke="#222222" stroke-width="1.5"/>
+<line x1="62" y1="1368" x2="62" y2="1412" stroke="#666666" stroke-width="1.2"/>
+<text x="78" y="1366" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Comentario</text>
+<text x="78" y="1384" font-size="12" fill="#666666" text-anchor="start">13/10 09:10 · Carla Huamán</text>
+<circle cx="62" cy="1414" r="6" fill="#222222" stroke="#222222" stroke-width="1.5"/>
+<text x="78" y="1418" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Resuelta</text>
+<text x="78" y="1436" font-size="12" fill="#666666" text-anchor="start">15/10 08:30 · Carla Huamán</text>
+<text x="40" y="1489" font-size="13" fill="#222222" text-anchor="start" font-weight="bold">Comentario</text>
+<rect x="40" y="1496" width="328" height="60" rx="4" fill="#fff" stroke="#666666" stroke-width="1.2"/>
+<text x="50" y="1518" font-size="13" fill="#bdbdbd" text-anchor="start">1 a 1000 caracteres</text>
+<rect x="40" y="1568" width="328" height="42" rx="5" fill="#fff" stroke="#222222" stroke-width="1.4"/>
+<text x="204.0" y="1594.0" font-size="14" fill="#222222" text-anchor="middle" font-weight="bold">Comentar</text>
+<rect x="40" y="1628" width="328" height="70" rx="6" fill="#fff" stroke="#666666" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="56" y="1656" font-size="15" fill="#222222" text-anchor="start" font-weight="bold">Encuesta de satisfacción</text>
+<line x1="40" y1="1670" x2="368" y2="1670" stroke="#bdbdbd" stroke-width="1.2"/>
+<text x="54" y="1688" font-size="12" fill="#666666" text-anchor="start">Aparece solo tras el cierre.</text>
+<rect x="414" y="92" width="300" height="1626" fill="#fafafa" stroke="#666666" stroke-dasharray="6 4"/>
+<text x="432" y="126" font-size="16" font-weight="bold" fill="#000">Notas de diseño (tabla 22)</text>
+<circle cx="444" cy="157" r="12" fill="#000"/>
+<text x="444" y="161.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="466" y="162" font-size="13" fill="#222222">Menú compacto en la cabecera; la</text>
+<text x="466" y="180" font-size="13" fill="#222222">navegación lateral se contrae.</text>
+<circle cx="444" cy="209" r="12" fill="#000"/>
+<text x="444" y="213.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">2</text>
+<text x="466" y="214" font-size="13" fill="#222222">Código, estado y prioridad arriba, con</text>
+<text x="466" y="232" font-size="13" fill="#222222">texto; luego el próximo paso.</text>
+<circle cx="444" cy="261" r="12" fill="#000"/>
+<text x="444" y="265.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">3</text>
+<text x="466" y="266" font-size="13" fill="#222222">Los paneles pasan a una columna:</text>
+<text x="466" y="284" font-size="13" fill="#222222">conformidad, responsable, plazos y</text>
+<text x="466" y="302" font-size="13" fill="#222222">actividad.</text>
+<circle cx="444" cy="331" r="12" fill="#000"/>
+<text x="444" y="335.5" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">4</text>
+<text x="466" y="336" font-size="13" fill="#222222">Confirmar y reabrir a todo el ancho;</text>
+<text x="466" y="354" font-size="13" fill="#222222">solo en Resuelta y dentro de 72 h.</text>
+</svg>

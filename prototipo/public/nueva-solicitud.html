@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nueva solicitud · Mesa de Servicios Universitarios</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <!-- P04 Nueva solicitud (PR02 y PR03, responsable: Alex). -->
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <div class="app">
+    <header class="cabecera" id="cabecera"></header>
+    <nav class="menu" id="menu" aria-label="Menú principal"></nav>
+    <main class="contenido" id="contenido" tabindex="-1">
+      <div class="encabezado-pagina">
+        <div>
+          <h1>Nueva solicitud</h1>
+          <p class="subtitulo">Describe el problema para que el área responsable lo evalúe. Los campos con <span class="obligatorio" aria-hidden="true">*</span> son obligatorios.</p>
+        </div>
+      </div>
+
+      <div id="resumen-errores" class="aviso aviso--error" tabindex="-1" role="alert" hidden></div>
+      <div id="error-envio"></div>
+      <div id="resultado" hidden></div>
+
+      <form id="form-solicitud" class="formulario" novalidate>
+        <fieldset>
+          <legend>1. Categoría y ubicación</legend>
+          <div class="dos-columnas">
+            <div class="campo" data-campo="categoria_id">
+              <label for="campo-categoria">Categoría <span class="obligatorio" aria-hidden="true">*</span></label>
+              <p class="ayuda" id="ayuda-categoria">Agrupadas por área responsable.</p>
+              <select id="campo-categoria" name="categoria_id" aria-describedby="ayuda-categoria" required disabled>
+                <option value="">Cargando categorías…</option>
+              </select>
+            </div>
+            <div class="campo" data-campo="ubicacion_id">
+              <label for="campo-ubicacion">Ubicación <span class="obligatorio" aria-hidden="true">*</span></label>
+              <p class="ayuda" id="ayuda-ubicacion">Edificio y ambiente donde ocurre el problema.</p>
+              <select id="campo-ubicacion" name="ubicacion_id" aria-describedby="ayuda-ubicacion" required disabled>
+                <option value="">Cargando ubicaciones…</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo" data-campo="referencia">
+            <label for="campo-referencia">Referencia adicional (opcional)</label>
+            <p class="ayuda" id="ayuda-referencia">Por ejemplo: «junto a la ventana» o «equipo 12». Hasta 200 caracteres.</p>
+            <input type="text" id="campo-referencia" name="referencia" maxlength="200" aria-describedby="ayuda-referencia" autocomplete="off">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>2. Descripción del problema</legend>
+          <div class="campo" data-campo="descripcion">
+            <label for="campo-descripcion">Descripción <span class="obligatorio" aria-hidden="true">*</span></label>
+            <p class="ayuda" id="ayuda-descripcion">Qué ocurre, desde cuándo y a quiénes afecta. Entre 20 y 2000 caracteres.</p>
+            <textarea id="campo-descripcion" name="descripcion" maxlength="2000" rows="5" aria-describedby="ayuda-descripcion contador-descripcion" required></textarea>
+            <p class="contador" id="contador-descripcion" aria-live="polite">0 de 2000 caracteres (mínimo 20).</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>3. Afectación</legend>
+          <div class="dos-columnas">
+            <fieldset class="campo" data-campo="impacto">
+              <legend class="etiqueta-campo">Impacto <span class="obligatorio" aria-hidden="true">*</span><span class="solo-lectores">(obligatorio)</span></legend>
+              <p class="ayuda">¿Cuántas personas o actividades se afectan?</p>
+              <span data-ancla-error hidden></span>
+              <div class="opciones" id="opciones-impacto"></div>
+            </fieldset>
+            <fieldset class="campo" data-campo="urgencia">
+              <legend class="etiqueta-campo">Urgencia <span class="obligatorio" aria-hidden="true">*</span><span class="solo-lectores">(obligatorio)</span></legend>
+              <p class="ayuda">¿Cuánto puede esperar la atención?</p>
+              <span data-ancla-error hidden></span>
+              <div class="opciones" id="opciones-urgencia"></div>
+            </fieldset>
+          </div>
+          <section class="resultado-prioridad" aria-labelledby="titulo-prioridad">
+            <h2 id="titulo-prioridad" class="etiqueta-campo">Prioridad inicial calculada</h2>
+            <div id="vista-prioridad" aria-live="polite" data-prueba="vista-prioridad">
+              <p>Selecciona impacto y urgencia para calcular la prioridad y los plazos.</p>
+            </div>
+          </section>
+        </fieldset>
+
+        <p class="ayuda">Las imágenes de evidencia se adjuntan en una operación separada que se implementa en la fase II.</p>
+        <div class="acciones">
+          <button type="submit" class="boton boton--primario" id="boton-registrar" disabled>Registrar solicitud</button>
+          <a class="boton" href="solicitudes.html">Cancelar</a>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script type="module" src="js/paginas/nueva-solicitud.js"></script>
+</body>
+</html>
