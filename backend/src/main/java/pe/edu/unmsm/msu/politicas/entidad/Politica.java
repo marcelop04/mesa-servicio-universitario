@@ -63,6 +63,10 @@ public class Politica {
         return vigenteDesde;
     }
 
+    public Usuario getPublicadaPor() {
+        return publicadaPor;
+    }
+
     public List<DetallePolitica> getDetalles() {
         return detalles;
     }

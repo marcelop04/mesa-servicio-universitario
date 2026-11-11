@@ -8,7 +8,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ContentDisposition;
@@ -19,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.comun.web.Pagina;
 import pe.edu.unmsm.msu.identidad.entidad.Rol;
 import pe.edu.unmsm.msu.indicadores.dto.Indicadores;
@@ -38,10 +41,13 @@ public class IndicadoresControlador {
 
     private final IndicadoresServicio indicadores;
     private final ListadoSolicitudesServicio listado;
+    private final AuditoriaServicio auditoria;
 
-    public IndicadoresControlador(IndicadoresServicio indicadores, ListadoSolicitudesServicio listado) {
+    public IndicadoresControlador(IndicadoresServicio indicadores, ListadoSolicitudesServicio listado,
+                                  AuditoriaServicio auditoria) {
         this.indicadores = indicadores;
         this.listado = listado;
+        this.auditoria = auditoria;
     }
 
     @GetMapping("/api/v1/indicadores")
@@ -89,6 +95,18 @@ public class IndicadoresControlador {
                     celda(fecha(s.registradaEn())), celda(fecha(s.limiteAtencion())), celda(fecha(s.limiteResolucion()))))
                     .append("\r\n");
         }
+        // HU23: la exportación de datos es un acceso relevante; se guardan los filtros, no el contenido.
+        Map<String, Object> filtros = new LinkedHashMap<>();
+        filtros.put("estado", estado);
+        filtros.put("area_id", areaId);
+        filtros.put("categoria_id", categoriaId);
+        filtros.put("prioridad", prioridad);
+        filtros.put("responsable", responsable);
+        filtros.put("q", q);
+        filtros.put("desde", desde == null ? null : desde.toString());
+        filtros.put("hasta", hasta == null ? null : hasta.toString());
+        filtros.values().removeIf(java.util.Objects::isNull);
+        auditoria.registrar("REPORTE_EXPORTAR", "SOLICITUD", null, Map.of("filas", filas.size(), "filtros", filtros));
         String nombre = "solicitudes-" + LocalDate.now(ZoneId.of("America/Lima")) + ".csv";
         return ResponseEntity.ok()
                 .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))

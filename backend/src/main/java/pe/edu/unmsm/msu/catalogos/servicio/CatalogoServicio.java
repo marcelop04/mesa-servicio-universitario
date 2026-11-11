@@ -2,11 +2,14 @@ package pe.edu.unmsm.msu.catalogos.servicio;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.catalogos.dto.CatalogoEntrada;
 import pe.edu.unmsm.msu.catalogos.dto.CatalogoItem;
 import pe.edu.unmsm.msu.catalogos.dto.CatalogosActivos;
@@ -40,16 +43,18 @@ public class CatalogoServicio {
     private final EstadoRepositorio estados;
     private final PrioridadRepositorio prioridades;
     private final ConsultaSolicitudes solicitudes;
+    private final AuditoriaServicio auditoria;
 
     public CatalogoServicio(AreaRepositorio areas, CategoriaRepositorio categorias, UbicacionRepositorio ubicaciones,
                             EstadoRepositorio estados, PrioridadRepositorio prioridades,
-                            ConsultaSolicitudes solicitudes) {
+                            ConsultaSolicitudes solicitudes, AuditoriaServicio auditoria) {
         this.areas = areas;
         this.categorias = categorias;
         this.ubicaciones = ubicaciones;
         this.estados = estados;
         this.prioridades = prioridades;
         this.solicitudes = solicitudes;
+        this.auditoria = auditoria;
     }
 
     /** Opciones que se ofrecen en formularios: solo activas (y categorías de áreas activas). */
@@ -83,7 +88,7 @@ public class CatalogoServicio {
 
     @Transactional
     public CatalogoItem crear(TipoCatalogo tipo, CatalogoEntrada e) {
-        return switch (tipo) {
+        CatalogoItem creado = switch (tipo) {
             case AREAS -> {
                 String nombre = requerido("nombre", e.nombre(), 2);
                 if (areas.existsByNombreIgnoreCase(nombre)) {
@@ -113,10 +118,21 @@ public class CatalogoServicio {
             }
             case ESTADOS, PRIORIDADES -> throw fijo(tipo);
         };
+        auditoria.registrar("CATALOGO_CREAR", entidad(tipo), creado.id(), datosAuditados(creado));
+        return creado;
     }
 
+    /** HU23: cada cambio queda en la auditoría administrativa con el estado resultante. */
     @Transactional
     public CatalogoItem actualizar(TipoCatalogo tipo, String id, CatalogoEntrada e) {
+        CatalogoItem actualizado = aplicarCambio(tipo, id, e);
+        auditoria.registrar(Boolean.TRUE.equals(e.activo()) && e.nombre() == null && e.areaId() == null
+                        && e.edificio() == null && e.ambiente() == null ? "CATALOGO_REACTIVAR" : "CATALOGO_ACTUALIZAR",
+                entidad(tipo), actualizado.id(), datosAuditados(actualizado));
+        return actualizado;
+    }
+
+    private CatalogoItem aplicarCambio(TipoCatalogo tipo, String id, CatalogoEntrada e) {
         return switch (tipo) {
             case AREAS -> {
                 Area area = areas.findById(idNumerico(id)).orElseThrow(() -> noExiste(tipo));
@@ -202,7 +218,29 @@ public class CatalogoServicio {
             }
             throw fijo(tipo);
         }
-        return actualizar(tipo, id, new CatalogoEntrada(null, null, null, null, false));
+        CatalogoItem desactivado = aplicarCambio(tipo, id, new CatalogoEntrada(null, null, null, null, false));
+        auditoria.registrar("CATALOGO_DESACTIVAR", entidad(tipo), desactivado.id(), datosAuditados(desactivado));
+        return desactivado;
+    }
+
+    private static String entidad(TipoCatalogo tipo) {
+        return switch (tipo) {
+            case AREAS -> "AREA";
+            case CATEGORIAS -> "CATEGORIA";
+            case UBICACIONES -> "UBICACION";
+            case ESTADOS -> "ESTADO";
+            case PRIORIDADES -> "PRIORIDAD";
+        };
+    }
+
+    private static Map<String, Object> datosAuditados(CatalogoItem item) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("nombre", item.nombre());
+        m.put("activo", item.activo());
+        if (item.areaNombre() != null) {
+            m.put("area", item.areaNombre());
+        }
+        return m;
     }
 
     private List<CatalogoItem> todos(TipoCatalogo tipo) {
