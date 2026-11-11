@@ -9,6 +9,8 @@ import { Perfil } from './paginas/identidad/Perfil.jsx';
 import { Registro } from './paginas/identidad/Registro.jsx';
 import { Supervision } from './paginas/supervision/Supervision.jsx';
 import { Atencion } from './paginas/atencion/Atencion.jsx';
+import { Dashboard } from './paginas/dashboard/Dashboard.jsx';
+import { Notificaciones } from './paginas/notificaciones/Notificaciones.jsx';
 import { DetallePagina } from './paginas/solicitudes/DetallePagina.jsx';
 import { MisSolicitudes } from './paginas/solicitudes/MisSolicitudes.jsx';
 import { NuevaSolicitud } from './paginas/solicitudes/NuevaSolicitud.jsx';
@@ -35,7 +37,7 @@ export default function App() {
       <Route element={<RutaProtegida />}>
         <Route element={<LayoutRol />}>
           <Route path="/perfil" element={<Perfil />} />
-          <Route path="/notificaciones" element={pendiente('P09')} />
+          <Route path="/notificaciones" element={<Notificaciones />} />
 
           <Route element={<RutaProtegida roles={['SOLICITANTE']} />}>
             <Route path="/solicitudes" element={<MisSolicitudes />} />
@@ -46,7 +48,7 @@ export default function App() {
           </Route>
           <Route element={<RutaProtegida roles={['SUPERVISOR']} />}>
             <Route path="/supervision" element={<Supervision />} />
-            <Route path="/dashboard" element={pendiente('P10')} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Route>
           <Route element={<RutaProtegida roles={['TECNICO']} />}>
             <Route path="/atencion" element={<Atencion />} />
