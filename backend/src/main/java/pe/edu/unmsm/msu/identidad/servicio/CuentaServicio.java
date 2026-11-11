@@ -2,9 +2,11 @@ package pe.edu.unmsm.msu.identidad.servicio;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.comun.error.ErrorCampo;
 import pe.edu.unmsm.msu.comun.error.ExcepcionApi;
 import pe.edu.unmsm.msu.identidad.dto.CambioPassword;
@@ -29,8 +31,11 @@ public class CuentaServicio {
     private final UsuarioRepositorio usuarios;
     private final RolRepositorio roles;
     private final PasswordEncoder encoder;
+    private final AuditoriaServicio auditoria;
 
-    public CuentaServicio(UsuarioRepositorio usuarios, RolRepositorio roles, PasswordEncoder encoder) {
+    public CuentaServicio(UsuarioRepositorio usuarios, RolRepositorio roles, PasswordEncoder encoder,
+                          AuditoriaServicio auditoria) {
+        this.auditoria = auditoria;
         this.usuarios = usuarios;
         this.roles = roles;
         this.encoder = encoder;
@@ -46,6 +51,8 @@ public class CuentaServicio {
         Rol solicitante = roles.findByCodigo(Rol.SOLICITANTE).orElseThrow();
         Usuario u = usuarios.saveAndFlush(new Usuario(datos.nombre().trim(), correo, encoder.encode(datos.password()),
                 datos.vinculo(), solicitante, null));
+        auditoria.registrarComo(u.getId(), "CUENTA_REGISTRAR", "USUARIO", u.getId(),
+                Map.of("correo", correo, "vinculo", String.valueOf(datos.vinculo())));
         return Perfil.de(u);
     }
 
@@ -53,7 +60,12 @@ public class CuentaServicio {
     @Transactional
     public Perfil cambiarPerfil(long usuarioId, CambioPerfil datos) {
         Usuario u = usuarios.findById(usuarioId).orElseThrow();
+        String anterior = u.getNombre();
         u.setNombre(datos.nombre().trim());
+        if (!anterior.equals(u.getNombre())) {
+            auditoria.registrarComo(usuarioId, "CUENTA_ACTUALIZAR_PERFIL", "USUARIO", usuarioId,
+                    Map.of("cambios", Map.of("nombre", Map.of("anterior", anterior, "nuevo", u.getNombre()))));
+        }
         return Perfil.de(u);
     }
 
@@ -80,6 +92,8 @@ public class CuentaServicio {
         }
         u.cambiarPasswordHash(encoder.encode(datos.nueva()));
         u.revocarAutorizacion();
+        // Solo se registra que hubo un cambio: nunca la contraseña anterior, la nueva ni su hash.
+        auditoria.registrarComo(usuarioId, "CUENTA_CAMBIAR_CLAVE_ACCESO", "USUARIO", usuarioId, Map.of());
         return usuarios.saveAndFlush(u);
     }
 }

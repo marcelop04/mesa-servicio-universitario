@@ -1,6 +1,8 @@
 package pe.edu.unmsm.msu.administracion.servicio;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.msu.administracion.dto.CambioUsuario;
 import pe.edu.unmsm.msu.administracion.dto.NuevoUsuarioInterno;
 import pe.edu.unmsm.msu.administracion.dto.UsuarioAdmin;
+import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.catalogos.entidad.Area;
 import pe.edu.unmsm.msu.catalogos.repositorio.AreaRepositorio;
 import pe.edu.unmsm.msu.comun.error.ExcepcionApi;
@@ -36,14 +39,16 @@ public class UsuarioAdminServicio {
     private final AreaRepositorio areas;
     private final ConsultaSolicitudes solicitudes;
     private final PasswordEncoder encoder;
+    private final AuditoriaServicio auditoria;
 
     public UsuarioAdminServicio(UsuarioRepositorio usuarios, RolRepositorio roles, AreaRepositorio areas,
-                                ConsultaSolicitudes solicitudes, PasswordEncoder encoder) {
+                                ConsultaSolicitudes solicitudes, PasswordEncoder encoder, AuditoriaServicio auditoria) {
         this.usuarios = usuarios;
         this.roles = roles;
         this.areas = areas;
         this.solicitudes = solicitudes;
         this.encoder = encoder;
+        this.auditoria = auditoria;
     }
 
     public Pagina<UsuarioAdmin> listar(String rol, Boolean activo, String texto, Integer pagina, Integer tamano) {
@@ -67,9 +72,15 @@ public class UsuarioAdminServicio {
         }
         Rol rol = rol(datos.rol());
         Area area = Rol.TECNICO.equals(datos.rol()) ? areaActivaObligatoria(datos.areaId()) : null;
-        Usuario nuevo = new Usuario(datos.nombre().trim(), correo, encoder.encode(datos.password()),
-                "ADMINISTRATIVO", rol, area);
-        return UsuarioAdmin.de(usuarios.save(nuevo), 0L);
+        Usuario nuevo = usuarios.save(new Usuario(datos.nombre().trim(), correo, encoder.encode(datos.password()),
+                "ADMINISTRATIVO", rol, area));
+        Map<String, Object> datosAuditados = new LinkedHashMap<>();
+        datosAuditados.put("nombre", nuevo.getNombre());
+        datosAuditados.put("correo", correo);
+        datosAuditados.put("rol", rol.getCodigo());
+        datosAuditados.put("area", area == null ? null : area.getNombre());
+        auditoria.registrar("USUARIO_CREAR", "USUARIO", nuevo.getId(), datosAuditados);
+        return UsuarioAdmin.de(nuevo, 0L);
     }
 
     @Transactional
@@ -107,6 +118,7 @@ public class UsuarioAdminServicio {
             }
         }
 
+        Map<String, Object> antes = estadoAuditable(usuario);
         if (cambio.nombre() != null) {
             usuario.setNombre(cambio.nombre().trim());
         }
@@ -120,7 +132,31 @@ public class UsuarioAdminServicio {
         if (cambiaRol || desactiva || reactiva || cambiaArea) {
             usuario.revocarAutorizacion();
         }
+        Map<String, Object> despues = estadoAuditable(usuario);
+        Map<String, Object> cambios = new LinkedHashMap<>();
+        antes.forEach((campo, valor) -> {
+            if (!Objects.equals(valor, despues.get(campo))) {
+                Map<String, Object> par = new LinkedHashMap<>();
+                par.put("anterior", valor);
+                par.put("nuevo", despues.get(campo));
+                cambios.put(campo, par);
+            }
+        });
+        if (!cambios.isEmpty()) {
+            String accion = desactiva ? "USUARIO_DESACTIVAR" : reactiva ? "USUARIO_REACTIVAR" : "USUARIO_ACTUALIZAR";
+            auditoria.registrar(accion, "USUARIO", usuario.getId(), Map.of("correo", usuario.getCorreo(), "cambios", cambios));
+        }
         return UsuarioAdmin.de(usuario, solicitudes.contarPendientesDeTecnico(id));
+    }
+
+    /** Datos que se comparan para la auditoría (HU23). Nunca incluye la contraseña ni su hash. */
+    private static Map<String, Object> estadoAuditable(Usuario u) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("nombre", u.getNombre());
+        m.put("rol", u.getRol().getCodigo());
+        m.put("area", u.getArea() == null ? null : u.getArea().getNombre());
+        m.put("activo", u.isActivo());
+        return m;
     }
 
     private Rol rol(String codigo) {

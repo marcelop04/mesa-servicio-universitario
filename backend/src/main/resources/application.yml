@@ -48,6 +48,10 @@ msu:
     # EM03: revisión del cierre automático a las 72 horas (RNF07: cada cinco minutos).
     habilitadas: ${TAREAS_HABILITADAS:true}
     cierre-automatico: ${CIERRE_INTERVALO:PT5M}
+    # HU15: revisión de plazos (aviso al 80 % y escalamiento al vencer).
+    alertas-plazos: ${ALERTAS_INTERVALO:PT5M}
+    # HU02: borra las revocaciones de tokens que ya vencieron.
+    limpieza-sesiones: ${LIMPIEZA_SESIONES_INTERVALO:PT1H}
   archivos:
     # Evidencias fuera de la carpeta pública (RNF11: en Docker es un volumen persistente).
     directorio: ${ARCHIVOS_DIR:./archivos}

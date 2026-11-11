@@ -9,8 +9,8 @@ export const PANTALLAS = {
   P06: { ruta: '/solicitudes/:id', titulo: 'Seguimiento de solicitud', subtitulo: 'Estado, plazos, comentarios y evidencias del caso.', menu: 'Detalle', movil: 'Detalle', icono: 'archivo', responsable: 'Alex', tarea: 'AX05' },
   P07: { ruta: '/supervision', titulo: 'Bandeja de supervisión', subtitulo: 'Evalúa, prioriza y asigna las solicitudes de la facultad.', menu: 'Bandeja de supervisión', movil: 'Bandeja', icono: 'archivo', responsable: 'Marcelo', tarea: 'MR07' },
   P08: { ruta: '/atencion', titulo: 'Atención técnica', subtitulo: 'Tus asignaciones, avances y soluciones.', menu: 'Atención técnica', movil: 'Atención', icono: 'archivo', responsable: 'Emanuel', tarea: 'EM05' },
-  P09: { ruta: '/notificaciones', titulo: 'Centro de notificaciones', subtitulo: 'Avisos internos sobre tus solicitudes.', menu: 'Notificaciones', movil: 'Avisos', icono: 'campana', responsable: 'Por asignar', tarea: 'HU16' },
-  P10: { ruta: '/dashboard', titulo: 'Dashboard', subtitulo: 'Volumen, cumplimiento y satisfacción del servicio.', menu: 'Dashboard', movil: 'Indicadores', icono: 'inicio', responsable: 'Por asignar', tarea: 'HU17' },
+  P09: { ruta: '/notificaciones', titulo: 'Centro de notificaciones', subtitulo: 'Avisos internos sobre tus solicitudes.', menu: 'Notificaciones', movil: 'Avisos', icono: 'campana', responsable: 'Equipo', tarea: 'HU15, HU16' },
+  P10: { ruta: '/dashboard', titulo: 'Dashboard', subtitulo: 'Volumen, cumplimiento y satisfacción del servicio.', menu: 'Dashboard', movil: 'Indicadores', icono: 'inicio', responsable: 'Equipo', tarea: 'HU17–HU19' },
   P11: { ruta: '/admin/usuarios', titulo: 'Administración de usuarios internos', subtitulo: 'Administra accesos, roles y disponibilidad del personal interno.', menu: 'Usuarios internos', movil: 'Usuarios', icono: 'usuario', responsable: 'Gabriel', tarea: 'GB06' },
   P12: { ruta: '/admin/configuracion', titulo: 'Configuración y auditoría', subtitulo: 'Gestiona datos maestros, plazos institucionales y trazabilidad.', menu: 'Configuración y auditoría', movil: 'Configuración', icono: 'escudo', responsable: 'Gabriel', tarea: 'GB06' },
 };

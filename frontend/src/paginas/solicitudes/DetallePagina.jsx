@@ -1,11 +1,12 @@
 /*
  * P06 · Seguimiento de una solicitud (Alex, AX05). Usa el detalle reutilizable; las acciones de
- * conformidad (confirmar o reabrir, HU12) se agregan como props sin copiar el detalle.
+ * conformidad (confirmar o reabrir, HU12) y la encuesta (HU13) se agregan como props sin copiar el detalle.
  */
 import { Link, useParams } from 'react-router-dom';
 import { useSesion } from '../../sesion/SesionContext.jsx';
 import { AccionesConformidad } from '../atencion/AccionesAtencion.jsx';
 import { DetalleSolicitud } from './DetalleSolicitud.jsx';
+import { EncuestaSatisfaccion } from './Encuesta.jsx';
 
 const VOLVER = {
   SOLICITANTE: { ruta: '/solicitudes', texto: 'Volver a mis solicitudes' },
@@ -22,7 +23,12 @@ export function DetallePagina() {
       <p><Link to={volver.ruta}>← {volver.texto}</Link></p>
       <DetalleSolicitud id={Number(id)}
         acciones={usuario?.rol === 'SOLICITANTE'
-          ? (s, recargar) => <AccionesConformidad solicitud={s} recargar={recargar} />
+          ? (s, recargar) => (
+            <>
+              <AccionesConformidad solicitud={s} recargar={recargar} />
+              <EncuestaSatisfaccion solicitud={s} />
+            </>
+          )
           : undefined} />
     </section>
   );

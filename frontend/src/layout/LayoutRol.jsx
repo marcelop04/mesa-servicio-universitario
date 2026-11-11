@@ -8,6 +8,8 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { Avatar, Icono, Marca } from '../componentes/index.js';
 import { useSesion } from '../sesion/SesionContext.jsx';
 import { menuDelRol, NOMBRE_ROL, pantallaDeRuta, seccionDelRol } from './navegacion.js';
+import { api } from '../api/cliente.js';
+import { EVENTO_AVISOS } from '../paginas/notificaciones/Notificaciones.jsx';
 
 function descripcionCuenta(usuario) {
   const rol = NOMBRE_ROL[usuario.rol] ?? usuario.rol;
@@ -41,6 +43,21 @@ export function LayoutRol() {
   const actual = pantallaDeRuta(ubicacion.pathname);
 
   useEffect(() => setCuentaAbierta(null), [ubicacion.pathname]);
+
+  const [noLeidas, setNoLeidas] = useState(0);
+  useEffect(() => {
+    let vigente = true;
+    const consultar = () => api.get('/notificaciones/no-leidas')
+      .then((r) => vigente && setNoLeidas(r?.total ?? 0)).catch(() => {});
+    consultar();
+    const intervalo = setInterval(consultar, 60000);
+    window.addEventListener(EVENTO_AVISOS, consultar);
+    return () => {
+      vigente = false;
+      clearInterval(intervalo);
+      window.removeEventListener(EVENTO_AVISOS, consultar);
+    };
+  }, [ubicacion.pathname]);
 
   useEffect(() => {
     if (!cuentaAbierta) return undefined;
@@ -105,8 +122,10 @@ export function LayoutRol() {
             {actual?.subtitulo && <p className="cabecera__subtitulo">{actual.subtitulo}</p>}
           </div>
           <div className="cabecera__acciones">
-            <Link to="/notificaciones" className="cabecera__aviso" aria-label="Notificaciones">
+            <Link to="/notificaciones" className="cabecera__aviso"
+              aria-label={noLeidas > 0 ? `Notificaciones: ${noLeidas} sin leer` : 'Notificaciones'}>
               <Icono nombre="campana" tamano={20} />
+              {noLeidas > 0 && <span className="cabecera__contador" aria-hidden="true">{noLeidas > 99 ? '99+' : noLeidas}</span>}
             </Link>
             <button type="button" className="cabecera__avatar" aria-expanded={cuentaAbierta === 'cabecera'} aria-haspopup="menu"
               aria-label={`Abrir menú de ${usuario.nombre}`} onClick={() => alternar('cabecera')}>

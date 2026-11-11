@@ -32,6 +32,20 @@ public class Notificador {
         avisar(destinatario, actorId, s, tipo, texto, null);
     }
 
+    /**
+     * HU15 · Aviso con una clave de evento propia (RN10: por solicitud, plazo, evento, destinatario y
+     * versión de fechas). Repetir la revisión con la misma clave no crea otro aviso.
+     */
+    public boolean avisarUnaVez(Usuario destinatario, Solicitud s, String tipo, String texto, String clave) {
+        if (destinatario == null || notificaciones.existsByClaveEvento(clave)) {
+            return false;
+        }
+        String recortado = texto.length() > 300 ? texto.substring(0, 297) + "..." : texto;
+        notificaciones.save(new Notificacion(destinatario, s, tipo, recortado, s.getVersionFechas(), clave,
+                Instant.now(reloj)));
+        return true;
+    }
+
     /** {@code evento} distingue avisos que no cambian la versión de la solicitud, como cada comentario. */
     public void avisar(Usuario destinatario, long actorId, Solicitud s, String tipo, String texto, String evento) {
         if (destinatario == null || destinatario.getId() == actorId) {

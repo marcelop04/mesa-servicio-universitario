@@ -1,6 +1,7 @@
 package pe.edu.unmsm.msu.solicitudes.repositorio;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,14 @@ import pe.edu.unmsm.msu.solicitudes.entidad.Solicitud;
 public interface SolicitudRepositorio extends JpaRepository<Solicitud, Long> {
 
     Optional<Solicitud> findByCodigoIgnoreCase(String codigo);
+
+    /** HU15: casos pendientes para la revisión de plazos. */
+    @EntityGraph(attributePaths = {"tecnico", "estado"})
+    List<Solicitud> findByEstado_CodigoIn(Collection<String> estados);
+
+    /** HU17 y HU18: solicitudes registradas en el periodo [desde, hasta). */
+    @EntityGraph(attributePaths = {"categoria", "area", "prioridad", "estado", "tecnico"})
+    List<Solicitud> findByRegistradaEnGreaterThanEqualAndRegistradaEnLessThan(Instant desde, Instant hasta);
 
     /** HU12: Resueltas cuya última resolución es anterior al límite (ventana de 72 horas vencida). */
     @Query("select s.id from Solicitud s where s.estado.codigo = 'RESUELTA' and s.ultimaResolucionEn <= :limite")

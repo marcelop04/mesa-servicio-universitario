@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.comun.error.ApiError;
 import pe.edu.unmsm.msu.comun.web.FiltroCorrelacion;
 import pe.edu.unmsm.msu.identidad.dto.Perfil;
@@ -41,9 +42,11 @@ public class AuthControlador {
     private final UsuarioRepositorio usuarios;
     private final TokenJwt tokens;
     private final CookieSesion cookie;
+    private final AuditoriaServicio auditoria;
 
     public AuthControlador(AuthenticationManager autenticacion, UsuarioRepositorio usuarios, TokenJwt tokens,
-                           CookieSesion cookie) {
+                           CookieSesion cookie, AuditoriaServicio auditoria) {
+        this.auditoria = auditoria;
         this.autenticacion = autenticacion;
         this.usuarios = usuarios;
         this.tokens = tokens;
@@ -67,11 +70,16 @@ public class AuthControlador {
             auth = autenticacion.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(
                     credenciales.correo(), credenciales.password()));
         } catch (BadCredentialsException e) {
+            // Acceso relevante (RF30): se guarda el correo intentado, nunca la contraseña.
+            auditoria.registrarComo(null, "SESION_RECHAZADA", "USUARIO", null,
+                    Map.of("correo", Usuario.normalizarCorreo(credenciales.correo())));
             return ResponseEntity.status(401).body(new ApiError("CREDENCIALES_INVALIDAS",
                     "Correo o contraseña incorrectos.", List.of(), FiltroCorrelacion.idDe(req)));
         }
         Usuario usuario = usuarios.findById(((UsuarioAutenticado) auth.getPrincipal()).id()).orElseThrow();
         cookie.escribir(res, tokens.emitir(usuario), tokens.getDuracion());
+        auditoria.registrarComo(usuario.getId(), "SESION_INICIAR", "USUARIO", usuario.getId(),
+                Map.of("rol", usuario.getRol().getCodigo()));
         return ResponseEntity.ok(Perfil.de(usuario));
     }
 

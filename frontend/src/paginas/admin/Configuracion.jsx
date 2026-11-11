@@ -2,12 +2,14 @@
  * GB06 · P12 Configuración y auditoría (Gabriel) · HU21 Mantener los catálogos.
  * Diseño de Figma Make: pestañas y una tarjeta por catálogo. DELETE es una desactivación
  * lógica (D07). Estados y prioridades son fijos: solo cambia su nombre visible.
- * Políticas de plazos (HU22) y auditoría (HU23) se integran en sus pestañas.
+ * Políticas de plazos (HU22) y auditoría (HU23) están en Politicas.jsx y Auditoria.jsx (Emanuel, fase III).
  */
 import { useState } from 'react';
 import { api } from '../../api/cliente.js';
 import { useConsulta } from '../../api/useConsulta.js';
 import { Campo, Confirmacion, EtiquetaActivo, Icono, Mensaje } from '../../componentes/index.js';
+import { Auditoria } from './Auditoria.jsx';
+import { Politicas } from './Politicas.jsx';
 
 export const TIPOS = [
   { tipo: 'areas', titulo: 'Áreas', singular: 'área', descripcion: 'Equipos responsables de la atención.', campos: ['nombre'] },
@@ -292,14 +294,6 @@ const PESTANAS = [
   { id: 'auditoria', titulo: 'Auditoría administrativa' },
 ];
 
-function Pendiente({ historia, texto }) {
-  return (
-    <div className="panel-pestanas__cuerpo">
-      <Mensaje tipo="info" titulo={`Se integra con ${historia}.`}>{texto}</Mensaje>
-    </div>
-  );
-}
-
 export function Configuracion() {
   const [actual, setActual] = useState('catalogos');
 
@@ -327,14 +321,8 @@ export function Configuracion() {
         </div>
         <div id="panel-configuracion" role="tabpanel" aria-labelledby={`pestana-${actual}`}>
           {actual === 'catalogos' && <Catalogos />}
-          {actual === 'politicas' && (
-            <Pendiente historia="HU22 Versionar políticas de plazos"
-              texto="La política vigente (v1) ya existe en la base con los plazos de la tabla 6. La publicación de nuevas versiones se agrega en esta pestaña." />
-          )}
-          {actual === 'auditoria' && (
-            <Pendiente historia="HU23 Consultar trazabilidad"
-              texto="Los eventos administrativos se mostrarán aquí, sin contraseñas ni tokens." />
-          )}
+          {actual === 'politicas' && <Politicas />}
+          {actual === 'auditoria' && <Auditoria />}
         </div>
       </div>
     </section>

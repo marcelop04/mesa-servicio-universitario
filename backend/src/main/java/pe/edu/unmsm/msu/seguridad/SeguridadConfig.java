@@ -70,6 +70,7 @@ public class SeguridadConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")
+                        .requestMatchers("/api/v1/indicadores", "/api/v1/reportes/**").hasRole("SUPERVISOR")
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().denyAll());
         return http.build();
