@@ -25,6 +25,12 @@ limpiar() {
     trap - EXIT
     if [[ $estado != 0 ]]; then
         dc logs --tail 120 mysql backend frontend >&2 || true
+        for servicio in mysql backend frontend; do
+            contenedor="$(dc ps --all --quiet "$servicio")"
+            if [[ -n $contenedor ]]; then
+                docker inspect --format '{{json .State.Health}}' "$contenedor" >&2 || true
+            fi
+        done
     fi
     dc down --volumes --remove-orphans >/dev/null || true
     rm -rf -- "$trabajo"

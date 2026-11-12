@@ -7,10 +7,10 @@ Fecha de preparación: 12/11/2026. Plataforma elegida con el responsable: OCI Al
 
 | ID | Entregable | Estado verificable | Evidencia |
 |---|---|---|---|
-| B1 | MySQL, backend y frontend en nube con HTTPS | Infraestructura y stack implementados/validados; falta aprovisionar la cuenta y obtener URL pública | `despliegue/infra/`, `despliegue/compose.yml`, `Caddyfile` |
+| B1 | MySQL, backend y frontend en nube con HTTPS | API OCI conectada y red creada; Oracle rechazó la VM por `Out of host capacity` en Bogotá; URL pendiente | `despliegue/infra/`, `despliegue/compose.yml`, `Caddyfile`, `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
 | B2 | Desarrollo, prueba, producción y secretos | Implementado; perfiles, generador y comportamiento de cookies en prod probados localmente | `application-{dev,prueba,prod}.yml`, `.env.example`, `crear-entorno.py`, `DespliegueHttpsTest` |
-| B3 | GHCR/CD solo tras CI y main protegida | Workflows y configuración preparados/validados; falta aplicar Secrets/protección y ejecutar el primer CD real | `.github/workflows/{ci,cd}.yml`, `despliegue/github/proteccion-main.json` |
-| B4 | Copia/restauración de MySQL y evidencias | Scripts, timer y ensayo destructivo aislado implementados; ejecución Docker/VM pendiente | `backup.sh`, `restaurar.sh`, `probar-recuperacion.sh`, `systemd/` |
+| B3 | GHCR/CD solo tras CI y main protegida | Rama publicada y PR #4; SSH en Secrets, CD desactivado hasta tener VM; main ya protegida, ajustes de checks/environment requieren administrador | `.github/workflows/{ci,cd}.yml`, `despliegue/github/proteccion-main.json`, PR #4 |
+| B4 | Copia/restauración de MySQL y evidencias | Scripts y timer implementados; ensayo MySQL real en CI del PR; recuperación en VM y copia externa pendientes | `backup.sh`, `restaurar.sh`, `probar-recuperacion.sh`, `systemd/`, checks del PR #4 |
 | B5 | Cinco usuarios, SUS y responsive | Protocolo y herramientas listos; revisión local de 32 pantallas aprobada; sesiones y revisión desplegada pendientes | `docs/pruebas/usuarios/`, `responsive-despliegue.mjs`, `docs/evidencias/fase-iii-iv-david/responsive-local/` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
 | Todos | Sección del informe, demostración y uso de IA | Borradores documentados; incorporar evidencias reales al activar la nube | `docs/informe/Seccion_David_Nube_CD.md`, `docs/presentacion/Guion_David.md`, `docs/registro-uso-ia.md` |
@@ -45,17 +45,37 @@ Fecha de preparación: 12/11/2026. Plataforma elegida con el responsable: OCI Al
 | Playwright con Edge, localhost, API real y H2 efímero | 32 capturas a 360/1366 px, cuatro roles, sin desbordes ni 5xx; ver `responsive-local/resultado.json` |
 
 La prueba de proxy usa H2 y cabeceras de un terminador TLS simulado; **no demuestra un
-certificado público** ni sustituye MySQL real. El ensayo RNF11 está conectado al CI, pero
-solo se declarará aprobado después de su ejecución con Docker y su evidencia.
+certificado público** ni sustituye MySQL real. El ensayo RNF11 ejecuta Docker/MySQL en
+GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
+
+## Accesos, publicación y aprovisionamiento real
+
+- PR: <https://github.com/marcelop04/mesa-servicio-universitario/pull/4>.
+- Se registró y verificó la clave API OCI; la región principal es `sa-bogota-1` (Bogotá).
+- Se comprobó por API que no había VM ni volúmenes y que quedaban 200 GB de almacenamiento Always Free.
+- Se intentó crear la configuración 2 OCPU/12 GB/50 GB con Terraform. La red se creó,
+  pero `LaunchInstance` devolvió HTTP 500, `Out of host capacity`.
+- También se consultaron 1 OCPU/6 GB y 1 OCPU/4 GB en los tres fault domains: todos sin
+  capacidad. La comprobación posterior confirmó cero VM y cero volúmenes creados.
+- El estado Terraform y los parámetros reales quedan localmente, ignorados por Git,
+  para reintentar sin recrear la red. La evidencia pública omite identificadores de cuenta y claves.
+- `davidAC322` tiene permiso WRITE, sin ADMIN. Se pudo registrar `SSH_PRIVATE_KEY` como
+  Secret del repositorio y configurar `DEPLOY_USER=ubuntu`, `CD_ENABLED=false`.
+- GitHub informa `main` protegida; su resumen no muestra checks obligatorios. Crear el
+  environment `production` devolvió 403 por requerir administrador. Marcelo debe revisar
+  las reglas existentes y añadir los cuatro checks sin eliminar reglas del equipo.
+- El primer CI permitió comprobar los contenedores con MySQL real y detectó dos ajustes:
+  expansión de rutas de ShellCheck en Docker y healthcheck Nginx con IPv4 explícito.
+  Las correcciones se incluyen en la rama; ver el resultado actualizado en el PR.
 
 ## Dependencias para completar la operación
 
-1. Cuenta OCI disponible y cupo A1 en home region. Autenticación/API key configurada en
-   el equipo del responsable para poder aplicar Terraform.
-2. Sesión `gh auth login` con permisos para Secrets, environment y protección de `main`.
-3. Docker Engine para ejecutar RNF11 localmente, o ejecución del CI en GitHub después
-   de publicar el PR. En la máquina de preparación no hay Docker disponible.
-4. Publicar la rama mediante PR, configurar Secrets/variables y activar CD al integrar.
+1. Disponibilidad física A1 en Bogotá: la cuenta y su autenticación funcionan, pero el
+   proveedor no tiene capacidad para las configuraciones gratuitas consultadas.
+2. Administrador del repositorio para crear el environment y revisar/ampliar los checks
+   de la protección existente de `main`.
+3. Ejecutar RNF11 en la VM cuando exista; CI proporciona el ensayo aislado con MySQL real.
+4. Revisar e integrar el PR, completar host/Secrets restantes y activar CD con la VM lista.
 5. Ejecutar smoke HTTPS, ensayo de recuperación en VM y copia externa; registrar URL,
    digests, hora, duración, resultado de CI/CD y hashes sin incluir datos ni secretos.
 6. Realizar las cinco sesiones y adjuntar los resultados reales de SUS/responsive.
@@ -65,8 +85,8 @@ solo se declarará aprobado después de su ejecución con Docker y su evidencia.
 | Evidencia | Estado |
 |---|---|
 | URL HTTPS y fecha/commit/digests | Pendiente |
-| Captura OCI: shape/cupo/costo gratuito, sin OCID sensible | Pendiente |
-| Enlace a CI exitoso con ensayo de recuperación | Pendiente |
+| Cuenta/home region/cupo y error real de capacidad OCI | `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
+| Enlace a CI con ensayo de recuperación por commit | Checks del [PR #4](https://github.com/marcelop04/mesa-servicio-universitario/pull/4/checks) |
 | Enlace a CD exitoso y protección de main | Pendiente |
 | Informe del smoke HTTPS y login | Pendiente |
 | Copia externa, recuperación práctica, duración y hashes | Pendiente |

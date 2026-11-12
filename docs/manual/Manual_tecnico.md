@@ -181,6 +181,14 @@ checks cuyos nombres están en el JSON. También impide force-push y borrar `mai
 El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
+Si `main` ya está protegida, el administrador debe conservar sus reglas y checks
+existentes e incorporar los del paquete B; el JSON es una referencia de configuración
+mínima, no una razón para borrar protecciones del equipo. La cuenta de David tiene
+WRITE y pudo gestionar Secrets/variables del repositorio, pero crear el environment
+devolvió 403. Los Secrets también pueden guardarse a nivel de repositorio y ser usados
+por el job `production`; las preferencias de protección del environment las configura
+el administrador.
+
 El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 
 1. `CI` debe terminar con éxito **completo** para un push a `main` del mismo repositorio público.
@@ -315,3 +323,10 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 Consultar [la bitácora de David](../fase-iii-iv-david.md) para distinguir implementación,
 comprobaciones locales, ejecución real de CI/CD y resultados con usuarios. Una validación
 Terraform no crea la VM; un cuestionario preparado no equivale a cinco sesiones completadas.
+
+En el intento del 12/11/2026 la API confirmó Bogotá como home region, cero VM/volúmenes
+y 200 GB Always Free disponibles. Terraform creó la red, pero la VM fue rechazada con
+`Out of host capacity`. También se consultaron configuraciones menores en los tres
+fault domains y todas devolvieron falta de capacidad. Se conserva el estado Terraform
+local para reintentar el mismo plan; `CD_ENABLED=false` hasta disponer del servidor,
+sus Secrets completos y HTTPS verificado.

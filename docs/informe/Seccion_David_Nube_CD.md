@@ -39,9 +39,13 @@ de imagen no revierte migraciones: para cambios incompatibles se utiliza la rest
 Se aprobaron localmente las 102 pruebas JUnit existentes, una prueba adicional del perfil
 de producción detrás de proxy, seis pruebas de herramientas, validación de Compose/Caddy,
 Terraform y análisis estático de scripts/workflows. Se compiló el frontend y se recorrieron
-32 vistas locales de los cuatro roles a 360/1366 px sin desbordes ni errores 5xx. La VM pública, la configuración real
-de GitHub y la ejecución RNF11 con Docker dependen de las cuentas y accesos del responsable;
-todavía no hay URL ni ejecución CD que presentar como terminada.
+32 vistas locales de los cuatro roles a 360/1366 px sin desbordes ni errores 5xx.
+Posteriormente se conectaron OCI y GitHub, se publicó el PR #4 y se inició el ensayo
+RNF11 con MySQL real en CI. Terraform preparó la red en Bogotá, pero la creación de la
+VM devolvió `Out of host capacity`, también confirmado por consultas de configuraciones
+menores en los tres fault domains. La URL y el primer CD quedan bloqueados por capacidad
+del proveedor. La cuenta de David tiene WRITE; los ajustes de environment/protección
+requieren al administrador del repositorio. Las evidencias sanitizadas están en la bitácora.
 
 El protocolo de usuarios prevé cinco participantes reales, SUS y revisión responsive a
 360/1366 px. Los instrumentos y la automatización están preparados; las sesiones y
