@@ -16,8 +16,10 @@ uploads/
 .idea/
 *.iml
 .DS_Store
+# Reportes de pruebas generados localmente
 test-results/
 playwright-report/
+tests/**/reportes/
 
 # Evidencias subidas en ejecución local (HU06)
 backend/archivos/

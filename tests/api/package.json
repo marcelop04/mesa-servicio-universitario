@@ -1,0 +1,14 @@
+{
+  "name": "msu-api-tests",
+  "version": "1.0.0",
+  "description": "Pruebas de API automatizadas con Postman y Newman para la Mesa de Servicios Universitarios",
+  "scripts": {
+    "test": "newman run colecciones/MSU-API.postman_collection.json -e entornos/MSU-Local.postman_environment.json -r cli,junit --reporter-junit-export reportes/junit-report.xml",
+    "test:ci": "newman run colecciones/MSU-API.postman_collection.json -e entornos/MSU-CI.postman_environment.json -r cli,junit --reporter-junit-export reportes/junit-report.xml",
+    "test:html": "newman run colecciones/MSU-API.postman_collection.json -e entornos/MSU-Local.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reportes/index.html"
+  },
+  "devDependencies": {
+    "newman": "6.2.3",
+    "newman-reporter-htmlextra": "^1.23.1"
+  }
+}

@@ -1,0 +1,2615 @@
+{
+  "info": {
+    "name": "Mesa de Servicios Universitarios - Suite de API (Newman CI)",
+    "description": "Colección completa de pruebas de API para MSU organizada por rol y por HU.\nCubre flujos 200, 201, 204, validaciones 400, no autenticado 401, permisos 403, no encontrado 404 y conflictos 409.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Test script de colección: captura de rotación de token CSRF y validación de correlación",
+          "if (pm.response.headers.has(\"X-Correlation-Id\")) {",
+          "    pm.test(\"Cabecera X-Correlation-Id presente\", function() {",
+          "        pm.expect(pm.response.headers.get(\"X-Correlation-Id\")).to.not.be.empty;",
+          "    });",
+          "}",
+          "var sc = pm.response.headers.all().filter(function(h) { return h.key.toLowerCase() === \"set-cookie\"; });",
+          "for (var i = 0; i < sc.length; i++) {",
+          "    var m = sc[i].value.match(/XSRF-TOKEN=([^;]+)/);",
+          "    if (m) {",
+          "        pm.environment.set(\"csrf_token\", m[1]);",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script de colección: Gestión de cabecera CSRF",
+          "var method = pm.request.method;",
+          "var csrf = pm.environment.get(\"csrf_token\");",
+          "if ([\"POST\", \"PUT\", \"DELETE\", \"PATCH\"].includes(method)) {",
+          "    if (pm.request.headers.has(\"X-CSRF-Invalido\")) {",
+          "        pm.request.headers.remove(\"X-CSRF-Invalido\");",
+          "        pm.request.headers.upsert({ key: \"X-XSRF-TOKEN\", value: \"token-csrf-invalido-12345\" });",
+          "    } else if (csrf && !pm.request.headers.has(\"X-Sin-CSRF\")) {",
+          "        pm.request.headers.upsert({ key: \"X-XSRF-TOKEN\", value: csrf });",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Autenticación y Cuenta (HU01, HU02, HU03)",
+      "item": [
+        {
+          "name": "01.01 - GET /auth/csrf - Obtener token CSRF inicial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/csrf",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "csrf"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"Cabecera X-Correlation-Id presente\", function() { pm.response.to.have.header(\"X-Correlation-Id\"); });",
+                  "pm.test(\"Token CSRF detectado\", function() { pm.expect(pm.environment.get(\"csrf_token\")).to.not.be.empty; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.02 - HU01: POST /auth/registro - Registro exitoso solicitante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/registro",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"Lucía Solicitante Nueva\",\"correo\":\"{{registro_correo}}\",\"vinculo\":\"ESTUDIANTE\",\"password\":\"{{demo_password}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set(\"registro_correo\", \"lucia.qa.\" + Date.now() + \"@unmsm.edu.pe\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Usuario registrado con rol SOLICITANTE\", function() {",
+                  "    pm.expect(json.rol).to.eql(\"SOLICITANTE\");",
+                  "    pm.expect(json.correo).to.eql(pm.environment.get(\"registro_correo\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.03 - HU01: POST /auth/registro - Validación 400 correo inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/registro",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"correo\": \"correo-invalido-sin-formato\",\n  \"vinculo\": \"ESTUDIANTE\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi con código DATOS_INVALIDOS\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "    pm.expect(json.id_correlacion).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.04 - HU02: POST /auth/login - Credenciales inválidas 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"solicitante@msu.test\",\n  \"password\": \"ClaveIncorrecta123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 Unauthorized\", function() { pm.response.to.have.status(401); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi CREDENCIALES_INVALIDAS\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"CREDENCIALES_INVALIDAS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.05 - HU02: POST /auth/login - Validación 400 correo vacío",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi DATOS_INVALIDOS\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.06 - HU02: POST /auth/login - Login exitoso como Solicitante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{solicitante_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Perfil de solicitante retornado\", function() {",
+                  "    pm.expect(json.correo).to.eql(pm.environment.get(\"solicitante_email\"));",
+                  "    pm.expect(json.rol).to.eql(\"SOLICITANTE\");",
+                  "});",
+                  "pm.test(\"Cookie HttpOnly MSU_SESION emitida\", function() {",
+                  "    var setCookie = pm.response.headers.get(\"Set-Cookie\");",
+                  "    pm.expect(setCookie).to.include(\"MSU_SESION=\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.07 - HU03: GET /me - Consultar perfil de la sesión",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Correo coincide con el usuario autenticado\", function() {",
+                  "    pm.expect(json.correo).to.eql(pm.environment.get(\"solicitante_email\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.08 - HU03: PUT /me - Actualizar datos de perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Solicitante Actualizada\",\n  \"vinculo\": \"ESTUDIANTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Nombre actualizado\", function() {",
+                  "    pm.expect(json.nombre).to.eql(\"Ana Solicitante Actualizada\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.09 - HU03: PUT /me/password - Cambiar contraseña exitoso (204)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me/password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actual\": \"{{demo_password}}\",\n  \"nueva\": \"NuevaClaveSegura2026!\",\n  \"confirmacion\": \"NuevaClaveSegura2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204 No Content\", function() { pm.response.to.have.status(204); });",
+                  "pm.test(\"Cookie de sesión renovada tras cambio de password\", function() {",
+                  "    var setCookie = pm.response.headers.get(\"Set-Cookie\");",
+                  "    pm.expect(setCookie).to.include(\"MSU_SESION=\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.10 - HU03: PUT /me/password - Restaurar contraseña demo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me/password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actual\": \"NuevaClaveSegura2026!\",\n  \"nueva\": \"{{demo_password}}\",\n  \"confirmacion\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204 No Content\", function() { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24)",
+      "item": [
+        {
+          "name": "02.01 - GET /catalogos - Consultar opciones de catálogo para formulario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/catalogos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalogos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Contiene categorias, ubicaciones, prioridades\", function() {",
+                  "    pm.expect(json.categorias).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(json.ubicaciones).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(json.prioridades).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.02 - HU04: POST /solicitudes - Validación 400 descripción menor a 20 caracteres",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria_id\": 2,\n  \"ubicacion_id\": 1,\n  \"referencia\": \"Aula 101\",\n  \"descripcion\": \"Muy corta\",\n  \"urgencia\": \"ALTA\",\n  \"impacto\": \"ALTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Error en campo descripcion\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "    var tieneError = json.errores.some(function(e) { return e.campo === \"descripcion\"; });",
+                  "    pm.expect(tieneError).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.03 - HU04: POST /solicitudes - Registrar solicitud exitosamente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria_id\": 2,\n  \"ubicacion_id\": 1,\n  \"referencia\": \"Junto a la pizarra del aula 101\",\n  \"descripcion\": \"El proyector interactivo del aula 101 no enciende y se requiere para la clase de la tarde.\",\n  \"urgencia\": \"ALTA\",\n  \"impacto\": \"MEDIO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Código MSU generado y plazos calculados\", function() {",
+                  "    pm.expect(json.codigo).to.match(/MSU-\\d{4}-\\d{4}/);",
+                  "    pm.expect(json.estado_codigo).to.eql(\"REGISTRADA\");",
+                  "    pm.expect(json.id).to.be.a(\"number\");",
+                  "    pm.environment.set(\"solicitud_id\", json.id);",
+                  "    pm.environment.set(\"solicitud_codigo\", json.codigo);",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.04 - HU05: GET /solicitudes - Listar mis solicitudes con paginación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Estructura paginada items, pagina, tamaño, total\", function() {",
+                  "    pm.expect(json.items).to.be.an(\"array\");",
+                  "    pm.expect(json.pagina).to.eql(1);",
+                  "    pm.expect(json.total).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.05 - HU05: GET /solicitudes/{id} - Ver detalle de solicitud registrada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Detalle coincide con la solicitud\", function() {",
+                  "    pm.expect(json.id).to.eql(Number(pm.environment.get(\"solicitud_id\")));",
+                  "    pm.expect(json.codigo).to.eql(pm.environment.get(\"solicitud_codigo\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.06 - HU05: GET /solicitudes/{id} - 404 No encontrado ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", function() { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi NO_ENCONTRADO\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"NO_ENCONTRADO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.07 - HU06: POST /solicitudes/{id}/comentarios - Agregar comentario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/comentarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "comentarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"Adjunto información adicional: el cable de poder fue verificado.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Comentario creado con autor y fecha\", function() {",
+                  "    pm.expect(json.texto).to.include(\"el cable de poder fue verificado\");",
+                  "    pm.expect(json.autor_nombre).to.not.be.empty;",
+                  "    pm.environment.set(\"comentario_id\", json.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.08 - HU06: POST /solicitudes/{id}/comentarios - Validación 400 texto vacío",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/comentarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "comentarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi DATOS_INVALIDOS\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.09 - HU06: GET /solicitudes/{id}/comentarios - Listar comentarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/comentarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "comentarios"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Lista contiene al menos un comentario\", function() {",
+                  "    pm.expect(json).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.10 - HU06: GET /solicitudes/{id}/evidencias - Listar evidencias iniciales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/evidencias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "evidencias"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Respuesta es un arreglo\", function() {",
+                  "    pm.expect(json).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.11 - HU23: GET /solicitudes/{id}/historial - Consultar historial de eventos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/historial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "historial"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Historial contiene eventos con acción registrada\", function() {",
+                  "    pm.expect(json).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(json[0].accion).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.12 - HU13: GET /solicitudes/{id}/encuesta - 204 No Content en caso aún no cerrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/encuesta",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "encuesta"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204 No Content (sin encuesta aún)\", function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.13 - HU13: POST /solicitudes/{id}/encuesta - 409 Conflicto por caso no cerrado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/encuesta",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "encuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificacion\": 5,\n  \"comentario\": \"Buena atención\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409 Conflict (no está cerrada)\", function() {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Error ENCUESTA_NO_DISPONIBLE\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"ENCUESTA_NO_DISPONIBLE\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19)",
+      "item": [
+        {
+          "name": "03.01 - Login como Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{supervisor_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Sesión de SUPERVISOR\", function() {",
+                  "    pm.expect(json.rol).to.eql(\"SUPERVISOR\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.02 - RF10: GET /supervision/tecnicos - Carga de trabajo por técnico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/supervision/tecnicos?area_id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "supervision",
+                "tecnicos?area_id=1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Lista de técnicos devuelta\", function() {",
+                  "    pm.expect(json).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(json[0]).to.have.property(\"nombre\");",
+                  "    pm.expect(json[0]).to.have.property(\"pendientes\");",
+                  "    var tomas = json.find(function(t) { return t.nombre === \"Tomás Soporte\"; });",
+                  "    pm.environment.set(\"tecnico_soporte_id\", tomas ? tomas.id : 2);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.03 - HU07: POST /solicitudes/{id}/evaluacion - Validación 400 motivo obligatorio al cambiar impacto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/evaluacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "evaluacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"impacto\":\"ALTO\",\"motivo\":\"\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"DATOS_INVALIDOS\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.04 - HU07: POST /solicitudes/{id}/evaluacion - Iniciar evaluación y subir impacto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/evaluacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "evaluacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"impacto\":\"ALTO\",\"motivo\":\"Afecta el dictado continuo de las clases programadas en la tarde.\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Estado EN_EVALUACION y nueva versión\", function() {",
+                  "    pm.expect(json.estado_codigo).to.eql(\"EN_EVALUACION\");",
+                  "    pm.expect(json.prioridad_codigo).to.eql(\"CRITICA\");",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.05 - HU08: POST /solicitudes/{id}/asignaciones - Asignar técnico Tomás Soporte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/asignaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "asignaciones"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnico_id\":{{tecnico_soporte_id}},\"motivo\":\"Asignación inmediata por prioridad Crítica.\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Estado ASIGNADA y técnico asociado\", function() {",
+                  "    pm.expect(json.estado_codigo).to.eql(\"ASIGNADA\");",
+                  "    pm.expect(json.tecnico_id).to.eql(Number(pm.environment.get(\"tecnico_soporte_id\")));",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.06 - HU17/HU18: GET /indicadores - Dashboard de indicadores del supervisor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/indicadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "indicadores"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Contiene conteos y tiempos\", function() {",
+                  "    pm.expect(json).to.have.property(\"conteos\");",
+                  "    pm.expect(json).to.have.property(\"tiempos\");",
+                  "    pm.expect(json.conteos).to.have.property(\"registradas\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.07 - HU19: GET /reportes/solicitudes.csv - Exportar CSV de solicitudes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reportes/solicitudes.csv",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reportes",
+                "solicitudes.csv"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"Content-Type text/csv\", function() {",
+                  "    var ct = pm.response.headers.get(\"Content-Type\");",
+                  "    pm.expect(ct).to.include(\"text/csv\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Atención Técnica (HU10, HU11)",
+      "item": [
+        {
+          "name": "04.01 - Login como Técnico Tomás Soporte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{tecnico_soporte_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Sesión de TECNICO\", function() {",
+                  "    pm.expect(json.rol).to.eql(\"TECNICO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.02 - HU10: POST /solicitudes/{id}/inicio - Iniciar atención técnica",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/inicio",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "inicio"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Estado pasa a EN_ATENCION\", function() {",
+                  "    pm.expect(json.estado_codigo).to.eql(\"EN_ATENCION\");",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.03 - HU11: POST /solicitudes/{id}/resoluciones - Validación 400 solución muy corta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/resoluciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "resoluciones"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"solucion\":\"Listo\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"DATOS_INVALIDOS por solución insuficiente\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.04 - HU11: POST /solicitudes/{id}/resoluciones - Registrar solución técnica",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/resoluciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "resoluciones"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"solucion\":\"Se sustituyó el cable de señal defectuoso y se ajustaron los conectores de video. El proyector quedó calibrado y operativo.\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Estado pasa a RESUELTA\", function() {",
+                  "    pm.expect(json.estado_codigo).to.eql(\"RESUELTA\");",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Cierre y Encuesta (HU12, HU13)",
+      "item": [
+        {
+          "name": "05.01 - Login como Solicitante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{solicitante_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.02 - HU12: POST /solicitudes/{id}/conformidad - Confirmar solución",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/conformidad",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "conformidad"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"accion\":\"CONFIRMAR\",\"motivo\":\"Verificación exitosa\",\"version\":{{solicitud_version}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Solicitud queda CERRADA\", function() {",
+                  "    pm.expect(json.estado_codigo).to.eql(\"CERRADA\");",
+                  "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.03 - HU13: POST /solicitudes/{id}/encuesta - Registrar calificación 5 estrellas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/encuesta",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "encuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificacion\": 5,\n  \"comentario\": \"Atención rápida y el técnico explicó claramente la causa del fallo.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Encuesta registrada con éxito\", function() {",
+                  "    pm.expect(json.calificacion).to.eql(5);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.04 - HU13: POST /solicitudes/{id}/encuesta - 409 Conflicto por duplicada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/encuesta",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "encuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificacion\": 4,\n  \"comentario\": \"Intentando enviar otra encuesta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409 Conflict\", function() { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ENCUESTA_DUPLICADA\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"ENCUESTA_DUPLICADA\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.05 - HU13: GET /solicitudes/{id}/encuesta - Consultar encuesta registrada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/encuesta",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "encuesta"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Encuesta consultada tiene calificación 5\", function() {",
+                  "    pm.expect(json.calificacion).to.eql(5);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Notificaciones (HU15, HU16)",
+      "item": [
+        {
+          "name": "06.01 - HU16: GET /notificaciones - Listar avisos del usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/notificaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notificaciones"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Items de notificaciones\", function() {",
+                  "    pm.expect(json).to.have.property(\"items\");",
+                  "    if (json.items && json.items.length > 0) {",
+                  "        pm.environment.set(\"notificacion_id\", json.items[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.02 - HU16: GET /notificaciones/no-leidas - Conteo de no leídas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/notificaciones/no-leidas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notificaciones",
+                "no-leidas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Propiedad total presente\", function() {",
+                  "    pm.expect(json).to.have.property(\"total\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.03 - HU16: PUT /notificaciones/lectura - Marcar todas como leídas",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/notificaciones/lectura",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notificaciones",
+                "lectura"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 - Administración (HU20, HU21, HU22, HU23)",
+      "item": [
+        {
+          "name": "07.01 - Login como Administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{admin_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Sesión de ADMINISTRADOR\", function() {",
+                  "    pm.expect(json.rol).to.eql(\"ADMINISTRADOR\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.02 - HU20: GET /admin/usuarios - Listar usuarios internos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "usuarios"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Listado de usuarios retornado\", function() {",
+                  "    pm.expect(json.items).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.03 - HU20: POST /admin/usuarios - Crear usuario técnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "usuarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"Nuevo Técnico QA\",\"correo\":\"{{nuevo_tecnico_correo}}\",\"rol\":\"TECNICO\",\"area_id\":1,\"password\":\"{{demo_password}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set(\"nuevo_tecnico_correo\", \"tec.qa.\" + Date.now() + \"@msu.test\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Usuario creado\", function() {",
+                  "    pm.expect(json.rol).to.eql(\"TECNICO\");",
+                  "    pm.environment.set(\"nuevo_usuario_id\", json.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.04 - HU20: PUT /admin/usuarios/{id} - Modificar usuario interno",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/usuarios/{{nuevo_usuario_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "usuarios",
+                "{{nuevo_usuario_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nuevo Técnico QA Modificado\",\n  \"rol\": \"TECNICO\",\n  \"area_id\": 1,\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Nombre actualizado\", function() {",
+                  "    pm.expect(json.nombre).to.eql(\"Nuevo Técnico QA Modificado\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.05 - HU21: GET /admin/catalogos/{tipo} - Listar áreas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/catalogos/areas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "catalogos",
+                "areas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Catálogo de áreas retornado\", function() {",
+                  "    pm.expect(json.items).to.be.an(\"array\").that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.06 - HU21: POST /admin/catalogos/{tipo} - Crear categoría nueva",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/catalogos/categorias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "catalogos",
+                "categorias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"{{nueva_categoria_nombre}}\",\"area_id\":1,\"activo\":true}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set(\"nueva_categoria_nombre\", \"Categoría QA \" + Date.now().toString().slice(-4));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function() { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Ítem de catálogo creado\", function() {",
+                  "    pm.expect(json.nombre).to.eql(pm.environment.get(\"nueva_categoria_nombre\"));",
+                  "    pm.environment.set(\"catalogo_item_id\", json.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.07 - HU21: DELETE /admin/catalogos/{tipo}/{id} - Desactivar ítem de catálogo (borrado lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/catalogos/categorias/{{catalogo_item_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "catalogos",
+                "categorias",
+                "{{catalogo_item_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK (desactivación lógica)\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Ítem marcado como inactivo\", function() {",
+                  "    pm.expect(json.activo).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.08 - HU22: GET /admin/politicas - Consultar políticas de plazos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/politicas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "politicas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Lista de políticas retornada con versión vigente\", function() {",
+                  "    pm.expect(json).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(json[0].vigente).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.09 - HU22: POST /admin/politicas - Validación 400 primera atención mayor que resolución",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/politicas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "politicas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version_base\": 1,\n  \"detalles\": [\n    {\n      \"prioridad_codigo\": \"CRITICA\",\n      \"horas_primera_atencion\": 10,\n      \"horas_resolucion\": 2\n    },\n    {\n      \"prioridad_codigo\": \"ALTA\",\n      \"horas_primera_atencion\": 8,\n      \"horas_resolucion\": 48\n    },\n    {\n      \"prioridad_codigo\": \"MEDIA\",\n      \"horas_primera_atencion\": 24,\n      \"horas_resolucion\": 120\n    },\n    {\n      \"prioridad_codigo\": \"BAJA\",\n      \"horas_primera_atencion\": 48,\n      \"horas_resolucion\": 240\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function() { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"DATOS_INVALIDOS en matriz\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"DATOS_INVALIDOS\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.10 - HU23: GET /admin/auditoria - Consultar bitácora administrativa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/auditoria",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "auditoria"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Lista de eventos de auditoría\", function() {",
+                  "    pm.expect(json.items).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.11 - HU23: GET /admin/auditoria/opciones - Filtros de auditoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/auditoria/opciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "auditoria",
+                "opciones"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Acciones y entidades disponibles\", function() {",
+                  "    pm.expect(json).to.have.property(\"acciones\");",
+                  "    pm.expect(json).to.have.property(\"entidades\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 - Seguridad y Control de Acceso (401, 403, CSRF)",
+      "item": [
+        {
+          "name": "08.01 - Login como Solicitante para pruebas de RBAC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{solicitante_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function() { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.02 - RBAC: Solicitante intenta acceder a /admin/usuarios (403 Prohibido)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "usuarios"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function() { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi ACCESO_DENEGADO\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"ACCESO_DENEGADO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.03 - RBAC: Solicitante intenta acceder a /indicadores (403 Prohibido)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/indicadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "indicadores"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function() { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi ACCESO_DENEGADO\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"ACCESO_DENEGADO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.04 - CSRF: Petición con token CSRF inválido responde 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-CSRF-Invalido",
+                "value": "true"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria_id\": 2,\n  \"ubicacion_id\": 1,\n  \"referencia\": \"Prueba\",\n  \"descripcion\": \"Intento con CSRF inválido para verificar rechazo de seguridad.\",\n  \"urgencia\": \"ALTA\",\n  \"impacto\": \"MEDIO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function() { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Rechazo por CSRF inválido\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"CSRF_INVALIDO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.05 - HU02: POST /auth/logout - Cerrar sesión y revocar JWT",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204 No Content\", function() { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.06 - HU02: GET /me sin sesión responde 401 Sin Sesión",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "MSU_SESION=token_invalido_expirado"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 Unauthorized\", function() { pm.response.to.have.status(401); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi SIN_SESION\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"SIN_SESION\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
