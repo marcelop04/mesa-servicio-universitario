@@ -21,3 +21,8 @@ playwright-report/
 
 # Evidencias subidas en ejecución local (HU06)
 backend/archivos/
+
+# Informes automáticos de seguridad: conservar solo evidencias revisadas y sin datos sensibles.
+reports/
+frontend/npm-audit.json
+*.sarif
