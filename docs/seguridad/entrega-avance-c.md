@@ -13,8 +13,10 @@ No se recibió una tabla de puntajes; esta trazabilidad no asigna una calificaci
   Se identificaron 22 archivos modificados y 30 nuevos de C y se trasladaron mediante lista explícita.
   Este documento agrega la trazabilidad de publicación; los archivos de A ya presentes en la base no se
   atribuyen a Marcelo. No se borraron archivos ni se cambió la rama `main`.
-- Estado remoto: **publicación y PR pendientes de autenticación GitHub** al preparar este documento.
-  Tener una rama/commit local no demuestra un push ni una ejecución remota.
+- Estado remoto: **rama publicada correctamente**, commit de implementación `55732c8`.
+  [Rama en GitHub](https://github.com/marcelop04/mesa-servicio-universitario/tree/feat/marcelo-seguridad).
+  La documentación de estado se registra por separado; verificar el commit actual, PR y checks en GitHub.
+  Un push correcto no demuestra que CI/CodeQL hayan terminado ni que sus hallazgos estén resueltos.
 
 ## 2. Correspondencia con el reparto y la propuesta
 
@@ -45,7 +47,7 @@ No se recibió una tabla de puntajes; esta trazabilidad no asigna una calificaci
 
 ## 4. Condiciones antes de integrar a main
 
-1. Publicar esta rama y abrir un **PR borrador**, no hacer push directo a `main` ni force-push.
+1. Revisar la rama publicada mediante un **PR borrador**, no hacer push directo a `main` ni force-push.
 2. Revisar CI y CodeQL reales. Mantener `failOnError=true`, el límite CVSS ≥ 7 y el fallo ante npm alto/crítico.
    No ocultar hallazgos ni aprobar una migración mayor de Spring sin coordinación del equipo.
 3. Resolver el tratamiento de los hallazgos bloqueantes y revisar cambios compartidos con sus responsables.
@@ -57,6 +59,7 @@ No se recibió una tabla de puntajes; esta trazabilidad no asigna una calificaci
 
 - **Gitleaks 8.30.1**, distribución oficial verificada con SHA-256, analizó el diff preparado: sin hallazgos,
   con redacción de secretos y sin reglas de supresión añadidas. El binario y su informe quedan fuera del commit.
+  Se repitió sobre el commit de implementación (`origin/main..HEAD`, un commit): también sin hallazgos.
 - Se comparó el contenido de los 53 archivos candidatos con los cuatro valores secretos del `.env` local,
   sin mostrarlos: ninguna coincidencia. No se copió `.env` al clon ni se extrajo el secret NVD de GitHub.
 - Se revisaron rutas locales de usuario y correos en esos archivos. Se conservan únicamente direcciones

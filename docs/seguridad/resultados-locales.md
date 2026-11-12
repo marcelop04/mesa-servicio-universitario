@@ -58,7 +58,7 @@ Un resultado «0» es una fotografía de esa base de avisos y alcance, no una ga
 
 ## Verificaciones que NO se hicieron
 
-- No se ejecutó CodeQL en GitHub: workflows preparados, sin commit/push ni acceso administrativo remoto.
+- Al corte de validación local no hay un resultado CodeQL revisado: la rama ya se publicó; registrar la ejecución real del PR y sus alertas antes de cerrar C2.
 - Hay análisis Java completado con hallazgos; no hay aprobación de C2 ni decisión sobre los pendientes de Spring.
 - Marcelo construyó/levantó los contenedores antes de los últimos parches Java. No se reconstruyeron con el nuevo POM ni se documentó una verificación integral de Nginx.
 - No se verificaron certificado TLS, HSTS y cookies sobre una URL HTTPS real del equipo.
@@ -114,5 +114,6 @@ Se trasladó el aporte C al clon del repositorio público, rama `feat/marcelo-se
 Las comprobaciones HTTP usan los contenedores que ya estaban levantados, no un despliegue nuevo del POM.
 El intento adicional de `nginx -t` no se ejecutó porque la CLI Docker no estaba disponible en el proceso.
 No se considera ese intento como una prueba aprobada ni se reinstaló/recreó Docker.
-La autenticación GitHub y las ejecuciones remotas siguen pendientes; no confundir la preparación local
-con una publicación. [Alcance, privacidad y trazabilidad con los documentos del curso](entrega-avance-c.md).
+Posteriormente se publicó el commit de implementación `55732c8` en la rama remota
+`feat/marcelo-seguridad`. Las ejecuciones remotas y su revisión siguen pendientes de registrar; no confundir
+el push correcto con checks aprobados. [Alcance, privacidad y trazabilidad](entrega-avance-c.md).

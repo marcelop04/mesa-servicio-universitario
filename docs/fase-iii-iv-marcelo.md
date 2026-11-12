@@ -9,7 +9,7 @@ ejecuciones externas, revisión humana, configuración del despliegue y aportes 
 | ID | Tarea | Estado comprobable | Evidencia |
 |---|---|---|---|
 | C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Código y pruebas backend implementados; verificar Nginx/HTTPS/IP real y rotaciones con David | [Checklist](seguridad/checklist-owasp.md); `SeguridadConfig`, `LimiteIntentosLogin`, `IpCliente`, `VerificadorSeguridad`, `.env.example`, generador y pruebas |
-| C2 | SAST, npm audit y Dependency-Check en CI | NVD y análisis local completados. Parches Java reducen de 68 a 23 CVE distintos; control sigue fallando por Spring (15 CVE ≥ 7). Decisión del equipo pendiente; CodeQL/CI requieren subir la rama | `.github/workflows/ci.yml`, `codeql.yml`, perfil Maven `seguridad`, `scripts/analizar-dependencias.ps1`; [evidencia y pendientes Java](seguridad/analisis-dependencias.md) |
+| C2 | SAST, npm audit y Dependency-Check en CI | NVD y análisis local completados. Parches Java reducen de 68 a 23 CVE distintos; control sigue fallando por Spring (15 CVE ≥ 7). Rama publicada; falta revisar ejecuciones CI/CodeQL y resolver los hallazgos | `.github/workflows/ci.yml`, `codeql.yml`, perfil Maven `seguridad`, `scripts/analizar-dependencias.ps1`; [evidencia y pendientes Java](seguridad/analisis-dependencias.md) |
 | C3 | ZAP baseline y corregir hallazgos | Workflow/procedimiento listos, escaneo NO ejecutado; depende de B1 y URL autorizada | `.github/workflows/dast.yml`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
 | C4 | Pruebas negativas por rol (RNF01) | Implementadas y ejecutadas con cadena real de seguridad | `AccesosPorRolTest` (34 casos), pruebas web/HTTPS/limitador y rutas React; [resultados](seguridad/resultados-locales.md) |
 | C5 | Arquitectura, patrones, errores y secretos | Revisión asistida realizada, correcciones puntuales aplicadas; aceptación humana pendiente | [Revisión](seguridad/revision-arquitectura.md), sanitización de auditoría y pruebas de errores |
@@ -38,11 +38,13 @@ No necesitas SonarCloud ni una cuenta cloud propia para C.
 No se modificaron migraciones, reglas de solicitudes, despliegue cloud, observabilidad, Newman, k6 o backups.
 No se reescribieron los DOCX históricos ni se borraron datos. La copia inicial llegó sin Git; el 12/11/2026
 se preparó el aporte selectivamente en el clon y rama `feat/marcelo-seguridad`, sobre `origin/main`.
-Publicación/PR pendientes de autenticación, no se modificó `main`. [Trazabilidad de la entrega](seguridad/entrega-avance-c.md).
+El commit de implementación `55732c8` fue publicado en GitHub; no se modificó `main`.
+[Rama remota](https://github.com/marcelop04/mesa-servicio-universitario/tree/feat/marcelo-seguridad)
+y [trazabilidad de la entrega](seguridad/entrega-avance-c.md). Consultar en GitHub el estado actual del PR y los checks.
 
 ## Pendientes para cerrar, en orden
 
-1. Marcelo/equipo: revisar el código generado y subirlo mediante una rama/PR en el repositorio real.
+1. Marcelo/equipo: revisar el código generado en la rama publicada y su PR; no integrar antes de resolver los controles bloqueantes.
 2. Marcelo/equipo: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada o revisión de
    aplicabilidad con evidencia por CVE). Marcelo ya informó que guardó `NVD_API_KEY`; ejecutar CI/CodeQL
    y conservar URLs/artifacts. Un análisis completado con hallazgos bloqueantes tampoco cuenta como aprobado.

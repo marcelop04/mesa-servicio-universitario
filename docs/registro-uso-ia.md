@@ -62,7 +62,7 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Herramienta | OpenCode, asistente GPT-6.1 Sol (OpenAI) |
 | Prompt / alcance (resumen) | Marcelo autoriza preparar/publicar su avance C en una rama propia, contrastar el main actual, evitar secretos/datos personales y respetar el reparto y los documentos del curso |
 | Resultado generado | Traslado selectivo al clon `mesa-servicio-marcelo`, rama `feat/marcelo-seguridad`; corrección del enlace del repositorio; trazabilidad C1–C6, preparación de commit/PR y documentación de límites |
-| ¿Se utilizó? | Incorporado a la rama local; publicación remota pendiente de autenticación GitHub |
+| ¿Se utilizó? | Incorporado y publicado en `feat/marcelo-seguridad`, commit de implementación `55732c8`; no se integró a main |
 | Validación | Base Git coincidente sin archivos faltantes; 155 pruebas backend y empaquetado; 80 frontend, build y npm audit sin vulnerabilidades; 5 pruebas del lanzador; cabeceras HTTP y demo 401 × 5 → 429; Gitleaks del diff sin hallazgos y comparación privada con los secretos locales |
 | Modificaciones tras revisar | Lista explícita de transferencia; exclusión de datos/compilados/reportes; identidad pública no-reply; documentación diferencia pruebas locales, SCA bloqueante, despliegue y evidencias remotas |
 | Límites | No se resolvieron mediante supresión los 23 CVE de Spring; no hubo migración mayor, corrección de A4, cambios a main, infraestructura cloud ni resultados ZAP/CodeQL inventados. `nginx -t` no ejecutado por falta de CLI Docker |
