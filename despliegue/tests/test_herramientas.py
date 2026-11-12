@@ -16,6 +16,7 @@ def cargar(nombre, ruta):
 
 entorno = cargar("crear_entorno", "despliegue/scripts/crear-entorno.py")
 sus = cargar("calcular_sus", "docs/pruebas/usuarios/calcular-sus.py")
+https = cargar("verificar_https", "despliegue/scripts/verificar-https.py")
 
 
 class EntornoTest(unittest.TestCase):
@@ -62,6 +63,23 @@ class SusTest(unittest.TestCase):
             sus.calcular(io.StringIO(cabecera + fila + fila))
         with self.assertRaises(ValueError):
             sus.calcular(io.StringIO((cabecera + fila).replace("https://", "http://")))
+
+
+class VerificacionHttpsTest(unittest.TestCase):
+    def test_reconoce_el_contenedor_real_de_react_y_su_modulo_compilado(self):
+        for documento in (
+            b'<div id="raiz"></div><script type="module" src="/assets/index-123.js"></script>',
+            b"<script src='/assets/app.js' type=module></script><div class=app id=raiz></div>",
+        ):
+            self.assertTrue(https.es_spa_html(documento))
+
+    def test_rechaza_la_pagina_por_defecto_y_documentos_sin_la_aplicacion(self):
+        for documento in (
+            b"<h1>Welcome to nginx!</h1>",
+            b'<div id="raiz"></div>',
+            b'<div id="root"></div><script type="module" src="/assets/app.js"></script>',
+        ):
+            self.assertFalse(https.es_spa_html(documento))
 
 
 if __name__ == "__main__":

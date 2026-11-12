@@ -3,12 +3,33 @@ import argparse
 from datetime import datetime, timezone
 from http.cookiejar import CookieJar
 from http.cookies import SimpleCookie
+from html.parser import HTMLParser
 import json
 import os
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urlsplit
 from urllib.request import build_opener, HTTPCookieProcessor, Request
+
+
+class _DetectorSpa(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.raiz = False
+        self.modulo = False
+
+    def handle_starttag(self, tag, attrs):
+        atributos = dict(attrs)
+        if tag == "div" and atributos.get("id") == "raiz":
+            self.raiz = True
+        if tag == "script" and atributos.get("type") == "module" and (atributos.get("src") or "").startswith("/assets/"):
+            self.modulo = True
+
+
+def es_spa_html(contenido):
+    detector = _DetectorSpa()
+    detector.feed(contenido.decode("utf-8", errors="replace"))
+    return detector.raiz and detector.modulo
 
 
 def verificar(url):
@@ -43,7 +64,7 @@ def verificar(url):
             return res.read(), res.headers
 
     pagina, _ = peticion("/login")
-    if b'id="root"' not in pagina:
+    if not es_spa_html(pagina):
         raise RuntimeError("/login no está sirviendo la SPA.")
     comprobaciones.append("TLS válido y ruta SPA")
     cuerpo, cabeceras = peticion("/api/v1/auth/csrf")

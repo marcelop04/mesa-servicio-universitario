@@ -8,11 +8,11 @@ Always Free se conserva como alternativa de infraestructura.
 
 | ID | Entregable | Estado verificable | Evidencia |
 |---|---|---|---|
-| B1 | MySQL, backend y frontend en nube con HTTPS | E5 1 OCPU/8 GB/50 GB creada y Docker listo; DNS resuelto, entrega HTTPS en verificación | `despliegue/infra/`, `despliegue/compose.yml`, `Caddyfile`, evidencia OCI |
+| B1 | MySQL, backend y frontend en nube con HTTPS | Desplegado en E5, HTTPS y login verificados en la URL pública | `https://msu-157-137-206-147.sslip.io`, `docs/evidencias/fase-iii-iv-david/https.json` |
 | B2 | Desarrollo, prueba, producción y secretos | Implementado; perfiles, generador y comportamiento de cookies en prod probados localmente | `application-{dev,prueba,prod}.yml`, `.env.example`, `crear-entorno.py`, `DespliegueHttpsTest` |
 | B3 | GHCR/CD solo tras CI y main protegida | PR #4, entrega demo desde rama autorizada tras cuatro checks; CD main preparado, integración/revisión y ajustes de environment pendientes del propietario | `.github/workflows/{ci,cd}.yml`, `entregar-ci.sh`, `despliegue/github/proteccion-main.json`, PR #4 |
 | B4 | Copia/restauración de MySQL y evidencias | Scripts y timer implementados; ensayo MySQL real en CI del PR; recuperación en VM y copia externa pendientes | `backup.sh`, `restaurar.sh`, `probar-recuperacion.sh`, `systemd/`, checks del PR #4 |
-| B5 | Cinco usuarios, SUS y responsive | Protocolo y herramientas listos; revisión local de 32 pantallas aprobada; sesiones y revisión desplegada pendientes | `docs/pruebas/usuarios/`, `responsive-despliegue.mjs`, `docs/evidencias/fase-iii-iv-david/responsive-local/` |
+| B5 | Cinco usuarios, SUS y responsive | Responsive desplegado: 32 capturas a 360/1366, sin desbordes/5xx. Cinco sesiones SUS pendientes | `docs/pruebas/usuarios/`, `docs/evidencias/fase-iii-iv-david/responsive/resultado.json` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
 | Todos | Sección del informe, demostración y uso de IA | Borradores documentados; incorporar evidencias reales al activar la nube | `docs/informe/Seccion_David_Nube_CD.md`, `docs/presentacion/Guion_David.md`, `docs/registro-uso-ia.md` |
 
@@ -46,6 +46,9 @@ Always Free se conserva como alternativa de infraestructura.
 | Caddy 2.10.2, validate | Configuración válida; sin solicitar certificados |
 | Compilación Vite del frontend | Aprobada |
 | Playwright con Edge, localhost, API real y H2 efímero | 32 capturas a 360/1366 px, cuatro roles, sin desbordes ni 5xx; ver `responsive-local/resultado.json` |
+| Smoke sobre HTTPS público con cuenta real de demostración | Aprobado: TLS, HSTS, SPA, CSRF Secure, 401 JSON, OpenAPI, login/perfil/logout |
+| Playwright sobre la URL pública | 32 capturas de cuatro roles a 360/1366, 0 desbordes y 0 errores 5xx; `responsive/resultado.json` |
+| Regresión del detector de SPA de la entrega | 2 pruebas adicionales aprobadas; reconoce `id=raiz` y módulo compilado, rechaza páginas que no contienen la app |
 
 La prueba de proxy usa H2 y cabeceras de un terminador TLS simulado; **no demuestra un
 certificado público** ni sustituye MySQL real. El ensayo RNF11 ejecuta Docker/MySQL en
@@ -73,11 +76,15 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Posteriormente se comprobó `FREE_TRIAL` con promoción ACTIVE de S/1.139/30 días y
   `is_intent_to_pay=false`. Tras autorización explícita se creó una E5 disponible.
 - VM: `msu-curso-trial`, 1 OCPU/8 GB/50 GB, IP pública `157.137.206.147`.
-  DNS previsto: `https://msu-157-137-206-147.sslip.io` (comprobación de aplicación pendiente).
+  URL verificada: `https://msu-157-137-206-147.sslip.io`.
 - Cloud-init terminó correctamente; Docker y Compose funcionan. El acceso SSH usa
   la clave de host pública leída desde la consola mediante API OCI autenticada.
 - Se registraron `DEMO_ENV`, `PRODUCTION_ENV`, `SSH_KNOWN_HOSTS` y variables del destino.
   Los archivos privados están fuera de Git. La cuenta conserva su plan Free Trial.
+- La primera entrega publicó las imágenes en GHCR y arrancó los cuatro servicios.
+  El smoke identificó un supuesto incorrecto de su propio detector HTML (`root` en
+  vez de `raiz`). Se corrigió con parseo HTML y dos pruebas de regresión. El smoke
+  externo con inicio/cierre de sesión ya está aprobado; ver checks para la nueva entrega.
 
 ## Dependencias para completar la operación
 
@@ -95,13 +102,14 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 
 | Evidencia | Estado |
 |---|---|
-| URL HTTPS y fecha/commit/digests | Pendiente |
+| URL HTTPS y validación de sesión | `https://msu-157-137-206-147.sslip.io`, `https.json` |
 | Cuenta/home region/cupo y error real de capacidad OCI | `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
 | Enlace a CI con ensayo de recuperación por commit | Checks del [PR #4](https://github.com/marcelop04/mesa-servicio-universitario/pull/4/checks) |
 | Enlace a CD exitoso y protección de main | Pendiente |
-| Informe del smoke HTTPS y login | Pendiente |
+| Informe del smoke HTTPS y login | `docs/evidencias/fase-iii-iv-david/https.json` |
 | Copia externa, recuperación práctica, duración y hashes | Pendiente |
-| Responsive 360/1366 y cuestionarios P01–P05 | Pendiente |
+| Responsive 360/1366 | `docs/evidencias/fase-iii-iv-david/responsive/` (32 capturas, 0 fallos) |
+| Cuestionarios P01–P05 | Pendientes de personas reales |
 
 ## Integración con los demás paquetes
 
