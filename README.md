@@ -83,7 +83,8 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 
 ## Despliegue gratuito y entrega continua (paquete B · David)
 
-- [Manual técnico](docs/manual/Manual_tecnico.md): OCI Always Free, HTTPS con Caddy,
+- [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
+  y alternativa Always Free, HTTPS con Caddy,
   perfiles `dev`/`prueba`/`prod`, GitHub Secrets, GHCR/CD y copia/restauración.
 - [`despliegue/`](despliegue/): infraestructura Terraform y Compose de nube; MySQL y
   backend sin puertos públicos, imágenes desplegadas por digest tras CI exitoso.

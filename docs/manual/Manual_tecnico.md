@@ -4,7 +4,7 @@
 
 ```text
 Rama de trabajo → PR → CI (JUnit, Vitest, build, recuperación, configuración)
-                         ↓ solo push a main aprobado
+                         ↓ main aprobado / demo de PR habilitada explícitamente
                       GHCR (amd64 + arm64, digest SHA-256)
                          ↓ SSH con host verificado
 Internet → Caddy :443 → React/Nginx
@@ -12,14 +12,17 @@ Internet → Caddy :443 → React/Nginx
                               └────────→ volumen de evidencias
 ```
 
-Plataforma elegida: **Oracle Cloud Infrastructure Always Free**, una VM Ubuntu 24.04 ARM
-`VM.Standard.A1.Flex`, **2 OCPU / 12 GB RAM / 50 GB de disco**. MySQL se instala como
-contenedor propio: no se contrata una base de datos de pago. Solo SSH, HTTP y HTTPS
+Plataforma elegida: **Oracle Cloud Infrastructure Free Trial**, una VM Ubuntu 24.04 x86
+`VM.Standard.E5.Flex`, **1 OCPU / 8 GB RAM / 50 GB de disco**, para la evaluación del curso.
+Se usa la promoción vigente con autorización del responsable; el plan de la cuenta
+permanece `FREE_TRIAL`. MySQL se instala como contenedor propio. Solo SSH, HTTP y HTTPS
 tienen entrada pública; MySQL y el backend no publican puertos del host.
 
 | Componente | Alternativa gratuita | Condición |
 |---|---|---|
-| VM y disco | OCI Always Free | Home region, cupo disponible de la cuenta; una sola VM de este tamaño |
+| VM E5 del curso | Créditos OCI Free Trial | Promoción activa, crédito suficiente y retiro después de la evaluación |
+| Alternativa A1 | OCI Always Free | `usar_creditos_trial=false`, home region y capacidad disponible |
+| Disco | Volumen de arranque de 50 GB | Comprobar cupo compartido de almacenamiento gratuito de la cuenta |
 | DNS | `msu-IP-CON-GUIONES.sslip.io` | Resuelve a la IP pública; también sirve un subdominio gratuito DuckDNS |
 | HTTPS | Caddy + certificados ACME | DNS correcto, entrada TCP 80/443 y salida a Internet |
 | CI/CD | GitHub Actions, runners estándar | Repositorio público; CD comprueba esta condición |
@@ -29,10 +32,15 @@ tienen entrada pública; MySQL y el backend no publican puertos del host.
 La [documentación oficial de OCI](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm),
 consultada el 12/11/2026, indica **1.500 horas OCPU y 9.000 GB-hora al mes** para A1
 (equivalente a 2 OCPU y 12 GB), 200 GB combinados de volúmenes y 20 GB de Object Storage.
-Los cupos son compartidos con los demás recursos de la cuenta. La configuración fija
-2/12/50; antes de aplicarla confirmar el cupo libre y el costo de **0** en la consola.
-El alta puede pedir tarjeta para validar identidad; este proyecto no requiere activar
-Pay As You Go ni recursos que dependan del crédito temporal de prueba.
+Los cupos son compartidos con los demás recursos de la cuenta. Terraform conserva A1
+2/12/50 por defecto; `usar_creditos_trial=true` selecciona E5 1/8/50 expresamente.
+El 12/11/2026 A1 no tenía capacidad y se eligió E5 para la demostración temporal.
+La promoción consultada era de S/1.139 por 30 días desde el 12/11/2026, con estado
+ACTIVE y sin intención de pasar a pago. El importe de la promoción no es una lectura
+de saldo restante en tiempo real. La tarifa pública de CPU/RAM E5 es aproximadamente
+US$0,046/hora (US$33,12 por 720 horas), cubierta por el crédito mientras alcance.
+Antes de aplicar, comprobar crédito, vigencia y costo de todos los recursos.
+Referencia: [condiciones Free Trial](https://www.oracle.com/cloud/free/faq/).
 
 Referencias de gratuidad: [GitHub Actions](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
 y [GHCR](https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-packages/about-billing-for-github-packages).
@@ -71,7 +79,7 @@ Sin Docker: seguir el README raíz. El perfil `dev` conserva las cuentas de demo
 ya documentadas. Los perfiles de nube exigen las credenciales por entorno y fuerzan
 la cookie de sesión `Secure`.
 
-## 3. Crear la VM gratuita
+## 3. Crear la VM del curso
 
 1. Crear la cuenta OCI, identificar su **home region** y un compartimento.
 2. Crear una API key desde el perfil OCI y configurar `~/.oci/config` en el equipo privado.
@@ -80,6 +88,7 @@ la cookie de sesión `Secure`.
    automatización y se guarda como Secret; la pública se coloca en `ssh_public_key`.
 4. Copiar `despliegue/infra/terraform.tfvars.example` como `terraform.tfvars` y completar
    región, compartimento y clave **pública**. El archivo está ignorado por Git.
+   Para la E5 de esta entrega, poner `usar_creditos_trial=true` tras verificar la promoción.
 5. Ejecutar desde la raíz (los siguientes comandos de archivos usan Bash/Git Bash):
 
 ```bash
@@ -91,7 +100,7 @@ terraform -chdir=despliegue/infra apply msu.tfplan
 terraform -chdir=despliegue/infra output
 ```
 
-El plan crea VCN, gateway, ruta, subnet, reglas 22/80/443 y una VM A1. No crea
+El plan crea VCN, gateway, ruta, subnet, reglas 22/80/443 y una VM A1 o E5 según el modo. No crea
 balanceadores ni bases gestionadas. `ssh_cidr=0.0.0.0/0` permite los runners públicos
 de GitHub con IP variable: Ubuntu usa autenticación por clave. Puede restringirse si
 se dispone de una salida SSH de IP fija. No abrir 3306, 8080 ni el administrador de Caddy.
@@ -207,6 +216,22 @@ El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 privados inicialmente; el token temporal permite descargarlos. Para descarga anónima,
 el propietario puede poner ambos paquetes como públicos en Packages. La etiqueta de
 origen de las imágenes las vincula al repositorio para gestionar sus accesos desde GitHub.
+
+### Entrega académica inicial desde PR
+
+Para comprobar la nube antes de integrar `main`, CI incluye un job de demostración
+habilitado expresamente con variables de repositorio `DEMO_ENABLED=true` y
+`DEMO_BRANCH=feat/david-despliegue`. Solo admite PR del mismo repositorio y esa rama,
+y depende del éxito de los cuatro jobs de pruebas/configuración. Publica imágenes
+amd64 en GHCR y entrega los digests del mismo commit de merge probado por CI.
+Comprueba además que el PR sigue abierto y que su cabeza no cambió antes de entregar.
+
+El job usa `DEMO_ENV` (archivo de entorno privado), `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`
+y las variables de host/usuario. `entregar-ci.sh` comparte el transporte SSH con CD.
+La demo y la entrega posterior de `main` actualizan la misma instancia académica y
+usan exclusión mutua; las pruebas MySQL de CI mantienen sus volúmenes independientes.
+El workflow CD de `main` conserva su evento y el environment `production`.
+Desactivar `DEMO_ENABLED` después de la integración; `CD_ENABLED` controla la entrega de main.
 
 En el primer despliegue, Caddy obtiene el certificado automáticamente y redirige HTTP a
 HTTPS. Sus certificados persisten en volúmenes. Si DNS/80/443 o la autoridad ACME fallan,
@@ -330,3 +355,26 @@ y 200 GB Always Free disponibles. Terraform creó la red, pero la VM fue rechaza
 fault domains y todas devolvieron falta de capacidad. Se conserva el estado Terraform
 local para reintentar el mismo plan; `CD_ENABLED=false` hasta disponer del servidor,
 sus Secrets completos y HTTPS verificado.
+
+Después se autorizó el uso de la prueba y se creó la E5 en Bogotá. DNS previsto:
+`https://msu-157-137-206-147.sslip.io`. La verificación HTTPS y la ejecución de entrega
+se registran en la bitácora al terminar. La huella SSH se obtuvo del historial de
+consola por la API OCI autenticada y se fijó en `SSH_KNOWN_HOSTS`.
+
+## 10. Cierre del curso y conservación de evidencias
+
+La VM E5 es temporal y consume créditos. Acordar la última fecha de revisión del
+docente; el vencimiento estimado de esta promoción es alrededor del 12/12/2026.
+Al finalizar: descargar SQL/evidencias, conservar informes/capturas/repositorio y
+retirar la VM y sus discos. Apagar una VM no elimina sus volúmenes.
+Con las copias verificadas y el estado Terraform local correcto:
+
+```bash
+terraform -chdir=despliegue/infra plan -destroy -out=retirar-curso.tfplan
+terraform -chdir=despliegue/infra apply retirar-curso.tfplan
+```
+
+Revisar que el plan solo afecte a los recursos de este proyecto y confirmar después
+en OCI que la VM y su disco desaparecieron. Desactivar las variables de entrega en
+GitHub al retirar el servidor. Mantener la cuenta en Free Trial/Free Tier conserva
+el modelo sin facturación automática al concluir la promoción.

@@ -14,6 +14,22 @@ provider "oci" {
   config_file_profile = var.oci_profile
 }
 
+locals {
+  maquina = var.usar_creditos_trial ? {
+    shape  = "VM.Standard.E5.Flex"
+    ocpus  = 1
+    ram_gb = 8
+    nombre = "msu-curso-trial"
+    modo   = "creditos-trial"
+    } : {
+    shape  = "VM.Standard.A1.Flex"
+    ocpus  = 2
+    ram_gb = 12
+    nombre = "msu-always-free"
+    modo   = "always-free"
+  }
+}
+
 data "oci_identity_availability_domains" "disponibles" {
   compartment_id = var.compartment_id
 }
@@ -22,7 +38,7 @@ data "oci_core_images" "ubuntu" {
   compartment_id           = var.compartment_id
   operating_system         = "Canonical Ubuntu"
   operating_system_version = "24.04"
-  shape                    = "VM.Standard.A1.Flex"
+  shape                    = local.maquina.shape
   sort_by                  = "TIMECREATED"
   sort_order               = "DESC"
 }
@@ -102,21 +118,27 @@ resource "oci_core_subnet" "publica" {
   security_list_ids = [oci_core_security_list.web.id]
 }
 
-# Valores fijos para un único servidor dentro del cupo Always Free consultado.
-# Comprobar el cupo libre de TODA la cuenta antes de ejecutar terraform apply.
+# Una única VM: A1 Always Free por defecto, o E5 con opt-in explícito al Free Trial.
+# Comprobar el cupo, la promoción vigente y la capacidad antes de aplicar el plan.
 resource "oci_core_instance" "msu" {
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.disponibles.availability_domains[var.availability_domain_index].name
-  display_name        = "msu-always-free"
-  shape               = "VM.Standard.A1.Flex"
+  display_name        = local.maquina.nombre
+  shape               = local.maquina.shape
+  freeform_tags = {
+    proyecto  = "mesa-servicio-universitario"
+    finalidad = "demostracion-curso"
+    modalidad = local.maquina.modo
+  }
   shape_config {
-    ocpus         = 2
-    memory_in_gbs = 12
+    ocpus         = local.maquina.ocpus
+    memory_in_gbs = local.maquina.ram_gb
   }
   source_details {
     source_type             = "image"
     source_id               = data.oci_core_images.ubuntu.images[0].id
     boot_volume_size_in_gbs = 50
+    boot_volume_vpus_per_gb = 10
   }
   create_vnic_details {
     subnet_id        = oci_core_subnet.publica.id

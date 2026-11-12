@@ -3,9 +3,10 @@
 Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
 Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
 
-| Fecha | Integrante | Herramienta | Solicitud / propósito | Aporte utilizado | Validación / pendientes |
-|---|---|---|---|---|---|
-| 12/11/2026 | David | OpenCode (asistente de programación) | Implementar paquete B del reparto: rama desde main, nube/HTTPS, ambientes, GHCR/CD, respaldo, pruebas de usuario y manual con servicios gratuitos | Infraestructura OCI, Compose/Caddy, perfiles, workflows, herramientas RNF11/SUS/responsive y documentación; conexión local de cuentas y PR #4 | JUnit, pruebas Python, ShellCheck, actionlint y validadores de infraestructura/configuración. API OCI y Terraform ejecutados: red creada, VM bloqueada por falta de capacidad A1; ensayo RNF11 en CI del PR. Primer CD, recuperación en VM y participantes pendientes |
+| Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
+|---|---|---|---|---|---|---|---|
+| 12/11/2026 | David | OpenCode (asistente de programación) | Implementar paquete B del reparto desde main: nube/HTTPS, ambientes, GHCR/CD, respaldo, usuarios y manual con servicios gratuitos | Terraform OCI, Compose/Caddy, perfiles, workflows, herramientas RNF11/SUS/responsive y documentación | Sí | JUnit, Python, ShellCheck, actionlint, Terraform, Compose/Caddy; MySQL real y RNF11 aprobados en CI del PR #4 | Se corrigieron rutas ShellCheck en Docker y healthcheck IPv4; A1 quedó bloqueada por capacidad |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Usar los créditos Free Trial para publicar la demo universitaria y entregar una URL web | Modo opt-in E5, transporte SSH compartido y entrega demo condicionada a CI | Sí | Promoción ACTIVE/FREE_TRIAL consultada, E5 creada, Terraform/ShellCheck/actionlint validados, Docker/SSH listos | Se separa bootstrap demo de CD main; HTTPS, recuperación en VM y sesiones reales se registran al ejecutarse |
 
 No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
 Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.

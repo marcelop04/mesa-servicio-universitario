@@ -14,6 +14,12 @@ variable "oci_profile" {
   default     = "DEFAULT"
 }
 
+variable "usar_creditos_trial" {
+  description = "Opt-in para E5 (1 OCPU/8 GB) con créditos temporales Free Trial; false mantiene A1 Always Free (2 OCPU/12 GB). No cambia el plan de facturación."
+  type        = bool
+  default     = false
+}
+
 variable "ssh_public_key" {
   description = "Clave PÚBLICA ed25519/rsa de acceso. Nunca colocar la privada aquí."
   type        = string

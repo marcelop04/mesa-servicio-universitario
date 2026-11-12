@@ -1,15 +1,16 @@
 # Fases III y IV · David · Paquete B: Nube y CI/CD
 
 Base: `main` (`87afec8`, funciones de Emanuel integradas). Rama: `feat/david-despliegue`.
-Fecha de preparación: 12/11/2026. Plataforma elegida con el responsable: OCI Always Free.
+Fecha de preparación: 12/11/2026. Plataforma: OCI Free Trial para la demostración del curso;
+Always Free se conserva como alternativa de infraestructura.
 
 ## Entregables y criterio de cierre
 
 | ID | Entregable | Estado verificable | Evidencia |
 |---|---|---|---|
-| B1 | MySQL, backend y frontend en nube con HTTPS | API OCI conectada y red creada; Oracle rechazó la VM por `Out of host capacity` en Bogotá; URL pendiente | `despliegue/infra/`, `despliegue/compose.yml`, `Caddyfile`, `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
+| B1 | MySQL, backend y frontend en nube con HTTPS | E5 1 OCPU/8 GB/50 GB creada y Docker listo; DNS resuelto, entrega HTTPS en verificación | `despliegue/infra/`, `despliegue/compose.yml`, `Caddyfile`, evidencia OCI |
 | B2 | Desarrollo, prueba, producción y secretos | Implementado; perfiles, generador y comportamiento de cookies en prod probados localmente | `application-{dev,prueba,prod}.yml`, `.env.example`, `crear-entorno.py`, `DespliegueHttpsTest` |
-| B3 | GHCR/CD solo tras CI y main protegida | Rama publicada y PR #4; SSH en Secrets, CD desactivado hasta tener VM; main ya protegida, ajustes de checks/environment requieren administrador | `.github/workflows/{ci,cd}.yml`, `despliegue/github/proteccion-main.json`, PR #4 |
+| B3 | GHCR/CD solo tras CI y main protegida | PR #4, entrega demo desde rama autorizada tras cuatro checks; CD main preparado, integración/revisión y ajustes de environment pendientes del propietario | `.github/workflows/{ci,cd}.yml`, `entregar-ci.sh`, `despliegue/github/proteccion-main.json`, PR #4 |
 | B4 | Copia/restauración de MySQL y evidencias | Scripts y timer implementados; ensayo MySQL real en CI del PR; recuperación en VM y copia externa pendientes | `backup.sh`, `restaurar.sh`, `probar-recuperacion.sh`, `systemd/`, checks del PR #4 |
 | B5 | Cinco usuarios, SUS y responsive | Protocolo y herramientas listos; revisión local de 32 pantallas aprobada; sesiones y revisión desplegada pendientes | `docs/pruebas/usuarios/`, `responsive-despliegue.mjs`, `docs/evidencias/fase-iii-iv-david/responsive-local/` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
@@ -17,12 +18,14 @@ Fecha de preparación: 12/11/2026. Plataforma elegida con el responsable: OCI Al
 
 ## Decisiones
 
-- Una VM ARM Always Free, 2 OCPU/12 GB y 50 GB de disco. Sin base gestionada, balanceador
-  pagado ni dependencia de créditos de prueba. Repositorio público y runners estándar.
+- Ante falta de A1, el responsable autorizó una E5 x86 Free Trial de 1 OCPU/8 GB y disco
+  de 50 GB. Se mantiene `FREE_TRIAL`; el crédito cubre el uso durante el curso según
+  saldo y vigencia. La alternativa A1 2/12 permanece por defecto en Terraform.
 - Caddy termina HTTPS y sirve API/SPA bajo el mismo origen. MySQL y backend quedan sin
   puertos del host. Certificados y evidencias persisten en volúmenes.
-- CD usa el SHA aprobado y digests inmutables multi-arquitectura. Comprueba el origen del
-  evento y el estado completo de CI; no despliega eventos de PR ni commits antiguos.
+- CD main usa el SHA aprobado y digests inmutables multi-arquitectura. La demo inicial
+  es un job separado, habilitado para la rama propia autorizada, después del éxito
+  de los cuatro checks; también usa el commit probado y sus digests GHCR.
 - Copia coherente con el backend detenido, dump SQL, tar de evidencias y sumas SHA-256.
   Rollback de imágenes separado de restauración SQL si una migración no es retrocompatible.
 - Configuración nueva mediante GitHub Secrets, sin escribir secretos en Git ni en Terraform.
@@ -67,11 +70,19 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - El primer CI permitió comprobar los contenedores con MySQL real y detectó dos ajustes:
   expansión de rutas de ShellCheck en Docker y healthcheck Nginx con IPv4 explícito.
   Las correcciones se incluyen en la rama; ver el resultado actualizado en el PR.
+- Posteriormente se comprobó `FREE_TRIAL` con promoción ACTIVE de S/1.139/30 días y
+  `is_intent_to_pay=false`. Tras autorización explícita se creó una E5 disponible.
+- VM: `msu-curso-trial`, 1 OCPU/8 GB/50 GB, IP pública `157.137.206.147`.
+  DNS previsto: `https://msu-157-137-206-147.sslip.io` (comprobación de aplicación pendiente).
+- Cloud-init terminó correctamente; Docker y Compose funcionan. El acceso SSH usa
+  la clave de host pública leída desde la consola mediante API OCI autenticada.
+- Se registraron `DEMO_ENV`, `PRODUCTION_ENV`, `SSH_KNOWN_HOSTS` y variables del destino.
+  Los archivos privados están fuera de Git. La cuenta conserva su plan Free Trial.
 
 ## Dependencias para completar la operación
 
-1. Disponibilidad física A1 en Bogotá: la cuenta y su autenticación funcionan, pero el
-   proveedor no tiene capacidad para las configuraciones gratuitas consultadas.
+1. Terminar y verificar la primera entrega de demostración en la E5, cuyo uso fue
+   autorizado para el período de prueba del curso.
 2. Administrador del repositorio para crear el environment y revisar/ampliar los checks
    de la protección existente de `main`.
 3. Ejecutar RNF11 en la VM cuando exista; CI proporciona el ensayo aislado con MySQL real.

@@ -1,0 +1,18 @@
+{
+  "fecha": "2026-11-12",
+  "fuente": "API OCI autenticada, Terraform apply y SSH con clave de host fijada",
+  "plan_verificado_antes_de_crear": "FREE_TRIAL",
+  "promocion": {"estado": "ACTIVE", "importe_total": 1139, "moneda": "PEN", "duracion_dias": 30, "inicio": "2026-11-12", "intencion_de_pasar_a_pago": false},
+  "nota_credito": "El importe total promocional no es una consulta de saldo restante en tiempo real; el consumo reportado puede tener demora.",
+  "vm": {"nombre": "msu-curso-trial", "region": "sa-bogota-1", "shape": "VM.Standard.E5.Flex", "ocpu": 1, "ram_gb": 8, "disco_gb": 50, "estado": "RUNNING", "ip_publica": "157.137.206.147"},
+  "url_prevista": "https://msu-157-137-206-147.sslip.io",
+  "cloud_init": "done",
+  "docker": "29.9.3",
+  "compose": "v5.7.1",
+  "huella_host_ed25519": "SHA256:cUbwHFmiu25u3rvZsBfYsrmvX7V0OP9r3vDBW4ek9GA",
+  "verificacion_host": "Clave pública leída desde la consola de arranque mediante API OCI firmada; StrictHostKeyChecking=yes",
+  "precio_cpu_ram_estimado_usd_hora": 0.046,
+  "precio_cpu_ram_estimado_usd_720_horas": 33.12,
+  "nota_precio": "Tarifa pública E5 de CPU y RAM; almacenamiento/tráfico dependen de sus cupos. El uso elegible consume el crédito de prueba.",
+  "estado_aplicacion": "Primera entrega CI/GHCR y comprobación HTTPS en curso"
+}
