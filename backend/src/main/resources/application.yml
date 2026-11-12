@@ -1,12 +1,14 @@
 # Configuración por variables de entorno (RNF02: secretos fuera del repositorio).
-# Los valores por defecto solo sirven para el entorno local de desarrollo.
+# Los valores locales están exclusivamente en application-dev.yml.
 spring:
   application:
     name: msu-backend
+  profiles:
+    default: dev
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8}
-    username: ${DB_USER:msu}
-    password: ${DB_PASSWORD:msu_local}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     open-in-view: false
     hibernate:
@@ -41,7 +43,7 @@ springdoc:
 msu:
   jwt:
     # DV04: JWT en cookie HttpOnly. En despliegue JWT_SECRET debe ser un valor aleatorio de 32 bytes o más.
-    secreto: ${JWT_SECRET:solo-desarrollo-cambie-este-secreto-de-32-bytes}
+    secreto: ${JWT_SECRET}
     duracion: ${JWT_DURACION:PT2H}
     cookie-segura: ${COOKIE_SECURE:false}
   tareas:
@@ -57,7 +59,7 @@ msu:
     directorio: ${ARCHIVOS_DIR:./archivos}
   datos-demo:
     # GB07: crea una cuenta de prueba por rol si no existen. Desactivar en despliegues reales.
-    habilitado: ${DATOS_DEMO:true}
-    password: ${DEMO_PASSWORD:Demo12345!}
+    habilitado: ${DATOS_DEMO:false}
+    password: ${DEMO_PASSWORD:}
     # MR07: solicitudes de ejemplo para la bandeja de supervisión, solo si la base no tiene ninguna.
-    solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:true}}
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:false}

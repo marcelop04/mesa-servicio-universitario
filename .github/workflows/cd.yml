@@ -1,0 +1,164 @@
+# RNF10: solo publica y despliega el SHA de un push a main con CI completo aprobado.
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-produccion
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Publicar imágenes verificadas
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend: ${{ steps.referencias.outputs.backend }}
+      frontend: ${{ steps.referencias.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Comprobar que el SHA sigue siendo la punta de main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: test "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" = "$SOURCE_SHA"
+      - name: Nombres de imágenes
+        id: nombres
+        env:
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          prefijo="ghcr.io/${GITHUB_REPOSITORY,,}"
+          {
+            echo "backend=$prefijo-backend:sha-$SOURCE_SHA"
+            echo "frontend=$prefijo-frontend:sha-$SOURCE_SHA"
+            echo "prefijo=$prefijo"
+          } >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: docker/build-push-action@v6
+        id: backend
+        with:
+          context: backend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.nombres.outputs.backend }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      - uses: docker/build-push-action@v6
+        id: frontend
+        with:
+          context: frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.nombres.outputs.frontend }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+      - name: Guardar digests inmutables
+        id: referencias
+        env:
+          PREFIJO: ${{ steps.nombres.outputs.prefijo }}
+          BACKEND_DIGEST: ${{ steps.backend.outputs.digest }}
+          FRONTEND_DIGEST: ${{ steps.frontend.outputs.digest }}
+        run: |
+          {
+            echo "backend=$PREFIJO-backend@$BACKEND_DIGEST"
+            echo "frontend=$PREFIJO-frontend@$FRONTEND_DIGEST"
+          } >> "$GITHUB_OUTPUT"
+          # Los backticks son formato Markdown literal.
+          # shellcheck disable=SC2016
+          printf '### Imágenes verificadas\n- `%s-backend@%s`\n- `%s-frontend@%s`\n' \
+            "$PREFIJO" "$BACKEND_DIGEST" "$PREFIJO" "$FRONTEND_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
+  desplegar:
+    name: Desplegar con HTTPS
+    needs: publicar
+    # Activar esta variable DEL REPOSITORIO después de configurar la VM y los Secrets.
+    if: vars.CD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Transferir configuración y desplegar el SHA aprobado
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          PRODUCTION_ENV: ${{ secrets.PRODUCTION_ENV }}
+          BACKEND_IMAGE: ${{ needs.publicar.outputs.backend }}
+          FRONTEND_IMAGE: ${{ needs.publicar.outputs.frontend }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" = "$SOURCE_SHA"
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$DEPLOY_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]+$ ]]
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          test -n "$SSH_PRIVATE_KEY" && test -n "$SSH_KNOWN_HOSTS" && test -n "$PRODUCTION_ENV"
+          umask 077
+          temporal="$(mktemp -d "$RUNNER_TEMP/msu.XXXXXX")"
+          conectado=0
+          limpiar() {
+            if [[ $conectado == 1 ]]; then
+              ssh "${opciones[@]}" "$destino" 'docker logout ghcr.io >/dev/null' || true
+            fi
+            rm -rf -- "$temporal"
+          }
+          trap limpiar EXIT
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$temporal/clave"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$temporal/known_hosts"
+          printf '%s\n' "$PRODUCTION_ENV" > "$temporal/produccion.env"
+          ssh-keygen -F "$DEPLOY_HOST" -f "$temporal/known_hosts" >/dev/null
+          opciones=(-i "$temporal/clave" -o "UserKnownHostsFile=$temporal/known_hosts" -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20)
+          destino="$DEPLOY_USER@$DEPLOY_HOST"
+          remoto="/opt/msu/entregas/$SOURCE_SHA"
+          # SHA validado: las rutas se expanden deliberadamente en el runner.
+          # shellcheck disable=SC2029
+          tar -czf - despliegue | ssh "${opciones[@]}" "$destino" "umask 077; mkdir -p '$remoto'; tar -xzf - -C '$remoto'"
+          scp "${opciones[@]}" "$temporal/produccion.env" "$destino:/opt/msu/shared/produccion.env.nueva"
+          ssh "${opciones[@]}" "$destino" 'chmod 600 /opt/msu/shared/produccion.env.nueva; mv /opt/msu/shared/produccion.env.nueva /opt/msu/shared/produccion.env'
+          conectado=1
+          # El actor y los digests vienen de GitHub/GHCR y se expanden en el runner.
+          # shellcheck disable=SC2029
+          printf '%s' "$GH_TOKEN" | ssh "${opciones[@]}" "$destino" "docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin"
+          # shellcheck disable=SC2029
+          ssh "${opciones[@]}" "$destino" "bash '$remoto/despliegue/scripts/desplegar.sh' '$BACKEND_IMAGE' '$FRONTEND_IMAGE'"
+          # shellcheck disable=SC2016
+          printf '### Despliegue completado\nCommit: `%s`\n' "$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"

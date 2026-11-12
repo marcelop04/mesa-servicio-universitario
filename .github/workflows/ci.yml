@@ -7,6 +7,13 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend:
     name: Backend (Spring Boot)
@@ -56,4 +63,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Construir backend y frontend
-        run: docker compose build
+        run: docker compose -f docker-compose.yml -f despliegue/compose.ci.yml build
+      - name: Validar Caddy (sin solicitar certificados)
+        run: >-
+          docker run --rm -e APP_HOST=prueba.example.org -e ACME_EMAIL=pruebas@example.org
+          -v "$PWD/despliegue/Caddyfile:/etc/caddy/Caddyfile:ro"
+          caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: RNF11 · Copia, pérdida y restauración de MySQL y evidencias
+        run: bash despliegue/scripts/probar-recuperacion.sh
+
+  despliegue:
+    name: Configuración de despliegue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pruebas del generador y del cálculo SUS
+        run: python -m unittest discover -s despliegue/tests -v
+      - name: ShellCheck
+        run: >-
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable
+          --external-sources -P /mnt/despliegue/scripts /mnt/despliegue/scripts/*.sh
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+      - name: Validar infraestructura (no crea recursos)
+        working-directory: despliegue/infra
+        run: |
+          terraform fmt -check
+          terraform init -backend=false -input=false
+          terraform validate

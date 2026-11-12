@@ -1,0 +1,117 @@
+# Stack de nube independiente del Compose local: solo Caddy publica puertos.
+name: ${COMPOSE_PROJECT_NAME:-msu-prod}
+
+x-logs: &logs
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mesa_servicios
+      MYSQL_USER: ${DB_USER:?Falta DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--max-connections=80"]
+    volumes:
+      - mysql-datos:/var/lib/mysql
+    networks: [datos]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql --user=\"$$MYSQL_USER\" --database=\"$$MYSQL_DATABASE\" --execute='SELECT 1' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 40s
+      retries: 20
+    mem_limit: 1g
+    logging: *logs
+
+  backend:
+    image: ${BACKEND_IMAGE:?Falta el digest de BACKEND_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:?Usar prod o prueba}
+      DB_URL: jdbc:mysql://mysql:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:?Falta DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET}
+      COOKIE_SECURE: "true"
+      ARCHIVOS_DIR: /app/archivos
+      DATOS_DEMO: ${DATOS_DEMO:-false}
+      DATOS_DEMO_SOLICITUDES: ${DATOS_DEMO_SOLICITUDES:-false}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:?Falta DEMO_PASSWORD}
+      TAREAS_HABILITADAS: ${TAREAS_HABILITADAS:-true}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError
+    volumes:
+      - evidencias:/app/archivos
+    networks: [datos, web]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/api/v1/auth/csrf"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 18
+    stop_grace_period: 40s
+    mem_limit: 1g
+    logging: *logs
+
+  frontend:
+    image: ${FRONTEND_IMAGE:?Falta el digest de FRONTEND_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [web]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    mem_limit: 128m
+    logging: *logs
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_healthy
+    environment:
+      APP_HOST: ${APP_HOST:?Falta el nombre DNS de la aplicación}
+      ACME_EMAIL: ${ACME_EMAIL:?Falta ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-datos:/data
+      - caddy-config:/config
+    networks: [web]
+    mem_limit: 128m
+    logging: *logs
+
+  # Solo se ejecuta para copiar/restaurar archivos conservando los UID/GID.
+  archivos:
+    image: alpine:3.22
+    profiles: [herramientas]
+    volumes:
+      - evidencias:/evidencias
+    network_mode: none
+    logging: *logs
+
+networks:
+  datos:
+    internal: true
+  web:
+
+volumes:
+  mysql-datos:
+  evidencias:
+  caddy-datos:
+  caddy-config:

@@ -1,0 +1,68 @@
+"""Comprueba claves únicas de entorno y los extremos/validaciones del instrumento SUS."""
+import importlib.util
+import io
+from pathlib import Path
+import unittest
+
+RAIZ = Path(__file__).resolve().parents[2]
+
+
+def cargar(nombre, ruta):
+    spec = importlib.util.spec_from_file_location(nombre, RAIZ / ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+entorno = cargar("crear_entorno", "despliegue/scripts/crear-entorno.py")
+sus = cargar("calcular_sus", "docs/pruebas/usuarios/calcular-sus.py")
+
+
+class EntornoTest(unittest.TestCase):
+    def test_cada_entorno_tiene_claves_independientes_y_demo_optativa(self):
+        a = dict(linea.split("=", 1) for linea in entorno.crear("msu.example.org", "david@example.org").splitlines())
+        b = dict(linea.split("=", 1) for linea in entorno.crear("prueba.example.org", "david@example.org", "prueba", True).splitlines())
+        for clave in ("JWT_SECRET", "DB_PASSWORD", "MYSQL_ROOT_PASSWORD", "DEMO_PASSWORD"):
+            self.assertNotEqual(a[clave], b[clave])
+            self.assertGreaterEqual(len(a[clave]), 32)
+        self.assertNotEqual(a["DB_PASSWORD"], a["MYSQL_ROOT_PASSWORD"])
+        self.assertEqual(a["DATOS_DEMO"], "false")
+        self.assertEqual(b["DATOS_DEMO"], "true")
+        self.assertNotEqual(a["COMPOSE_PROJECT_NAME"], b["COMPOSE_PROJECT_NAME"])
+
+    def test_no_permite_inyectar_lineas_ni_directivas_en_el_entorno(self):
+        for host, email in [("https://msu.example.org", "a@example.org"), ("msu.example.org\nDB_USER=root", "a@example.org"), ("msu.example.org", "a@example.org\nJWT_SECRET=x")]:
+            with self.assertRaises(ValueError):
+                entorno.crear(host, email)
+
+
+class SusTest(unittest.TestCase):
+    def test_extremos_y_punto_neutro(self):
+        self.assertEqual(sus.puntuacion([5, 1] * 5), 100)
+        self.assertEqual(sus.puntuacion([1, 5] * 5), 0)
+        self.assertEqual(sus.puntuacion([3] * 10), 50)
+
+    def test_rechaza_respuestas_fuera_de_escala_o_incompletas(self):
+        for valores in ([1] * 9, [6] * 10, [0] * 10, [True] * 10):
+            with self.assertRaises(ValueError):
+                sus.puntuacion(valores)
+
+    def test_no_inventa_resultados_para_la_plantilla_vacia(self):
+        with (RAIZ / "docs/pruebas/usuarios/respuestas-sus.csv").open() as archivo:
+            with self.assertRaises(ValueError):
+                sus.calcular(archivo)
+
+    def test_csv_real_exige_https_y_detecta_muestra_y_duplicados(self):
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + "\n"
+        fila = "P01,2026-11-12,Solicitante,360,https://msu.example.org," + ",".join(["3"] * 10) + "\n"
+        resultado = sus.calcular(io.StringIO(cabecera + fila))
+        self.assertEqual(resultado["media_sus"], 50)
+        self.assertFalse(resultado["meta_muestra_cumplida"])
+        with self.assertRaises(ValueError):
+            sus.calcular(io.StringIO(cabecera + fila + fila))
+        with self.assertRaises(ValueError):
+            sus.calcular(io.StringIO((cabecera + fila).replace("https://", "http://")))
+
+
+if __name__ == "__main__":
+    unittest.main()
