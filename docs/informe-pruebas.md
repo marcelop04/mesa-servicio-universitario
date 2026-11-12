@@ -219,3 +219,4 @@ Durante la ejecución de las tareas E1 a E4 se identificaron y mitigaron los sig
 3. **Recomendaciones para el Despliegue en la Nube (David - B1):**
    - Ampliar el tamaño del pool HikariCP en producción (`maximum-pool-size: 25-30`) y el número de hilos de Tomcat (`max-threads: 200`) para soportar picos superiores a 400 VU sin encolamiento.
    - Ejecutar la suite de Newman y Playwright apuntando a `BASE_URL=https://...` antes de abrir el servicio a los usuarios finales.
+

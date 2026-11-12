@@ -59,3 +59,4 @@ Para garantizar que el software no cuente con pruebas «placebo» o cobertura en
 1. **Robustez y Sensibilidad:** Todas las pruebas auditadas reaccionan negativamente ante regresiones deliberadas de código y validación.
 2. **Determinismo:** La suite completa puede ejecutarse de manera repetida e idempotente sin dejar basura en la base de datos gracias a los scripts de limpieza y aislamiento por prefijo `[CARGA]`.
 3. **Firma y Aprobación:** La tabla anterior incluye la evidencia técnica recabada; la columna «Revisado por Alex» queda reservada para la firma y conformidad manual del estudiante responsable del Paquete E.
+

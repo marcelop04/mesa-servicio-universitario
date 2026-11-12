@@ -52,3 +52,4 @@
   - El pre-request script de Newman y k6 manejan la rotación estricta de `XSRF-TOKEN` y rechazan cualquier cookie no HttpOnly.
 - **Para Emanuel y Gabriel (Paquetes A y D):**
   - Los scripts de prueba E2E y API cubren las funciones de encuestas (`HU13`), versionado de políticas (`HU22`) y auditoría (`HU23`).
+

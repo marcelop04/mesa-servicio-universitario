@@ -89,3 +89,4 @@ k6 run --summary-export=tests/load/resultados/resumen-estres.json tests/load/scr
   - El sistema mantuvo cero errores HTTP hasta los **400 usuarios concurrentes**.
   - A 400 VU el tiempo de respuesta p95 subió a **1.87 s** y se registraron picos máximos de **5.20 s**, marcando el **límite operativo recomendado** para el hardware local asignado (2 núcleos vCPU, pool HikariCP estándar de 10 conexiones en Spring Boot).
   - **Capacidad de recuperación:** En la fase de enfriamiento (etapa 6 a 20 VU), el sistema se estabilizó de inmediato con latencias sub-100 ms sin fugas de memoria en la JVM ni conexiones zombi en MySQL.
+
