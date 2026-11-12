@@ -1,0 +1,248 @@
+{
+    "metrics": {
+        "iterations": {
+            "rate": 29.665987838027352,
+            "count": 1798
+        },
+        "http_req_duration{tipo:lectura}": {
+            "p(95)": 35.34470499999999,
+            "avg": 19.0853509167842,
+            "min": 2.166,
+            "med": 23.72585,
+            "max": 60.7263,
+            "p(90)": 32.742259999999995,
+            "thresholds": {
+                "p(95)<1000": false
+            }
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1803,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 1.3721,
+            "med": 17.849,
+            "max": 60.7263,
+            "p(90)": 31.889319999999998,
+            "p(95)": 34.36712999999999,
+            "avg": 18.155613089295628
+        },
+        "vus_max": {
+            "value": 20,
+            "min": 20,
+            "max": 20
+        },
+        "vus": {
+            "max": 20,
+            "value": 1,
+            "min": 1
+        },
+        "http_req_waiting": {
+            "max": 60.2069,
+            "p(90)": 31.85222,
+            "p(95)": 34.20847,
+            "avg": 18.116089462007775,
+            "min": 1.3721,
+            "med": 17.8135
+        },
+        "iteration_duration": {
+            "med": 562.4644000000001,
+            "max": 842.0685,
+            "p(90)": 760.46751,
+            "p(95)": 784.39469,
+            "avg": 562.6083507786436,
+            "min": 304.7045
+        },
+        "checks": {
+            "passes": 1804,
+            "fails": 0,
+            "value": 1
+        },
+        "data_sent": {
+            "count": 871930,
+            "rate": 14386.354157737034
+        },
+        "http_req_duration{tipo:escritura}": {
+            "med": 14.109300000000001,
+            "max": 33.7283,
+            "p(90)": 17.522450000000003,
+            "p(95)": 18.502240000000004,
+            "avg": 14.540872368421052,
+            "min": 10.3373,
+            "thresholds": {
+                "p(95)<2000": false
+            }
+        },
+        "http_req_blocked": {
+            "avg": 0.011662895174708818,
+            "min": 0,
+            "med": 0,
+            "max": 11.5804,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_reqs": {
+            "count": 1803,
+            "rate": 29.748485023338883
+        },
+        "http_req_sending": {
+            "max": 0.5027,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.0002788130892956184,
+            "min": 0,
+            "med": 0
+        },
+        "http_req_connecting": {
+            "avg": 0.005528064337215751,
+            "min": 0,
+            "med": 0,
+            "max": 0.7876,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_receiving": {
+            "min": 0,
+            "med": 0,
+            "max": 2.2582,
+            "p(90)": 0,
+            "p(95)": 0.5130899999999998,
+            "avg": 0.03924481419855797
+        },
+        "http_req_duration": {
+            "min": 1.3721,
+            "med": 17.849,
+            "max": 60.7263,
+            "p(90)": 31.889319999999998,
+            "p(95)": 34.36712999999999,
+            "avg": 18.155613089295628
+        },
+        "data_received": {
+            "count": 8825658,
+            "rate": 145618.38870444315
+        },
+        "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0
+        }
+    },
+    "setup_data": {
+        "solicitante": {
+            "headersEscritura": {
+                "Content-Type": "application/json",
+                "Cookie": "MSU_SESION=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sIjoiU09MSUNJVEFOVEUiLCJ2ZXIiOjQsImp0aSI6ImIxOWZkYzc1LWQ1NDEtNDNhYS04ZmVmLTdjMzBhMDdkNTgwZSIsImlhdCI6MTc5NDUxODgzNiwiZXhwIjoxNzk0NTI2MDM2fQ.8l6YeKlN_-4yMLVwZnoZn-9May2-18-N7JJqbdyDfxQ; XSRF-TOKEN=8d9541a4-29a6-4b6e-9700-af7d1454d0c2",
+                "X-XSRF-TOKEN": "8d9541a4-29a6-4b6e-9700-af7d1454d0c2",
+                "Accept": "application/json"
+            },
+            "headersLectura": {
+                "Accept": "application/json",
+                "Cookie": "MSU_SESION=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sIjoiU09MSUNJVEFOVEUiLCJ2ZXIiOjQsImp0aSI6ImIxOWZkYzc1LWQ1NDEtNDNhYS04ZmVmLTdjMzBhMDdkNTgwZSIsImlhdCI6MTc5NDUxODgzNiwiZXhwIjoxNzk0NTI2MDM2fQ.8l6YeKlN_-4yMLVwZnoZn-9May2-18-N7JJqbdyDfxQ; XSRF-TOKEN=8d9541a4-29a6-4b6e-9700-af7d1454d0c2"
+            },
+            "msuSesion": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sIjoiU09MSUNJVEFOVEUiLCJ2ZXIiOjQsImp0aSI6ImIxOWZkYzc1LWQ1NDEtNDNhYS04ZmVmLTdjMzBhMDdkNTgwZSIsImlhdCI6MTc5NDUxODgzNiwiZXhwIjoxNzk0NTI2MDM2fQ.8l6YeKlN_-4yMLVwZnoZn-9May2-18-N7JJqbdyDfxQ",
+            "csrfToken": "8d9541a4-29a6-4b6e-9700-af7d1454d0c2"
+        },
+        "supervisor": {
+            "headersLectura": {
+                "Cookie": "MSU_SESION=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sIjoiU1VQRVJWSVNPUiIsInZlciI6MCwianRpIjoiYWJlMmRiMzItM2NjNS00YTc4LTg1NzItNzg3NzhlZTI3YWVkIiwiaWF0IjoxNzk0NTE4ODM2LCJleHAiOjE3OTQ1MjYwMzZ9.h8Hqy-uGoR-x05xilWKJRQdnJd9rkm3tzv5_mF9--AM; XSRF-TOKEN=e2cb7d41-56a6-4a38-8cc7-5fb3134e8958",
+                "Accept": "application/json"
+            },
+            "msuSesion": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sIjoiU1VQRVJWSVNPUiIsInZlciI6MCwianRpIjoiYWJlMmRiMzItM2NjNS00YTc4LTg1NzItNzg3NzhlZTI3YWVkIiwiaWF0IjoxNzk0NTE4ODM2LCJleHAiOjE3OTQ1MjYwMzZ9.h8Hqy-uGoR-x05xilWKJRQdnJd9rkm3tzv5_mF9--AM",
+            "csrfToken": "e2cb7d41-56a6-4a38-8cc7-5fb3134e8958",
+            "headersEscritura": {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Cookie": "MSU_SESION=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sIjoiU1VQRVJWSVNPUiIsInZlciI6MCwianRpIjoiYWJlMmRiMzItM2NjNS00YTc4LTg1NzItNzg3NzhlZTI3YWVkIiwiaWF0IjoxNzk0NTE4ODM2LCJleHAiOjE3OTQ1MjYwMzZ9.h8Hqy-uGoR-x05xilWKJRQdnJd9rkm3tzv5_mF9--AM; XSRF-TOKEN=e2cb7d41-56a6-4a38-8cc7-5fb3134e8958",
+                "X-XSRF-TOKEN": "e2cb7d41-56a6-4a38-8cc7-5fb3134e8958"
+            }
+        },
+        "idsValidos": [
+            4328,
+            4327,
+            4326,
+            4325,
+            4324,
+            4323,
+            4322,
+            4321,
+            4320,
+            4319,
+            4318,
+            4317,
+            4316,
+            4315,
+            4314,
+            4313,
+            4312,
+            4311,
+            4310,
+            4309
+        ]
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "setup": {
+                "name": "setup",
+                "path": "::setup",
+                "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+                "groups": {},
+                "checks": {
+                        "CSRF obtenido correctamente (200)": {
+                            "name": "CSRF obtenido correctamente (200)",
+                            "path": "::setup::CSRF obtenido correctamente (200)",
+                            "id": "e98baa6efece9c90e44f56468304b0ee",
+                            "passes": 2,
+                            "fails": 0
+                        },
+                        "Inicio de sesión exitoso (200)": {
+                            "path": "::setup::Inicio de sesión exitoso (200)",
+                            "id": "a668ba622a196dd0d42338d4dfba8584",
+                            "passes": 2,
+                            "fails": 0,
+                            "name": "Inicio de sesión exitoso (200)"
+                        },
+                        "Cookie de sesión MSU_SESION recibida": {
+                            "name": "Cookie de sesión MSU_SESION recibida",
+                            "path": "::setup::Cookie de sesión MSU_SESION recibida",
+                            "id": "2e5340b03e0f02643fd84bfb163ccd30",
+                            "passes": 2,
+                            "fails": 0
+                        }
+                    }
+            }
+        },
+        "checks": {
+            "Lectura respondió status 200": {
+                "name": "Lectura respondió status 200",
+                "path": "::Lectura respondió status 200",
+                "id": "00bf06133ffe933563ebe7691f133ad4",
+                "passes": 1418,
+                "fails": 0
+            },
+            "Creación de solicitud respondió 201": {
+                "name": "Creación de solicitud respondió 201",
+                "path": "::Creación de solicitud respondió 201",
+                "id": "ac8338101ed3d09f856ae8afaa80d754",
+                "passes": 196,
+                "fails": 0
+            },
+            "Comentario respondió 201": {
+                "fails": 0,
+                "name": "Comentario respondió 201",
+                "path": "::Comentario respondió 201",
+                "id": "20ba22712afd9a752cd07180959a9a43",
+                "passes": 184
+            }
+        }
+    }
+}
