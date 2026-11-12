@@ -107,4 +107,13 @@ correctos). Dependency-Check generó HTML/JSON el **`2026-11-12T05:26:06.3355164
 misma base NVD con `-DautoUpdate=false`, sin clave ni consulta nueva. El resultado sigue siendo
 **23 CVE distintos, 15 bloqueantes y 0 suprimidos; BUILD FAILURE por hallazgos**, no por autenticación.
 SHA-256 del JSON: `50E10435A326FB155E80F1028158420338042A5AA7C23D6DD4DD62003B68EA4F`.
-Los reportes permanecen fuera de Git; el hash y este resumen no sustituyen los artifacts de CI pendientes.
+Los reportes permanecen fuera de Git; el hash y este resumen no sustituyen los artifacts de CI
+documentados a continuación.
+
+## Confirmación remota revisada · PR #3
+
+El artifact de CI `13918327597` contiene el reporte del **`2026-11-12T05:35:51.814494400Z`**:
+NVD consultado el `2026-11-12T05:35:39Z`, 23 CVE distintos, 15 bloqueantes y 0 suprimidos.
+El fallo por vulnerabilidades se reproduce en GitHub; no es un error de clave ni una conclusión basada
+solo en caché local. CodeQL Java/JS y npm audit también se revisaron, con 0 resultados/hallazgos
+en el alcance indicado en [las evidencias remotas](resultados-ci.md). El control Java continúa NO aprobado.

@@ -96,8 +96,12 @@ Marcelo completó la descarga NVD y Dependency-Check generó informes. Se aplica
 migrar Boot 3.5/Java 17: los CVE distintos bajaron de 68 a 23; quedan 15 con CVSS ≥ 7 en Spring y el
 control continúa fallando. La regresión y el empaquetado pasan con 155 pruebas. No existe análisis Java
 aprobado todavía ni excepciones autorizadas; [evidencia y decisión pendiente](../seguridad/analisis-dependencias.md).
-CodeQL está configurado; no existe todavía evidencia de su ejecución sobre esta rama. Adjuntar ejecuciones GitHub y
-revisar alertas antes del cierre. David debe integrar los controles con protección de ramas y CD.
+Se revisó la ejecución real de CodeQL del PR #3, head `30bc5b2` y referencia `refs/pull/3/merge`:
+Java y JavaScript/TypeScript finalizaron sin errores, con **0 resultados en ambos SARIF** y sin alertas
+abiertas para esa referencia. CI confirmó 155 pruebas backend, 80 frontend y npm audit 0; Dependency-Check
+reprodujo los 23 CVE, 15 bloqueantes, con NVD consultado correctamente. [Evidencias, URLs y hashes](../seguridad/resultados-ci.md).
+El resultado SAST no certifica ausencia absoluta de vulnerabilidades. David debe integrar los controles
+con protección de ramas y CD; C2 no se cierra hasta resolver el tratamiento de los hallazgos Java.
 
 ### 5.3 DAST
 

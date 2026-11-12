@@ -1,15 +1,16 @@
 # Fases III y IV · Marcelo (paquete C: seguridad y revisión de calidad)
 
-Fecha: 11/11/2026. Alcance aprobado: CodeQL en repositorio público, secretos externos, limitador para
+Inicio: 11/11/2026; evidencias remotas revisadas el 12/11/2026. Alcance aprobado: CodeQL en repositorio público, secretos externos, limitador para
 una instancia y actualización puntual de dependencias vulnerables. Base recibida: incluye HU15–19 y paquete A.
 
-**No declarar el paquete entero terminado:** se implementaron controles y pruebas locales. Faltan
-ejecuciones externas, revisión humana, configuración del despliegue y aportes finales del equipo.
+**No declarar el paquete entero terminado:** controles y pruebas locales implementados; CI/CodeQL del
+PR #3 revisados. Faltan resolver los hallazgos Java, DAST, revisión humana, configuración del despliegue
+y aportes finales del equipo.
 
 | ID | Tarea | Estado comprobable | Evidencia |
 |---|---|---|---|
 | C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Código y pruebas backend implementados; verificar Nginx/HTTPS/IP real y rotaciones con David | [Checklist](seguridad/checklist-owasp.md); `SeguridadConfig`, `LimiteIntentosLogin`, `IpCliente`, `VerificadorSeguridad`, `.env.example`, generador y pruebas |
-| C2 | SAST, npm audit y Dependency-Check en CI | NVD y análisis local completados. Parches Java reducen de 68 a 23 CVE distintos; control sigue fallando por Spring (15 CVE ≥ 7). Rama publicada; falta revisar ejecuciones CI/CodeQL y resolver los hallazgos | `.github/workflows/ci.yml`, `codeql.yml`, perfil Maven `seguridad`, `scripts/analizar-dependencias.ps1`; [evidencia y pendientes Java](seguridad/analisis-dependencias.md) |
+| C2 | SAST, npm audit y Dependency-Check en CI | Ejecuciones remotas revisadas: CodeQL Java/JS con 0 resultados y sin alertas abiertas para la referencia analizada; npm audit 0. Dependency-Check completado con 23 CVE distintos, 15 bloqueantes. C2 sigue abierto por Spring | [Evidencias CI/CodeQL y hashes](seguridad/resultados-ci.md); [análisis y decisión Java](seguridad/analisis-dependencias.md); workflows y perfil `seguridad` |
 | C3 | ZAP baseline y corregir hallazgos | Workflow/procedimiento listos, escaneo NO ejecutado; depende de B1 y URL autorizada | `.github/workflows/dast.yml`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
 | C4 | Pruebas negativas por rol (RNF01) | Implementadas y ejecutadas con cadena real de seguridad | `AccesosPorRolTest` (34 casos), pruebas web/HTTPS/limitador y rutas React; [resultados](seguridad/resultados-locales.md) |
 | C5 | Arquitectura, patrones, errores y secretos | Revisión asistida realizada, correcciones puntuales aplicadas; aceptación humana pendiente | [Revisión](seguridad/revision-arquitectura.md), sanitización de auditoría y pruebas de errores |
@@ -40,14 +41,16 @@ No se reescribieron los DOCX históricos ni se borraron datos. La copia inicial 
 se preparó el aporte selectivamente en el clon y rama `feat/marcelo-seguridad`, sobre `origin/main`.
 El commit de implementación `55732c8` fue publicado en GitHub; no se modificó `main`.
 [Rama remota](https://github.com/marcelop04/mesa-servicio-universitario/tree/feat/marcelo-seguridad)
-y [trazabilidad de la entrega](seguridad/entrega-avance-c.md). Consultar en GitHub el estado actual del PR y los checks.
+y [trazabilidad de la entrega](seguridad/entrega-avance-c.md). [PR #3, borrador](https://github.com/marcelop04/mesa-servicio-universitario/pull/3).
+Las evidencias del head `30bc5b2` ya se revisaron; consultar en GitHub los checks de commits posteriores.
 
 ## Pendientes para cerrar, en orden
 
 1. Marcelo/equipo: revisar el código generado en la rama publicada y su PR; no integrar antes de resolver los controles bloqueantes.
-2. Marcelo/equipo: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada o revisión de
-   aplicabilidad con evidencia por CVE). Marcelo ya informó que guardó `NVD_API_KEY`; ejecutar CI/CodeQL
-   y conservar URLs/artifacts. Un análisis completado con hallazgos bloqueantes tampoco cuenta como aprobado.
+2. Marcelo/equipo: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada, parches de
+   soporte si están disponibles o revisión de aplicabilidad por CVE). NVD funcionó en CI; CodeQL y los
+   artifacts ya tienen evidencias revisadas. Repetir/revisar los controles tras cambios: un análisis completado
+   con hallazgos bloqueantes no cuenta como aprobado.
 3. David: entorno HTTPS de pruebas, configuración de secretos/cookies/HSTS/proxy y autorización de escaneo.
    Acordar bootstrap de administrador/política sin demo y condicionamiento de CD a los controles.
 4. Marcelo: ZAP baseline real, análisis de hallazgos, corrección/reprueba y evidencia de release/fecha/alcance.

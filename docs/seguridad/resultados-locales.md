@@ -56,14 +56,14 @@ Se actualizaron versiones por los hallazgos de npm audit, con autorización para
 sin `npm audit fix --force`. Se regeneró el lockfile y se verificaron suite y build. React permanece 18.3.1.
 Un resultado «0» es una fotografía de esa base de avisos y alcance, no una garantía permanente.
 
-## Verificaciones que NO se hicieron
+## Límites y verificaciones no realizadas
 
-- Al corte de validación local no hay un resultado CodeQL revisado: la rama ya se publicó; registrar la ejecución real del PR y sus alertas antes de cerrar C2.
+- Las verificaciones locales no sustituyen los escáneres remotos: posteriormente se revisó CodeQL del PR #3 y no presentó resultados/alertas abiertas en esa referencia. [Evidencia remota](resultados-ci.md).
 - Hay análisis Java completado con hallazgos; no hay aprobación de C2 ni decisión sobre los pendientes de Spring.
 - Marcelo construyó/levantó los contenedores antes de los últimos parches Java. No se reconstruyeron con el nuevo POM ni se documentó una verificación integral de Nginx.
 - No se verificaron certificado TLS, HSTS y cookies sobre una URL HTTPS real del equipo.
 - No se ejecutaron ZAP, Newman, Playwright, k6, estrés, restauración o pruebas de usuario en esta intervención.
-- Los scripts HTTP de demo/cabeceras están preparados; necesitan la aplicación levantada para la comprobación real.
+- Los scripts HTTP se comprobaron después sobre el HTTP local ya levantado (ver revalidación); no verifican el futuro despliegue HTTPS.
 - No se crearon cuentas, infraestructura cloud ni evidencias inventadas de los otros paquetes.
 
 Pasos pendientes y comandos en [GUIA_MARCELO.md](GUIA_MARCELO.md). Actualizar este registro con URLs de CI,
@@ -115,5 +115,6 @@ Las comprobaciones HTTP usan los contenedores que ya estaban levantados, no un d
 El intento adicional de `nginx -t` no se ejecutó porque la CLI Docker no estaba disponible en el proceso.
 No se considera ese intento como una prueba aprobada ni se reinstaló/recreó Docker.
 Posteriormente se publicó el commit de implementación `55732c8` en la rama remota
-`feat/marcelo-seguridad`. Las ejecuciones remotas y su revisión siguen pendientes de registrar; no confundir
-el push correcto con checks aprobados. [Alcance, privacidad y trazabilidad](entrega-avance-c.md).
+`feat/marcelo-seguridad`. Después se revisaron los registros, SARIF y artifacts reales del PR #3:
+[resultados CI/CodeQL](resultados-ci.md). SAST, npm y pruebas correctos para el head `30bc5b2`;
+Dependency-Check sigue fallando por los hallazgos de Spring. [Alcance y privacidad](entrega-avance-c.md).

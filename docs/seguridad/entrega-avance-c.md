@@ -17,13 +17,16 @@ No se recibió una tabla de puntajes; esta trazabilidad no asigna una calificaci
   [Rama en GitHub](https://github.com/marcelop04/mesa-servicio-universitario/tree/feat/marcelo-seguridad).
   La documentación de estado se registra por separado; verificar el commit actual, PR y checks en GitHub.
   Un push correcto no demuestra que CI/CodeQL hayan terminado ni que sus hallazgos estén resueltos.
+- [PR #3 abierto como borrador](https://github.com/marcelop04/mesa-servicio-universitario/pull/3).
+  Se revisaron las [ejecuciones CI/CodeQL del head `30bc5b2`](resultados-ci.md): SAST sin resultados,
+  npm audit 0 y pruebas correctas; Dependency-Check sigue bloqueando por Spring. No se integró a main.
 
 ## 2. Correspondencia con el reparto y la propuesta
 
 | Tarea C | Correspondencia con la propuesta | Aporte listo para revisión | Qué impide declarar cierre |
 |---|---|---|---|
 | C1 · OWASP y configuración | Fase III, seguridad: autorización, validación, secretos, entorno y prevención de hardcode (págs. 7–8) | Checklist; cookies/cabeceras; limitador; guard de despliegue; secretos externos; scripts y pruebas | HTTPS/certificado, flags y proxy reales con David; rotación de credenciales anteriores donde corresponda |
-| C2 · SAST y SCA | Fase IV, SAST y pruebas de seguridad (pág. 8) | Workflows CodeQL y npm audit; perfil Dependency-Check y artifacts; actualizaciones verificadas | 23 CVE distintos de Spring, 15 con CVSS ≥ 7; decisión de tratamiento, CI/CodeQL y revisión de alertas remotas |
+| C2 · SAST y SCA | Fase IV, SAST y pruebas de seguridad (pág. 8) | CI/CodeQL reales revisados: Java/JS sin resultados; npm audit 0; Dependency-Check completado y artifacts conservados | 23 CVE distintos de Spring, 15 con CVSS ≥ 7; decisión de tratamiento y reprueba. No falta volver a configurar NVD |
 | C3 · DAST | Fase IV, DAST y pruebas de seguridad (pág. 8) | ZAP baseline manual con autorización, URL controlada y plantilla de hallazgos | B1: URL HTTPS autorizada; ejecutar, corregir y repetir. No existe resultado ZAP todavía |
 | C4 · RNF01 | Fase III, autorización/roles y pruebas unitarias/integración (pág. 8) | Pruebas negativas de rol, propiedad/asignación, descargas y efectos laterales; no solo botones ocultos | Revisión humana y repetición al integrar cambios de endpoints/configuración del equipo |
 | C5 · Revisión de calidad | Arquitectura, patrones, errores, hardcode y secretos (pág. 9) | Revisión documentada, sanitización de auditoría, errores seguros y riesgos abiertos | Aceptación humana; coordinar el defecto A4 con Emanuel, sin atribuir su implementación a C |

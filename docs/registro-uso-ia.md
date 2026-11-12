@@ -67,3 +67,18 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Modificaciones tras revisar | Lista explícita de transferencia; exclusión de datos/compilados/reportes; identidad pública no-reply; documentación diferencia pruebas locales, SCA bloqueante, despliegue y evidencias remotas |
 | Límites | No se resolvieron mediante supresión los 23 CVE de Spring; no hubo migración mayor, corrección de A4, cambios a main, infraestructura cloud ni resultados ZAP/CodeQL inventados. `nginx -t` no ejecutado por falta de CLI Docker |
 | Responsable | Marcelo; revisión humana pendiente. La IA no firma por él ni sustituye su comprensión del aporte |
+
+## IA-C-05 · Revisión de evidencias remotas de C2
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 |
+| Herramienta | OpenCode, asistente GPT-6.1 Sol (OpenAI) |
+| Prompt / alcance (resumen) | Avanzar lo verificable de C sin suponer datos faltantes; revisar CodeQL, CI y el estado de la rama, consultando las decisiones pendientes |
+| Resultado generado | `docs/seguridad/resultados-ci.md` y actualización de estado, checklist e informe con evidencia real, identificadores, alcance y hashes |
+| ¿Se utilizó? | Incorporado a la rama C para actualizar el PR borrador; no se integra a main |
+| Validación realizada | Consulta API y descarga de SARIF: Java y JavaScript con 0 resultados, sin error, sin alertas abiertas en la referencia analizada; logs CI: 155 pruebas backend y 80 frontend; artifacts: npm audit 0 y Dependency-Check 23 CVE, 15 bloqueantes, 0 suprimidos |
+| Modificaciones tras revisar | Se sustituyó el estado obsoleto «CodeQL pendiente» por el resultado de esa ejecución, sin confundir SAST sin resultados con SCA aprobado. Se identificó el head/merge de prueba para no atribuir el resultado a futuras versiones |
+| Límites | Sin nueva implementación ni migración, sin supresiones, sin escaneo de URL supuesta, sin atribuir revisión humana a Marcelo. Los reportes completos y credenciales no se publican |
+| Información pendiente | Decisión de tratamiento de Spring con el equipo; URL HTTPS, versión y autorización de David para C3; secciones verificadas para C6 |
+| Responsable | Marcelo; debe revisar el registro y las decisiones antes del cierre |
