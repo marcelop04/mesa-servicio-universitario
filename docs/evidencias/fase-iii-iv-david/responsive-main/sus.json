@@ -1,0 +1,29 @@
+{
+  "fecha_utc": "2026-11-13T04:33:13.198Z",
+  "url": "https://msu-157-137-206-147.sslip.io/sus/",
+  "estado": "OK",
+  "resultados": [
+    {
+      "ancho": 360,
+      "archivo": "sus-360.png",
+      "estado_http": 200,
+      "preguntas": 10,
+      "radios": 50,
+      "ancho_seleccionado": "360",
+      "sin_desborde": true,
+      "estado": "OK"
+    },
+    {
+      "ancho": 1366,
+      "archivo": "sus-1366.png",
+      "estado_http": 200,
+      "preguntas": 10,
+      "radios": 50,
+      "ancho_seleccionado": "1366",
+      "sin_desborde": true,
+      "estado": "OK"
+    }
+  ],
+  "fallos": [],
+  "nota": "Verificación técnica de lectura sin responder el formulario; no acredita participantes ni resultados SUS."
+}
