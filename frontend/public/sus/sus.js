@@ -15,11 +15,13 @@ export const columnas = ['participante', 'fecha', 'rol', 'ancho', 'url', ...Arra
 export function crearRegistro(datos, contexto) {
   if (!/^P\d{2,3}$/.test(datos.participante ?? '')) throw new Error('Usa el identificador P01, P02… asignado por el facilitador.');
   if (!['Solicitante', 'Supervisor', 'Técnico', 'Administrador'].includes(datos.rol)) throw new Error('Selecciona el rol probado.');
-  if (!['360', '1366'].includes(datos.ancho)) throw new Error('Indica el ancho previsto de la sesión.');
+  if (datos.tareas !== 'on') throw new Error('Confirma que probaste la aplicación antes de responder.');
+  if (!Number.isInteger(contexto.viewport) || contexto.viewport <= 0) throw new Error('No se pudo registrar el tamaño de la pantalla.');
   const url = new URL(contexto.url);
   if (url.protocol !== 'https:') throw new Error('La evaluación debe hacerse sobre la aplicación HTTPS.');
   const fecha = new Date(contexto.fechaUtc);
-  const registro = { participante: datos.participante, fecha: fecha.toISOString().slice(0, 10), rol: datos.rol, ancho: datos.ancho, url: url.origin };
+  const fechaLocal = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).format(fecha);
+  const registro = { participante: datos.participante, fecha: fechaLocal, rol: datos.rol, ancho: contexto.viewport, url: url.origin };
   for (let i = 1; i <= 10; i++) {
     if (!/^[1-5]$/.test(String(datos[`q${i}`] ?? ''))) throw new Error('Responde los diez ítems con valores del 1 al 5.');
     registro[`q${i}`] = Number(datos[`q${i}`]);
@@ -38,8 +40,8 @@ export function registroCsv(registro) {
 
 const formulario = typeof document === 'undefined' ? null : document.querySelector('#sus-form');
 if (formulario) {
-  formulario.elements.ancho.value = innerWidth <= 640 ? '360' : '1366';
   const contenedor = document.querySelector('#preguntas');
+  const escala = ['Totalmente en desacuerdo', 'En desacuerdo', 'Neutral', 'De acuerdo', 'Totalmente de acuerdo'];
   preguntas.forEach((pregunta, i) => {
     const grupo = document.createElement('fieldset');
     const leyenda = document.createElement('legend');
@@ -51,6 +53,7 @@ if (formulario) {
       const etiqueta = document.createElement('label');
       const radio = document.createElement('input');
       Object.assign(radio, { type: 'radio', name: `q${i + 1}`, value: String(valor), required: true });
+      radio.setAttribute('aria-label', `${valor}: ${escala[valor - 1]}`);
       etiqueta.append(radio, document.createTextNode(String(valor)));
       opciones.append(etiqueta);
     }

@@ -15,50 +15,50 @@ def puntuacion(respuestas):
     return sum(v - 1 if i % 2 == 0 else 5 - v for i, v in enumerate(respuestas)) * 2.5
 
 
-def calcular(archivo, simulacion=False):
+def calcular(archivo):
     filas = list(csv.DictReader(archivo))
-    marcadas = [f.get("origen", "").strip().upper() == "SIMULADO" for f in filas]
-    if any(marcadas) and not simulacion:
-        raise ValueError("Datos SIMULADOS: no son evidencia de usuarios reales; use --simulacion para probar el cálculo.")
-    if simulacion and (not filas or not all(marcadas)):
-        raise ValueError("Una simulación requiere todas las filas identificadas con origen=SIMULADO.")
     participantes = []
     ids = set()
+    origenes = set()
     for fila in filas:
+        if fila.get("origen") != "RESPUESTA_USUARIO":
+            raise ValueError("Solo se aceptan respuestas con origen=RESPUESTA_USUARIO recogidas en las sesiones.")
         participante = fila.get("participante", "")
         if not re.fullmatch(r"P\d{2,3}", participante) or participante in ids:
             raise ValueError("Cada participante debe tener un identificador P01, P02… único.")
         date.fromisoformat(fila["fecha"])
-        if fila["ancho"] not in ("360", "1366"):
-            raise ValueError(f"{participante}: registrar ancho 360 o 1366.")
-        if urlsplit(fila["url"]).scheme != "https" or not urlsplit(fila["url"]).hostname:
+        if not re.fullmatch(r"[1-9]\d*", fila.get("ancho") or ""):
+            raise ValueError(f"{participante}: registrar el ancho real de la pantalla en píxeles.")
+        url = urlsplit(fila["url"])
+        if url.scheme != "https" or not url.hostname or url.username or url.password:
             raise ValueError(f"{participante}: registrar la URL HTTPS desplegada.")
-        if not fila["rol"].strip():
-            raise ValueError(f"{participante}: falta el rol observado.")
+        origenes.add((url.scheme, url.netloc))
+        if len(origenes) > 1:
+            raise ValueError("Las respuestas deben corresponder a la misma aplicación HTTPS.")
+        if fila.get("rol") not in ("Solicitante", "Supervisor", "Técnico", "Administrador"):
+            raise ValueError(f"{participante}: registrar el rol observado.")
         valor = puntuacion([int(fila[f"q{i}"]) for i in range(1, 11)])
         ids.add(participante)
         participantes.append({"participante": participante, "rol": fila["rol"], "ancho": int(fila["ancho"]), "sus": valor})
     if not participantes:
         raise ValueError("No hay respuestas: realizar las sesiones con personas antes de calcular SUS.")
     return {
-        "participantes": 0 if simulacion else len(participantes),
-        "registros_simulados": len(participantes) if simulacion else 0,
+        "participantes": len(participantes),
         "media_sus": mean(p["sus"] for p in participantes),
-        "resultados": participantes, "meta_muestra_cumplida": len(participantes) >= 5 and not simulacion,
-        "tipo": "SIMULACION_NO_ACREDITA_B5" if simulacion else "RESPUESTAS_REGISTRADAS",
-        "nota": "Datos simulados, no son resultados de participantes reales ni cierran B5." if simulacion else "SUS usa escala 0–100, no porcentaje. El facilitador acredita la participación real y la muestra mínima de 5 personas.",
+        "resultados": participantes, "meta_muestra_cumplida": len(participantes) >= 5,
+        "tipo": "RESPUESTAS_REGISTRADAS",
+        "nota": "SUS usa escala 0–100, no porcentaje. El conteo del CSV no acredita por sí solo personas reales: el facilitador debe documentar las sesiones, sus tareas y la versión probada.",
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("csv", type=Path)
-    parser.add_argument("--simulacion", action="store_true")
     args = parser.parse_args()
     try:
         with args.csv.open(encoding="utf-8-sig", newline="") as archivo:
-            print(json.dumps(calcular(archivo, simulacion=args.simulacion), ensure_ascii=False, indent=2))
-    except (KeyError, ValueError) as error:
+            print(json.dumps(calcular(archivo), ensure_ascii=False, indent=2))
+    except (OSError, KeyError, ValueError, TypeError) as error:
         parser.exit(1, f"Datos SUS inválidos: {error}\n")
 
 

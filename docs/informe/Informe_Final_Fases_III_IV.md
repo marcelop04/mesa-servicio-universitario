@@ -2,6 +2,10 @@
 ## Informe consolidado · fases III y IV
 
 **Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre main+B `5e83051`: 12/11/2026.
+Actualización del paquete B: 13/11/2026 (Lima), sobre main `df8cc39` y evidencias del PR #9.
+Esta revisión actualiza la sección B y sus filas de trazabilidad. Los demás aportes
+conservan su corte anterior para que los revisen sus responsables.
+
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
 
@@ -50,23 +54,117 @@ versión integrada. Los cambios C en auditoría, documentación y credenciales d
 La tarea programada A4 conserva un defecto de transacción documentado en la revisión C5; sus pruebas
 actuales no cubren ese camino de ejecución. Su corrección corresponde coordinarla con Emanuel.
 
-## 4. Nube, ambientes y CI/CD · David (B)
+## 4. Nube, ambientes y CI/CD · Paquete B
 
-Se incorpora el aporte B desde main `5e83051` sin atribuir su implementación a Marcelo.
-Fuente: [sección de David](Seccion_David_Nube_CD.md), [bitácora](../fase-iii-iv-david.md) y
-[manual técnico](../manual/Manual_tecnico.md). La revisión del responsable y el cierre operacional siguen pendientes.
+La sección técnica se integra aquí para evitar documentos de aporte duplicados.
+Estado y evidencias: [bitácora B](../fase-iii-iv-david.md),
+[manual técnico](../manual/Manual_tecnico.md) y
+[entrega desde main](../evidencias/fase-iii-iv-david/entrega-main.json).
 
-| Evidencia requerida | Estado en esta consolidación |
+### 4.1 Arquitectura y ambientes
+
+Se desplegó una arquitectura reproducible en Oracle Cloud Infrastructure Free Trial:
+una VM Ubuntu x86 E5 de 1 OCPU, 8 GB RAM y disco de 50 GB ejecuta MySQL 8, Spring Boot,
+React/Nginx y Caddy mediante Docker Compose. El responsable autorizó consumir créditos
+temporales para la evaluación tras no encontrar capacidad A1 Always Free. Caddy
+gestiona certificados HTTPS y mantiene la SPA y API bajo el mismo origen, conservando
+la sesión JWT/CSRF. Solo el proxy publica los puertos web.
+
+Los ambientes se expresan mediante perfiles Spring (`dev`, `prueba`, `prod`; `test`
+para JUnit) y variables externas. Los secretos de producción se generan aleatoriamente
+y se entregan con GitHub Secrets; Terraform no los incorpora. Los volúmenes separan
+MySQL, evidencias y certificados del ciclo de vida de los contenedores.
+
+URL verificada: <https://msu-157-137-206-147.sslip.io>.
+
+### 4.2 RNF10 · Integración y despliegue continuos
+
+El CI comprueba backend, frontend, imágenes, configuración e infraestructura y ejecuta
+un ensayo de recuperación sobre MySQL real en un proyecto efímero. CD solo se activa
+después de un CI completo exitoso sobre un push de `main` del mismo repositorio público.
+Publica imágenes amd64/arm64 en GHCR y despliega por digest mediante SSH con host verificado.
+La salud interna y un smoke HTTPS deben aprobarse antes de registrar la entrega como
+verificada. La primera entrega se comprobó mediante un bootstrap de PR, retirado
+posteriormente. La entrega definitiva se ejecutó desde `main`, commit `df8cc39`, tras
+integrar el PR #8: [CI 43365136107](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136107),
+[CodeQL 43365136281](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136281)
+y [CD 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850)
+aprobados. La publicación multi-arquitectura tardó 3m35s y la entrega 56s. Se comprobó
+la revisión de las imágenes en la VM, salud y HTTPS. Los builds de JAR/assets usan
+arquitectura nativa para evitar el bloqueo ARM/QEMU del primer intento.
+
+El perfil prod se verificó con ambas siembras desactivadas, guard activo, cookie Secure
+y entorno privado 0600. Main bloquea borrado/force-push y exige PR/una aprobación con
+bypass configurado; no declara checks obligatorios. El environment `production`,
+creado por el workflow, tiene deployment exitoso y no tiene revisores/restricciones
+de rama adicionales. Esas mejoras administrativas corresponden al propietario.
+
+### 4.3 RNF11 · Copia y recuperación
+
+La estrategia implementada y probada pausa el backend para obtener un punto consistente entre
+base de datos y evidencias. Cada copia conserva dump SQL, tar con permisos, referencias
+de imagen y sumas SHA-256. Un timer permite copia diaria; cada despliegue existente
+genera además una copia previa. Se descargó una instantánea de la aplicación pública
+a una carpeta privada del equipo del responsable y se verificaron sus cuatro SHA-256.
+Después del CD main se repitió la copia externa con los digests actuales
+(`msu-20261113T043450Z-14914`): cuatro archivos OK y sesión HTTPS aprobada al reanudar.
+
+El ensayo automatizado altera una fila y un archivo, verifica que una copia corrupta
+no se acepte, restaura y compara SQL, hashes, permisos de escritura y salud. Una reversión
+de imagen no revierte migraciones: para cambios incompatibles se utiliza la restauración.
+
+### 4.4 Validación y límites
+
+En la preparación inicial se aprobaron localmente las 102 pruebas JUnit existentes, una prueba adicional del perfil
+de producción detrás de proxy, ocho pruebas de herramientas, validación de Compose/Caddy,
+Terraform y análisis estático de scripts/workflows. Se compiló el frontend y se recorrieron
+32 vistas locales de los cuatro roles a 360/1366 px sin desbordes ni errores 5xx.
+Después del intento A1 sin capacidad se creó la E5 de prueba y se completó la entrega
+CI/GHCR del [run 43322815086](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086).
+El smoke HTTPS con login, perfil y logout está aprobado, así como 32 capturas de la
+URL pública a ambos tamaños. RNF11 también se aprobó en un proyecto aislado de la VM,
+verificando SQL, archivos, hashes, permisos y rechazo de copia corrupta. El timer de
+respaldo diario está activo. Se documentó y corrigió un defecto del verificador HTML,
+que asumía `root` en vez del identificador real `raiz`, mediante pruebas de regresión.
+
+La versión final de main volvió a aprobar las suites y el ensayo MySQL de CI. Para
+Dependency-Check se cambió el transporte a los feeds oficiales NIST 2.0 después de dos
+fallos HTTP 503 de la API. Una carga nueva y los análisis local/remotos aprobaron,
+conservando actualización automática, CVSS ≥ 7, failOnError y las excepciones existentes
+del paquete C. La consulta Code Scanning de main registra cinco alertas del prototipo
+histórico (tres high, dos medium), fuera de los contextos Docker backend/frontend;
+quedan para revisión de seguridad. Un workflow CodeQL exitoso no equivale a cero alertas.
+
+El protocolo de usuarios prevé cinco participantes reales, SUS y revisión responsive a
+360/1366 px. La revisión responsive final sobre HTTPS registra 32 capturas de cuatro
+roles y dos del formulario `/sus/`, sin desbordes/5xx. El formulario publicado permite
+descarga CSV y su combinación para calcular resultados; su verificación técnica no
+respondió cuestionarios. Las cinco sesiones y sus puntuaciones siguen pendientes de
+participación real. También quedan los ajustes administrativos de GitHub y la revisión
+de alertas del prototipo. Ver `docs/fase-iii-iv-david.md` y `entrega-main.json`.
+
+### 4.5 Estado de cierre revisado el 13/11/2026 (Lima)
+
+| Tarea B | Estado |
 |---|---|
-| Plataforma elegida y justificación; frontend/backend/DB; origen HTTPS y release identificable | OCI E5 temporal; HTTPS y entrega demo documentados en B. Nueva release con C aún no desplegada |
-| Perfiles dev/prueba/prod; secretos privados; cookies Secure, HSTS y proxy confiable | Perfiles integrados; controles C en código/pruebas locales. Validación del servidor actualizado pendiente |
-| Main protegida, PR, publicación GHCR y CD bloqueado por pruebas/análisis fallidos (RNF10) | Workflows B incorporados; CD definitivo y bloqueo por CodeQL requieren evidencia/configuración de B |
-| Copia y restauración de MySQL/evidencias probada (RNF11) | Ensayo CI con MySQL real documentado por B; recuperación en VM/copia externa pendientes |
-| Pruebas de usuario, SUS y revisión 360/1366 px con datos reales de la sesión de prueba | Capturas responsive disponibles; cinco sesiones SUS y resultados reales pendientes |
-| Manual técnico e instrucciones reproducibles de instalación/despliegue | Documento B incorporado; nota C sobre perfiles/secretos y transición sin demo |
+| B1 · MySQL/backend/frontend con HTTPS | Desplegados; smoke público repetido el 13/11, aprobado |
+| B2 · Ambientes y secretos | Perfiles y validaciones implementados; prod sin siembras verificado en la entrega registrada |
+| B3 · GHCR/CD y protección main | Entrega main aprobada; falta que el propietario active los ocho checks obligatorios |
+| B4 · Respaldo y recuperación | CI y ensayo aislado en VM aprobados, copia externa comprobada y timer activo |
+| B5 · Usuarios/SUS y responsive | Responsive técnico verificado; cuestionario preparado, cinco sesiones reales y análisis pendientes |
+| B6 · Manual técnico | Instalación, variables, CD, provisión y recuperación documentados |
 
-Dependencias C: URL autorizada para DAST, bootstrap sin cuentas ficticias y controles del borde HTTPS.
-No se eligió una plataforma ni se creó infraestructura por Marcelo.
+El [cuestionario](../pruebas/usuarios/Cuestionario_SUS.md) incluye una invitación y
+versión escrita. El formulario web descarga un CSV por persona, registra ancho real
+y fecha de Lima, y no envía respuestas al servidor. El archivo de respuestas permanece
+vacío hasta recoger sesiones reales. Se retiraron el ejemplo de respuestas y el modo
+de simulación. El simulacro RNF08 y el ensayo RNF11 siguen siendo pruebas exigidas.
+
+La API de GitHub confirmó permisos WRITE sin ADMIN. El ruleset aditivo está preparado
+en `despliegue/github/checks-main-ruleset.json`; configurarlo corresponde al propietario.
+No se declara B3 completamente cerrado mientras falten los checks de main.
+La revisión de las alertas CodeQL y el DAST corresponde a C; la integración de
+observabilidad y las pruebas completas de rendimiento corresponden a D/E.
 
 ## 5. Seguridad y revisión de calidad · Marcelo (C)
 
@@ -154,10 +252,10 @@ versión y alcance correspondientes. Registrar ambiente, herramientas, fecha, ta
 | RNF01/RNF02 y calidad C | Checklist, código y pruebas C | Borde HTTPS, escáneres externos, aceptación humana |
 | RNF06 rendimiento | Por aportar Alex | Mediciones k6 y análisis de estrés |
 | RNF08 operación/observabilidad | Por aportar Gabriel | Simulacro y evidencias |
-| RNF10 CI/CD | CI y workflows preparados | Ejecuciones y despliegue condicionado por David |
-| RNF11 restauración | Ensayo CI y scripts B incorporados | Recuperación en VM/copia externa y revisión del responsable |
+| RNF10 CI/CD | CI/CodeQL y CD main aprobados; sección 4 | Activación administrativa de checks obligatorios |
+| RNF11 restauración | Ensayo CI/VM y copia externa con hashes; sección 4 | Repetir si cambia el procedimiento o la release |
 | Manual de usuario | Documento de Emanuel enlazado arriba | Revisión de la release |
-| Manual técnico, repositorio y URL final | Aporte B incorporado | Release definitiva, permisos y validación del procedimiento |
+| Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa | Verificar la futura release con D/E integrados |
 | Informe de pruebas | Aportes de seguridad disponibles | Consolidación de Alex |
 | Presentación/demo y registro IA | Aportes C disponibles | Consolidación de Gabriel y aportes de todos |
 

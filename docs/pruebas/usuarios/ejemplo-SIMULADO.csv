@@ -1,6 +1,0 @@
-participante,fecha,rol,ancho,url,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,observaciones,origen
-P01,2026-11-12,Solicitante,360,https://ejemplo.invalid,3,3,3,3,3,3,3,3,3,3,Ejemplo sintético neutral; no es una sesión real,SIMULADO
-P02,2026-11-12,Supervisor,1366,https://ejemplo.invalid,5,1,5,1,5,1,5,1,5,1,Ejemplo sintético de extremo superior,SIMULADO
-P03,2026-11-12,Técnico,360,https://ejemplo.invalid,1,5,1,5,1,5,1,5,1,5,Ejemplo sintético de extremo inferior,SIMULADO
-P04,2026-11-12,Administrador,1366,https://ejemplo.invalid,4,2,4,2,4,2,4,2,4,2,Ejemplo sintético de prueba,SIMULADO
-P05,2026-11-12,Solicitante,1366,https://ejemplo.invalid,2,4,2,4,2,4,2,4,2,4,Ejemplo sintético de prueba,SIMULADO

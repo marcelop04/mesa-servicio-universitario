@@ -1,8 +1,8 @@
-# Manual técnico · Nube y CI/CD (David, paquete B)
+# Manual técnico · Nube y CI/CD
 
 > Nota de integración C (12/11/2026): los perfiles de B se conservan, pero ya no hay claves
 > predeterminadas en `dev` y `prod` rechaza las siembras demo. Revisar la configuración privada
-> con David antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
+> antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
 
 ## 1. Arquitectura y costo
 
@@ -195,13 +195,14 @@ Compose de nube. MySQL conserva sus credenciales en el volumen inicial: para rot
 en una base existente hacer `ALTER USER` antes de actualizar el Secret; cambiar el
 `.env` por sí solo no cambia el usuario MySQL. Rotar JWT invalida las sesiones existentes.
 
-En GitHub crear el environment **`production`** y configurar:
+El workflow usa el environment **`production`**. En esta entrega se creó automáticamente
+al ejecutar CD y utiliza los siguientes Secrets del repositorio y variables:
 
 | Tipo | Nombre | Valor |
 |---|---|---|
-| Secret de environment | `PRODUCTION_ENV` | Contenido completo del archivo generado |
-| Secret de environment | `SSH_PRIVATE_KEY` | Clave privada dedicada al usuario `ubuntu` |
-| Secret de environment | `SSH_KNOWN_HOSTS` | Entrada OpenSSH verificada para la IP/nombre de conexión |
+| Secret del repositorio | `PRODUCTION_ENV` | Contenido completo del archivo generado |
+| Secret del repositorio | `SSH_PRIVATE_KEY` | Clave privada dedicada al usuario `ubuntu` |
+| Secret del repositorio | `SSH_KNOWN_HOSTS` | Entrada OpenSSH verificada para la IP/nombre de conexión |
 | Variable del repositorio | `DEPLOY_HOST` | IP pública o nombre usado en SSH, sin protocolo |
 | Variable del repositorio | `DEPLOY_USER` | `ubuntu` |
 | Variable del repositorio | `PRODUCTION_URL` | `https://` + `APP_HOST` |
@@ -210,7 +211,9 @@ En GitHub crear el environment **`production`** y configurar:
 Obtener las entradas con `ssh-keyscan -H IP_PUBLICA` y comparar la huella con
 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` visto en la consola OCI/una sesión
 ya verificada. No desactivar `StrictHostKeyChecking`. La clave usada en CD debe poder
-abrirse sin interacción. Los Secrets se crean desde Settings → Environments o con `gh secret set`.
+abrirse sin interacción. Los Secrets de esta entrega se gestionan con `gh secret set`.
+La API de `production` muestra `protection_rules=[]` y `deployment_branch_policy=null`;
+el administrador configura sus revisores y restricciones adicionales.
 
 ## 5. PR, protección de main y CD
 
@@ -218,18 +221,19 @@ Requiere que el propietario/administrador del repositorio ejecute, una vez auten
 
 ```bash
 gh auth login
-gh api --method PUT repos/marcelop04/mesa-servicio-universitario/environments/production
 gh api --method POST repos/marcelop04/mesa-servicio-universitario/rulesets \
   --input despliegue/github/checks-main-ruleset.json
 ```
 
 El JSON propone un ruleset adicional de ocho checks, sin sustituir los rulesets existentes.
+`proteccion-main.json` contiene los mismos ocho checks como referencia para repositorios
+que usan protección clásica; no aplicarlo encima de reglas existentes sin revisarlas.
 La configuración **observada** por
 la API de reglas efectivas de main bloquea borrado/force-push y exige PR con una
 aprobación, con bypass configurado para el usuario actual. No declara checks de estado
 obligatorios. Ver `docs/evidencias/fase-iii-iv-david/proteccion.json`; no se atribuyen
 a la rama checks que la API no muestra. El propietario puede añadir los ocho checks de CI/CodeQL.
-El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
+El equipo trabaja en ramas y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
 Si `main` ya está protegida, el administrador debe conservar sus reglas y checks
@@ -238,8 +242,9 @@ mínima, no una razón para borrar protecciones del equipo. El intento de crear 
 adicional con la cuenta de David devolvió 404, sin cambiar las reglas. Esa cuenta tiene
 WRITE y pudo gestionar Secrets/variables del repositorio, pero crear el environment
 devolvió 403. Los Secrets también pueden guardarse a nivel de repositorio y ser usados
-por el job `production`; las preferencias de protección del environment las configura
-el administrador.
+por el job `production`; esa fue la configuración usada en la entrega definitiva.
+El workflow pudo crear el environment automáticamente, pero sus preferencias de
+protección las configura el administrador.
 
 El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 
@@ -271,6 +276,13 @@ transporte se verificó con una descarga nueva de los feeds y un análisis local
 Referencia: [fuentes oficiales NVD](https://nvd.nist.gov/vuln/data-feeds).
 El lanzador local `scripts/analizar-dependencias.ps1` conserva la vía API con
 `NVD_API_KEY`; el Secret no se necesita para el transporte por feed de CI.
+
+El run CodeQL de main también terminó con éxito, pero la consulta de alertas registra
+cinco abiertas en `prototipo/` (dos XSS, dos redirecciones y una falta de rate limiting).
+Esos archivos están fuera de los contextos de las imágenes backend/frontend. El gate
+actual exige la finalización exitosa del workflow; no evalúa por sí mismo el listado
+de alertas. Su revisión corresponde al responsable de seguridad y queda documentada
+en `entrega-main.json`.
 
 `CD_ENABLED=false` permite publicar sin intentar SSH. GHCR puede crear los paquetes como
 privados inicialmente; el token temporal permite descargarlos. Para descarga anónima,
@@ -381,6 +393,10 @@ ni contraseñas. No usar opciones que deshabiliten la verificación TLS.
 
 El [protocolo de usuarios](../pruebas/usuarios/Protocolo_SUS.md) describe las cinco
 sesiones y la revisión responsive. Sus resultados reales son requisito para cerrar B5.
+El [cuestionario listo para compartir](../pruebas/usuarios/Cuestionario_SUS.md) incluye
+el mensaje de invitación y los diez ítems. `/sus/` descarga un CSV por participante;
+no almacena respuestas en el servidor. Las herramientas de combinación y cálculo
+aceptan respuestas de sesiones registradas y no ofrecen un modo de simulación.
 
 ## 8. Diagnóstico
 
@@ -390,6 +406,7 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 | SSH bloqueado | IP, clave, usuario ubuntu, regla 22 y `SSH_KNOWN_HOSTS` verificado |
 | Certificado no emitido | DNS hacia la VM, reglas OCI y firewall 80/443; logs de Caddy; límites ACME del dominio compartido |
 | GHCR 401/403 | Token con packages:read y acceso de Actions al paquete vinculado al repositorio |
+| Dependency-Check falla al actualizar NVD | Consultar disponibilidad de los feeds oficiales y logs; conservar CVSS ≥ 7 y failOnError; no aprobar un análisis incompleto |
 | MySQL «Access denied» después de cambiar el Secret | Las claves del volumen no cambian con `.env`; coordinar `ALTER USER` |
 | API 502 | Salud de MySQL/backend y memoria; `docker compose ... logs backend` usando ambos env files |
 | Cookie sin Secure | Perfil prod/prueba, proxy directo Caddy→backend y X-Forwarded-Proto |
@@ -399,7 +416,7 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 
 ## 9. Evidencias y estado
 
-Consultar [la bitácora de David](../fase-iii-iv-david.md) para distinguir implementación,
+Consultar [la bitácora del paquete B](../fase-iii-iv-david.md) para distinguir implementación,
 comprobaciones locales, ejecución real de CI/CD y resultados con usuarios. Una validación
 Terraform no crea la VM; un cuestionario preparado no equivale a cinco sesiones completadas.
 
@@ -416,6 +433,22 @@ automática ya se verificaron; ver `https.json` y `entrega.json` en las evidenci
 El ensayo de pérdida/restauración de la VM y la copia externa están en `recuperacion.json`.
 La huella SSH se obtuvo del historial de
 consola por la API OCI autenticada y se fijó en `SSH_KNOWN_HOSTS`.
+
+La entrega definitiva desde main se completó el **13/11/2026 UTC** con el commit
+`df8cc39e32f1580b097295b8b003810435aee5ac`:
+
+- [CI 43365136107](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136107),
+  [CodeQL 43365136281](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136281)
+  y [CD 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850)
+  aprobados para ese SHA.
+- Publicación amd64/arm64 en 3m35s y entrega por digest en 56s; etiquetas de revisión
+  coincidentes en la VM. Prod tiene guard activo, ambas siembras desactivadas y cookie Secure.
+- Revisión externa: sesión HTTPS aprobada, 32 capturas de roles y dos de `/sus/` a
+  360/1366 px sin fallos. `responsive-main/` y `https.json` conservan los resultados.
+- Copia `msu-20261113T043450Z-14914` descargada al equipo privado y sus cuatro sumas
+  verificadas. Timer diario activo; `CD_ENABLED=true`.
+
+La evidencia completa está en `docs/evidencias/fase-iii-iv-david/entrega-main.json`.
 
 Acceso de usuarios: abrir la URL y usar Registro o las cuentas ficticias por rol del
 README. En la nube sus contraseñas son aleatorias; `DEMO_PASSWORD` se conserva en el

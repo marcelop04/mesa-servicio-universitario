@@ -95,9 +95,24 @@ Las verificaciones y resultados de participantes deben provenir de ejecuciones/p
 | 12/11/2026 | David | OpenCode (asistente de programación) | Completar entrega, respaldo y evidencias del paquete B | Imágenes GHCR por digest, entrega HTTPS y ensayo de recuperación en VM; actualización del manual/informe | Sí | CI/entrega aprobados, MySQL y archivo recuperados en proyecto aislado, cuatro SHA-256 de copia externa coinciden, timer activo | Se documentan los resultados reales y las dependencias de revisión de main y de cinco participantes SUS |
 | 12/11/2026 | David | OpenCode (asistente de programación) | Revisar correcciones de prod y evidenciar el flujo definitivo | Validación de entorno antes de transferir, builds nativos portables, gate CI/CodeQL y formulario CSV SUS | Sí | 5 pruebas Java de prod/guard aprobadas, 77 Vitest y 15 Python; reglas efectivas de rama consultadas por API | Se incorpora idéntico el VerificadorSeguridad de Marcelo (PR #3); no se atribuye ni se declara integrado el resto de C. Se rechaza prod con siembra; el ejemplo de cinco registros se marca SIMULADO y no acredita B5 |
 | 12/11/2026 (13/11 UTC) | David | OpenCode (asistente de programación) | Continuar la integración y resolver el bloqueo real de CI antes de CD main | Integración de main con PR #3/#7; precisión de fecha de políticas; fuente NIST por feeds 2.0 en CI y propuesta de ocho checks | Sí | Backend/frontend/CodeQL del PR aprobados; API NVD falló con HTTP 503; descarga nueva de todos los feeds y análisis Dependency-Check local aprobado | Se conserva CVSS ≥ 7, failOnError, actualización automática y excepciones existentes. La propuesta de reglas no se aplicó por falta de permisos; falta ejecución definitiva de CI/CD |
+| 13/11/2026 UTC | David | OpenCode (asistente de programación) | Completar la entrega tras la integración del PR #8 y registrar resultados comprobados | Evidencia CD main `df8cc39`, actualización de manual/informe/guion, capturas finales y copia externa | Sí | CI/CodeQL/CD aprobados; etiquetas de revisión y prod sin siembra verificados por SSH; sesión HTTPS, 32 capturas de roles y dos de SUS aprobadas; cuatro SHA-256 de nueva copia externa OK | `production` fue creado por el workflow sin reglas adicionales; se registran cinco alertas abiertas de `prototipo/` para revisión de Marcelo. Cinco sesiones SUS reales y ajustes administrativos siguen pendientes; no se respondieron cuestionarios técnicos como si fueran personas |
 
 No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
 Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.
+
+## IA-B-08 · Revisión del paquete B y preparación de sesiones reales
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026, America/Lima |
+| Responsable | David; revisión humana de la entrega y ejecución de las sesiones pendientes |
+| Herramienta | Codex, asistente de programación de OpenAI |
+| Prompt / alcance | Revisar repositorio y reparto actualizado, completar B, retirar el guion individual y las respuestas de ejemplo, integrar la sección técnica y preparar el cuestionario para cinco personas |
+| Resultado generado | Cuestionario web/escrito, protocolo de sesiones y cálculo sin modo de simulación; actualización del informe, manual, referencias y plantilla de checks |
+| ¿Se utilizó? | Incorporado al PR de actualización del paquete B; aceptación del equipo pendiente |
+| Validación realizada | Pruebas Python y frontend, compilación, revisión del formulario y consulta real de HTTPS/GitHub; resultados detallados en la bitácora B y los checks del PR |
+| Modificaciones | Se registra ancho real y fecha de Lima; se exige confirmación de uso; se rechazan otras procedencias, duplicados y aplicaciones distintas. Capturas históricas conservadas por decisión del responsable |
+| Límites | No se atribuyen respuestas a participantes, aprobación humana ni checks de main aplicados. Las cinco sesiones y la configuración administrativa siguen pendientes |
 
 ## IA-C-06 · Integración de seguridad sobre main con B
 

@@ -26,5 +26,21 @@
       "metadatos.txt": "cbe297c997a47e2d7919012a12f3a2a3540957b22c157d47c2ed4a9440050041"
     }
   },
-  "nota": "El ensayo de pérdida/restauración se ejecutó en volúmenes aislados; la copia externa contiene la instantánea de la aplicación pública. Dumps y contraseñas no se publican en Git."
+  "copia_posterior_cd_main": {
+    "fecha_utc": "2026-11-13T04:34:50Z",
+    "commit_desplegado": "df8cc39e32f1580b097295b8b003810435aee5ac",
+    "directorio_vm": "/opt/msu/backups/msu-20261113T043450Z-14914",
+    "copia_externa": "Equipo del responsable, carpeta privada .msu-respaldos/msu-20261113T043450Z-14914 fuera del repositorio",
+    "transferencia": "SCP con host SSH verificado",
+    "comprobacion_externa": "sha256sum --check SHA256SUMS: mysql.sql.gz, evidencias.tar.gz, imagenes.env y metadatos.txt OK",
+    "sha256": {
+      "mysql.sql.gz": "ff176dd6986f653040b6b6ff6ef3fcad34eb1f63c891623df22018de554acf9d",
+      "evidencias.tar.gz": "9b94b774dd2f4f75fff33a135d9ca270c9f78c9d9889cf4eeccdd8912512ac71",
+      "imagenes.env": "a38494a42217f5d9c313709529394e22d6df167a860d69d77f65c1ca06f861c7",
+      "metadatos.txt": "fe4aff1049169393fe1d30e5ff4e4d6ba5849ca6ce7a68dc93de5140a5824339"
+    },
+    "servicio_tras_reanudar": "Smoke HTTPS con login/perfil/logout aprobado a las 04:35:35 UTC",
+    "ensayo_main_ci": "RNF11 aprobado en el CI 43365136107; no se provocó una pérdida sobre los datos de producción"
+  },
+  "nota": "El ensayo de pérdida/restauración se ejecutó en volúmenes aislados; las copias externas contienen instantáneas de la aplicación pública. Dumps y contraseñas no se publican en Git."
 }

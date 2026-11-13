@@ -1,7 +1,7 @@
 # Fases III y IV · David · Paquete B: Nube y CI/CD
 
 Entrega inicial: `feat/david-despliegue`, integrada en main por PR #4 (`5e83051`).
-Correcciones operacionales: `fix/despliegue-prod`, desde ese main.
+Correcciones operacionales: PR #8 integrado en `df8cc39`; CD main verificado el 13/11/2026 UTC.
 Fecha de preparación: 12/11/2026. Plataforma: OCI Free Trial para la demostración del curso;
 Always Free se conserva como alternativa de infraestructura.
 
@@ -10,12 +10,12 @@ Always Free se conserva como alternativa de infraestructura.
 | ID | Entregable | Estado verificable | Evidencia |
 |---|---|---|---|
 | B1 | MySQL, backend y frontend en nube con HTTPS | Desplegado en E5, HTTPS y login verificados en la URL pública | `https://msu-157-137-206-147.sslip.io`, `docs/evidencias/fase-iii-iv-david/https.json` |
-| B2 | Desarrollo, prueba, producción y secretos | Implementado; perfiles, generador y comportamiento de cookies en prod probados localmente | `application-{dev,prueba,prod}.yml`, `.env.example`, `crear-entorno.py`, `DespliegueHttpsTest` |
-| B3 | GHCR/CD solo tras CI y main protegida | PR #4 integrado. Reglas de main certificadas. Primer CD main cancelado al compilar frontend ARM; builds nativos y gate CI/CodeQL corregidos, nueva entrega definitiva en verificación | `entrega.json`, `proteccion.json`, `.github/workflows/{ci,cd}.yml` |
+| B2 | Desarrollo, prueba, producción y secretos | Implementado y probado; VM verificada con prod, ambas siembras false, guard true, cookie Secure y entorno 0600 | `application-{dev,prueba,prod}.yml`, `crear-entorno.py`, `DespliegueHttpsTest`, `entrega-main.json` |
+| B3 | GHCR/CD solo tras CI y main protegida | CD definitivo aprobado desde main tras CI/CodeQL del mismo SHA. PR/reglas verificadas; checks obligatorios de rama y restricciones de environment requieren administrador | `entrega-main.json`, `proteccion.json`, `.github/workflows/{ci,cd}.yml` |
 | B4 | Copia/restauración de MySQL y evidencias | Aprobado en CI y en ensayo aislado de la VM; copia de la app descargada al equipo y cuatro SHA-256 verificados; timer diario activo | `recuperacion.json`, `backup.sh`, `restaurar.sh`, `systemd/` |
-| B5 | Cinco usuarios, SUS y responsive | Responsive desplegado aprobado. Formulario CSV y combinación preparados; ejemplo simulado separado. Cinco sesiones reales siguen pendientes | `docs/pruebas/usuarios/`, `/sus/`, `responsive/resultado.json` |
+| B5 | Cinco usuarios, SUS y responsive | Responsive main aprobado: 32 capturas de roles y dos del formulario publicado. CSV/combinación preparados; cinco sesiones reales siguen pendientes | `docs/pruebas/usuarios/`, `/sus/`, `responsive-main/{resultado,sus}.json` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
-| Todos | Sección del informe, demostración y uso de IA | Borradores documentados; incorporar evidencias reales al activar la nube | `docs/informe/Seccion_David_Nube_CD.md`, `docs/presentacion/Guion_David.md`, `docs/registro-uso-ia.md` |
+| Todos | Sección del informe, demostración y uso de IA | Sección B integrada en el informe; Gabriel consolida la presentación del equipo | `docs/informe/Informe_Final_Fases_III_IV.md`, `docs/registro-uso-ia.md` |
 
 ## Decisiones
 
@@ -30,7 +30,7 @@ Always Free se conserva como alternativa de infraestructura.
   Rollback de imágenes separado de restauración SQL si una migración no es retrocompatible.
 - Configuración nueva mediante GitHub Secrets, sin escribir secretos en Git ni en Terraform.
 
-## Comprobaciones locales ejecutadas
+## Historial de comprobaciones ejecutadas
 
 | Comprobación | Resultado |
 |---|---|
@@ -53,6 +53,10 @@ Always Free se conserva como alternativa de infraestructura.
 | Ensayo RNF11 en la VM | Aprobado: pérdida, copia corrupta, SQL/archivo/hash/permisos restaurados y servicios saludables |
 | Copia externa de la app pública | SQL, evidencias, imágenes y metadatos transferidos por SCP; las cuatro sumas SHA-256 coinciden |
 | Respaldo diario | `msu-backup.timer` activo; siguiente ejecución observada 13/11/2026 08:01:42 UTC |
+| CI/CodeQL main de `df8cc39` | Aprobados: runs `43365136107` y `43365136281`, incluidos SCA y RNF11 con MySQL real |
+| CD definitivo main | [Run 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850) aprobado; publicación multi-arquitectura en 3m35s, entrega en 56s |
+| Verificación después de CD | HTTPS/login/perfil/logout aprobados; 32 capturas de roles y dos de SUS a 360/1366, sin fallos; `responsive-main/` |
+| Copia posterior a CD | `msu-20261113T043450Z-14914` descargada fuera de la VM; cuatro SHA-256 OK y sesión HTTPS comprobada al reanudar |
 
 La prueba de proxy usa H2 y cabeceras de un terminador TLS simulado; **no demuestra un
 certificado público** ni sustituye MySQL real. El ensayo RNF11 ejecuta Docker/MySQL en
@@ -95,8 +99,8 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Se ejecutó RNF11 en un proyecto efímero de la misma VM y se confirmó recuperación
   SQL/archivo/hash/permisos. Después se copió la aplicación pública y se descargó la
   instantánea al equipo del responsable; las cuatro sumas coinciden.
-- El timer diario está activo. `CD_ENABLED` se pausó en `false` mientras se revisa
-  prod y se completa CI del PR #8; se habilita para la entrega definitiva de main.
+- El timer diario está activo. `CD_ENABLED` se pausó en `false` mientras se revisaba
+  prod y se completaba CI del PR #8; se reactivó en `true` para el CD definitivo.
   Los ajustes administrativos de GitHub los realiza el propietario.
 - El PR #4 se integró. El primer CD main duró 60 minutos y se canceló compilando
   assets ARM bajo QEMU; se corrigieron los stages de build para usar arquitectura nativa.
@@ -110,8 +114,8 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Se obtuvieron las reglas efectivas mediante `/rules/branches/main` y los rulesets:
   borrado/force-push bloqueados, PR con 1 aprobación y bypass configurado. La respuesta
   no contiene checks obligatorios; `proteccion.json` registra la configuración real.
-- No hay cinco participantes reales acreditados. P01–P05 en el ejemplo sintético no
-  se cuentan como participantes; el cálculo normal rechaza sus datos simulados.
+- No hay cinco participantes reales acreditados. El CSV de respuestas permanece vacío
+  y el cálculo solo acepta registros de sesiones con origen `RESPUESTA_USUARIO`.
 - La integración detectó una intermitencia al publicar políticas: MySQL/H2 redondeaba
   nanosegundos y podía dejar la fecha en el futuro. Se normalizó a milisegundos, acorde
   con `DATETIME(3)`, y se comprobó con reloj fijo y las pruebas de políticas.
@@ -122,17 +126,42 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - La propuesta adicional `despliegue/github/checks-main-ruleset.json` recoge los ocho
   checks de CI/CodeQL. Su creación por API devolvió 404 con WRITE, sin modificar las reglas.
 
+## Entrega definitiva desde main · 13/11/2026 UTC
+
+- PR #8 integrado en `df8cc39e32f1580b097295b8b003810435aee5ac`. CI y CodeQL de ese
+  mismo SHA/push aprobaron; el gate del CD también quedó aprobado.
+- [CD 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850)
+  publicó backend/frontend amd64/arm64, entregó por digest y verificó HTTPS. La VM
+  ejecuta ambos con etiqueta de revisión igual al SHA; MySQL/backend/frontend saludables.
+- Se verificó remotamente `prod`, ambas siembras `false`, guard `true`, cookie Secure,
+  entorno privado `0600` y solo los puertos web publicados. Los datos académicos existentes
+  se conservaron. Digests, estados y fuentes: `docs/evidencias/fase-iii-iv-david/entrega-main.json`.
+- El workflow creó `production`, con deployment `7757186740` exitoso. La API muestra
+  `protection_rules=[]` y `deployment_branch_policy=null`; recibe Secrets del repositorio.
+  Las restricciones adicionales de GitHub siguen siendo tarea del administrador.
+- Se repitieron smoke con sesión y revisión responsive sobre la nueva versión: 32
+  capturas de cuatro roles, cero desbordes/5xx. El formulario `/sus/` responde HTTP 200,
+  muestra 10 ítems/50 radios y tiene dos capturas adicionales sin desbordes; no se respondió
+  ningún cuestionario en esta prueba técnica.
+- Se creó una copia posterior a la entrega y se descargó fuera de la VM. Las cuatro
+  sumas coinciden; la app volvió a aprobar login/perfil/logout después de reanudar.
+  Timer activo, siguiente ejecución observada `2026-11-13T08:01:16Z`.
+- La consulta de Code Scanning de main devuelve cinco alertas abiertas, todas en
+  `prototipo/`: dos XSS, dos redirecciones y una falta de limitación de peticiones
+  (tres high y dos medium). Esos archivos pertenecen al prototipo histórico y están
+  fuera de los contextos Docker `backend/` y `frontend/`. Se registra su revisión
+  pendiente con Marcelo; CodeQL exitoso no se presenta como ausencia de alertas.
+
 ## Dependencias para completar la operación
 
-1. Completar y evidenciar la ejecución CD main con el entorno prod revisado, y consultar
-   la configuración efectiva del environment creado por el workflow.
-2. El propietario puede fortalecer reglas/environment; se distingue esa mejora de las
+1. El propietario puede fortalecer reglas/environment; se distingue esa mejora de las
    protecciones que ya se han verificado, sin certificar checks inexistentes.
-3. Realizar las cinco sesiones y adjuntar las respuestas reales SUS. Responsive web ya verificado.
+2. Realizar las cinco sesiones y adjuntar las respuestas reales SUS. Responsive web ya verificado.
+3. Revisar con Marcelo las cinco alertas CodeQL del prototipo histórico.
 4. Acordar el cierre después de la revisión docente, conservar copias externas y
    retirar la VM/discos antes de finalizar el período de prueba si ya no se necesitan.
 
-## Evidencias de nube por completar
+## Evidencias de nube registradas y pendientes
 
 | Evidencia | Estado |
 |---|---|
@@ -140,10 +169,11 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 | Cuenta/home region/cupo y error real de capacidad OCI | `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
 | Enlace a CI con ensayo de recuperación por commit | Checks del [PR #4](https://github.com/marcelop04/mesa-servicio-universitario/pull/4/checks) |
 | Entrega demo CI/GHCR exitosa | [Run 43322815086](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086), `entrega.json` |
-| Ruta CD main y ajustes de protección | Preparada; pendiente de revisión/integración y administrador |
+| Ruta CD main | [Run 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850), `entrega-main.json`; aprobada |
+| Reglas y environment | Configuración real registrada; ocho checks y restricciones adicionales requieren administrador |
 | Informe del smoke HTTPS y login | `docs/evidencias/fase-iii-iv-david/https.json` |
 | Copia externa y recuperación práctica con hashes | `docs/evidencias/fase-iii-iv-david/recuperacion.json` |
-| Responsive 360/1366 | `docs/evidencias/fase-iii-iv-david/responsive/` (32 capturas, 0 fallos) |
+| Responsive 360/1366 main | `docs/evidencias/fase-iii-iv-david/responsive-main/` (32 capturas de roles y dos de SUS, 0 fallos) |
 | Cuestionarios P01–P05 | Pendientes de personas reales |
 
 ## Integración con los demás paquetes
@@ -152,5 +182,37 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   (observabilidad). Coordinar carga/escaneos para no interferir con sesiones SUS.
 - Gabriel puede añadir servicios/puertos internos en su Compose de observabilidad;
   mantener MySQL, Actuator y herramientas administrativas fuera del acceso público.
-- Entregar a Alex únicamente resultados reales de usuarios, no los datos sintéticos
-  empleados para comprobar la fórmula SUS.
+- Entregar a Alex únicamente resultados reales de usuarios, acompañados de sus fichas
+  de sesión. Las pruebas técnicas de la fórmula no son evidencia de usabilidad.
+
+## Revisión del paquete B · 13/11/2026 (Lima)
+
+- Se retiró el guion individual de presentación y se integró la sección técnica en
+  el informe final. Se conservan la bitácora, el responsable del registro IA y las
+  tres tandas de capturas como historial, según el reparto y la revisión solicitada.
+- Se eliminó el archivo de respuestas de ejemplo y el modo de simulación SUS.
+  Se conserva la verificación técnica de la fórmula y el ensayo real de respaldo RNF11.
+- Se preparó `docs/pruebas/usuarios/Cuestionario_SUS.md`, listo para compartir;
+  el formulario registra fecha de Lima y ancho real automáticamente, valida la
+  confirmación de uso y mantiene la descarga individual sin enviar respuestas al servidor.
+- El script responsive incluye ahora la verificación reproducible de `/sus/`.
+- Se retiraron la pantalla provisional sin rutas activas, su función auxiliar y
+  los metadatos de asignación del menú que ya no se consumían, con aprobación del responsable.
+- La API de GitHub confirmó permisos WRITE sin ADMIN: main exige un PR y una aprobación,
+  pero no checks obligatorios; `production` tampoco tiene restricciones adicionales.
+  El JSON aditivo de ocho checks queda listo para el propietario. No se declararon aplicados.
+- Se comprobó nuevamente el origen público: TLS, SPA, CSRF Secure, 401 JSON y OpenAPI
+  aprobados. Este smoke no inició sesión ni reemplaza las pruebas con participantes.
+- D y E siguen en los PR #6 y #5, basados en versiones anteriores de main. Su integración
+  debe conservar el gate CI/CodeQL, el guard prod y las herramientas/evidencias B actuales.
+
+Pendientes B: cinco sesiones reales con su análisis y activación administrativa de
+los checks de main. La verificación de una futura release integrada debe repetirse
+después de que sus CI y CD terminen.
+
+Validación de esta revisión: 15 pruebas de herramientas y 4 de autorización DAST
+aprobadas; 83 pruebas frontend y compilación aprobadas. El formulario se verificó
+con navegador a 360/1366 px: diez preguntas, 50 opciones, validación de campos y
+descarga CSV correctas, sin desborde ni errores JavaScript. Los registros técnicos
+se generaron en una carpeta temporal con origen de prueba local y no se incorporan
+al CSV de participantes ni se cuentan como sesiones SUS.

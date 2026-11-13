@@ -1,9 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { LayoutRol } from './layout/LayoutRol.jsx';
-import { inicioDelRol, PANTALLAS } from './layout/navegacion.js';
+import { inicioDelRol } from './layout/navegacion.js';
 import { Configuracion } from './paginas/admin/Configuracion.jsx';
 import { Usuarios } from './paginas/admin/Usuarios.jsx';
-import { EnConstruccion } from './paginas/EnConstruccion.jsx';
 import { Login } from './paginas/Login.jsx';
 import { Perfil } from './paginas/identidad/Perfil.jsx';
 import { Registro } from './paginas/identidad/Registro.jsx';
@@ -22,11 +21,6 @@ function Inicio() {
   const { usuario, cargando } = useSesion();
   if (cargando) return <Cargando texto="Verificando la sesión…" />;
   return <Navigate to={usuario ? inicioDelRol(usuario.rol) : '/login'} replace />;
-}
-
-/** Pantallas de otros integrantes: quedan enlazadas para integrar cada una en su rama. */
-function pendiente(id) {
-  return <EnConstruccion id={id} {...PANTALLAS[id]} />;
 }
 
 export default function App() {

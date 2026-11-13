@@ -46,6 +46,12 @@ try {
     await pagina.goto(`${BASE}/registro`);
     await pagina.getByRole('heading', { level: 1 }).waitFor();
     await captura(pagina, 'registro', ancho);
+    await pagina.goto(`${BASE}/sus/`);
+    await pagina.locator('#sus-form fieldset').last().waitFor();
+    if (await pagina.locator('#sus-form fieldset').count() !== 10 || await pagina.locator('#sus-form input[type=radio]').count() !== 50) {
+      throw new Error('El cuestionario SUS debe mostrar diez ítems con cinco opciones cada uno.');
+    }
+    await captura(pagina, 'sus', ancho);
     await publico.close();
 
     for (const rol of roles) {
