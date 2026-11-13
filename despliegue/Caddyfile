@@ -1,0 +1,24 @@
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+{$APP_HOST} {
+	encode zstd gzip
+	request_body {
+		max_size 6MB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	@api path /api/* /swagger-ui /swagger-ui/* /swagger-ui.html
+	handle @api {
+		reverse_proxy backend:8080
+	}
+	handle {
+		reverse_proxy frontend:80
+	}
+}

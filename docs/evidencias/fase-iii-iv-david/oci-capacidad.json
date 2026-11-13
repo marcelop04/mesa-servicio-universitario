@@ -1,0 +1,32 @@
+{
+  "fecha_utc": "2026-11-12",
+  "fuente": "API OCI autenticada y terraform apply",
+  "region": "sa-bogota-1",
+  "es_home_region": true,
+  "plan_confirmado_en_consola": "Free Tier / Free Trial con recursos Always Free",
+  "instancias_existentes": 0,
+  "almacenamiento_usado_gb": 0,
+  "almacenamiento_always_free_disponible_gb": 200,
+  "configuracion_prevista": {
+    "shape": "VM.Standard.A1.Flex",
+    "ocpu": 2,
+    "ram_gb": 12,
+    "disco_gb": 50
+  },
+  "capacidad_consultada": {
+    "ocpu_ram_gb": [[2, 12], [1, 6], [1, 4]],
+    "fault_domains": ["automatico", "FAULT-DOMAIN-1", "FAULT-DOMAIN-2", "FAULT-DOMAIN-3"],
+    "resultado_de_todas_las_combinaciones": "OUT_OF_HOST_CAPACITY"
+  },
+  "intento_real_de_creacion": {
+    "herramienta": "Terraform 1.9.8 / OCI provider 7.32.0",
+    "operacion": "LaunchInstance",
+    "http": 500,
+    "mensaje": "Out of host capacity.",
+    "vm_creada": false,
+    "red_preparada": ["VCN", "Internet Gateway", "Route Table", "Security List", "Subnet"],
+    "verificacion_posterior": "API OCI confirma cero instancias y cero volumenes"
+  },
+  "estado": "BLOQUEADO_POR_CAPACIDAD_DEL_PROVEEDOR",
+  "siguiente_accion": "Reintentar la misma configuracion Always Free en la home region cuando Oracle libere capacidad."
+}

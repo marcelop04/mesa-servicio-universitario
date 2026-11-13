@@ -1,0 +1,21 @@
+# Prueba de integración/usuario: MySQL y volúmenes propios, HTTPS igual que prod.
+# Las pruebas JUnit siguen usando el perfil test (H2, en src/test/resources).
+server:
+  forward-headers-strategy: framework
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+
+msu:
+  jwt:
+    cookie-segura: true
+  tareas:
+    habilitadas: ${TAREAS_HABILITADAS:false}
+  datos-demo:
+    habilitado: ${DATOS_DEMO:false}
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:false}

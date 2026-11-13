@@ -1,0 +1,11 @@
+# Copiar como terraform.tfvars (ignorado por Git).
+# Revisar el cupo Always Free y la región ANTES de aplicar.
+region         = "REEMPLAZAR_POR_HOME_REGION"
+compartment_id = "ocid1.compartment.oc1..REEMPLAZAR"
+ssh_public_key = "ssh-ed25519 REEMPLAZAR_POR_CLAVE_PUBLICA"
+# Para el CD con runners GitHub alojados, SSH necesita aceptar su IP variable.
+ssh_cidr                  = "0.0.0.0/0"
+availability_domain_index = 0
+# Solo activar con promoción Free Trial vigente y créditos disponibles.
+# Usa una E5 x86 (1 OCPU/8 GB); false conserva la configuración A1 Always Free.
+usar_creditos_trial = false
