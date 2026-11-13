@@ -13,7 +13,7 @@ Always Free se conserva como alternativa de infraestructura.
 | B2 | Desarrollo, prueba, producción y secretos | Implementado y probado; VM verificada con prod, ambas siembras false, guard true, cookie Secure y entorno 0600 | `application-{dev,prueba,prod}.yml`, `crear-entorno.py`, `DespliegueHttpsTest`, `entrega-main.json` |
 | B3 | GHCR/CD solo tras CI y main protegida | CD definitivo aprobado desde main tras CI/CodeQL del mismo SHA. PR/reglas verificadas; checks obligatorios de rama y restricciones de environment requieren administrador | `entrega-main.json`, `proteccion.json`, `.github/workflows/{ci,cd}.yml` |
 | B4 | Copia/restauración de MySQL y evidencias | Aprobado en CI y en ensayo aislado de la VM; copia de la app descargada al equipo y cuatro SHA-256 verificados; timer diario activo | `recuperacion.json`, `backup.sh`, `restaurar.sh`, `systemd/` |
-| B5 | Cinco usuarios, SUS y responsive | Responsive main aprobado: 32 capturas de roles y dos del formulario publicado. CSV/combinación preparados; cinco sesiones reales siguen pendientes | `docs/pruebas/usuarios/`, `/sus/`, `responsive-main/{resultado,sus}.json` |
+| B5 | Cinco usuarios, SUS y responsive | Cinco sesiones aportadas y cuestionarios calculados, media SUS 87/100; responsive técnico aprobado. Notas y límites documentados | `docs/pruebas/usuarios/Resultados_SUS.md`, `respuestas-sus.csv`, `resultados-sus.json`, `responsive-main/` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
 | Todos | Sección del informe, demostración y uso de IA | Sección B integrada en el informe; Gabriel consolida la presentación del equipo | `docs/informe/Informe_Final_Fases_III_IV.md`, `docs/registro-uso-ia.md` |
 
@@ -114,8 +114,8 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Se obtuvieron las reglas efectivas mediante `/rules/branches/main` y los rulesets:
   borrado/force-push bloqueados, PR con 1 aprobación y bypass configurado. La respuesta
   no contiene checks obligatorios; `proteccion.json` registra la configuración real.
-- No hay cinco participantes reales acreditados. El CSV de respuestas permanece vacío
-  y el cálculo solo acepta registros de sesiones con origen `RESPUESTA_USUARIO`.
+- Antes de recibir los cuestionarios no se habían entregado cinco respuestas. El cálculo
+  solo acepta registros con origen `RESPUESTA_USUARIO`; la recepción posterior se documenta al final.
 - La integración detectó una intermitencia al publicar políticas: MySQL/H2 redondeaba
   nanosegundos y podía dejar la fecha en el futuro. Se normalizó a milisegundos, acorde
   con `DATETIME(3)`, y se comprobó con reloj fijo y las pruebas de políticas.
@@ -156,7 +156,7 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 
 1. El propietario puede fortalecer reglas/environment; se distingue esa mejora de las
    protecciones que ya se han verificado, sin certificar checks inexistentes.
-2. Realizar las cinco sesiones y adjuntar las respuestas reales SUS. Responsive web ya verificado.
+2. Sesiones y análisis SUS incorporados: cinco respuestas, media 87/100 y datos no registrados declarados. Conservar los originales junto con las evidencias responsive.
 3. Revisar con Marcelo las cinco alertas CodeQL del prototipo histórico.
 4. Acordar el cierre después de la revisión docente, conservar copias externas y
    retirar la VM/discos antes de finalizar el período de prueba si ya no se necesitan.
@@ -174,7 +174,7 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 | Informe del smoke HTTPS y login | `docs/evidencias/fase-iii-iv-david/https.json` |
 | Copia externa y recuperación práctica con hashes | `docs/evidencias/fase-iii-iv-david/recuperacion.json` |
 | Responsive 360/1366 main | `docs/evidencias/fase-iii-iv-david/responsive-main/` (32 capturas de roles y dos de SUS, 0 fallos) |
-| Cuestionarios P01–P05 | Pendientes de personas reales |
+| Cuestionarios P01–P05 | Cinco CSV recibidos y calculados; media 87/100 y límites registrados en `Resultados_SUS.md` |
 
 ## Integración con los demás paquetes
 
@@ -206,8 +206,8 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - D y E siguen en los PR #6 y #5, basados en versiones anteriores de main. Su integración
   debe conservar el gate CI/CodeQL, el guard prod y las herramientas/evidencias B actuales.
 
-Pendientes B: cinco sesiones reales con su análisis y activación administrativa de
-los checks de main. La verificación de una futura release integrada debe repetirse
+Pendiente B: activación administrativa de los ocho checks de main. Las sesiones
+recibidas y sus límites se documentan en la sección siguiente. Una futura release debe verificarse
 después de que sus CI y CD terminen.
 
 Validación de esta revisión: 15 pruebas de herramientas y 4 de autorización DAST
@@ -216,3 +216,28 @@ con navegador a 360/1366 px: diez preguntas, 50 opciones, validación de campos 
 descarga CSV correctas, sin desborde ni errores JavaScript. Los registros técnicos
 se generaron en una carpeta temporal con origen de prueba local y no se incorporan
 al CSV de participantes ni se cuentan como sesiones SUS.
+
+## Recepción de cuestionarios · 13/11/2026 (Lima)
+
+Se recibieron los cinco archivos P01–P05 facilitados por el responsable y se consolidaron
+sin alterar sus valores. Todos corresponden al rol Solicitante. Puntuaciones:
+75, 95, 85, 90 y 90; media **87/100**. Los datos y su cálculo se conservan en
+`docs/pruebas/usuarios/`; el informe de resultados distingue los comentarios aportados
+de las tareas, tiempos, ayuda y navegador no registrados.
+
+El responsable autorizó ajustar las diferencias de metadatos e indicó que las notas
+de tarea, tiempos, ayuda y navegador no se registraron. El resumen usa `viewport_real`
+para resolver el ancho de P01 (1536 px); los CSV conservan sus valores originales.
+Las horas individuales quedan sin validar y no se emplean para calcular duración.
+B5 incorpora las cinco sesiones aportadas, sus puntuaciones y la revisión responsive,
+con estas limitaciones explícitas.
+
+La consulta de GitHub volvió a mostrar `required_status_checks.enforcement_level=off`,
+`contexts=[]` y ninguna regla efectiva `required_status_checks`. Los ocho checks se
+ejecutan en CI, pero todavía no son obligatorios para integrar. Se conserva el
+pendiente administrativo y la evidencia de la consulta en `proteccion.json`.
+
+El PR #9 ya está integrado en `f8d8c9e`; CI, CodeQL y
+[CD 43468451433](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43468451433)
+aprobaron. El formulario actualizado se comprobó después en la URL HTTPS, a 360/1366 px,
+sin responderlo como participante. Esta referencia no reemplaza el SHA de cada sesión.

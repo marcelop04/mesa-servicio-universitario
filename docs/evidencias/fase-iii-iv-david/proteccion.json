@@ -1,9 +1,62 @@
 {
-  "fecha_utc": "2026-11-13",
+  "fecha_utc": "2026-11-13T22:26:06.858605+00:00",
   "repositorio": "marcelop04/mesa-servicio-universitario",
   "rama": "main",
-  "fuentes": ["GET /repos/marcelop04/mesa-servicio-universitario/rules/branches/main", "GET /repos/marcelop04/mesa-servicio-universitario/rulesets/27168230", "GET /repos/marcelop04/mesa-servicio-universitario/rulesets/27168231"],
-  "rulesets": [{"id": 27168230, "nombre": "main-1", "estado": "active", "reglas": ["deletion", "non_fast_forward"], "bypass_usuario_actual": "never"}, {"id": 27168231, "nombre": "main-2", "estado": "active", "reglas": ["pull_request"], "aprobaciones_requeridas": 1, "bypass_usuario_actual": "always"}],
+  "commit": "f8d8c9e585fcbd278475a20784d0e7b1621c194f",
+  "fuentes": [
+    "GET /repos/marcelop04/mesa-servicio-universitario/branches/main",
+    "GET /repos/marcelop04/mesa-servicio-universitario/rules/branches/main",
+    "GET /repos/marcelop04/mesa-servicio-universitario/rulesets?per_page=100",
+    "GET /repos/marcelop04/mesa-servicio-universitario/rulesets/27168230",
+    "GET /repos/marcelop04/mesa-servicio-universitario/rulesets/27168231"
+  ],
+  "rulesets": [
+    {
+      "id": 27168230,
+      "nombre": "main-1",
+      "estado": "active",
+      "reglas": [
+        "deletion",
+        "non_fast_forward"
+      ],
+      "bypass_usuario_actual": "never"
+    },
+    {
+      "id": 27168231,
+      "nombre": "main-2",
+      "estado": "active",
+      "reglas": [
+        "pull_request"
+      ],
+      "bypass_usuario_actual": "always",
+      "aprobaciones_requeridas": 1
+    }
+  ],
+  "resumen_proteccion_clasica": {
+    "enforcement_level": "off",
+    "contexts": [],
+    "checks": []
+  },
   "checks_obligatorios_en_reglas_de_rama": [],
-  "nota": "Se certifica lo observado: PR con una aprobación y bypass configurado, bloqueo de borrado/force-push. No existe regla required_status_checks en la respuesta efectiva. El gate CI/CD de la aplicación se comprueba por separado."
+  "checks_esperados": [
+    "Backend (Spring Boot)",
+    "Frontend (React)",
+    "npm audit (incluye desarrollo)",
+    "OWASP Dependency-Check",
+    "Configuración de despliegue",
+    "Imágenes Docker",
+    "CodeQL (java-kotlin)",
+    "CodeQL (javascript-typescript)"
+  ],
+  "checks_esperados_no_obligatorios": [
+    "Backend (Spring Boot)",
+    "Frontend (React)",
+    "npm audit (incluye desarrollo)",
+    "OWASP Dependency-Check",
+    "Configuración de despliegue",
+    "Imágenes Docker",
+    "CodeQL (java-kotlin)",
+    "CodeQL (javascript-typescript)"
+  ],
+  "nota": "Las ejecuciones CI/CodeQL se comprueban por separado. La consulta actual no acredita checks obligatorios cuando enforcement_level está off y la respuesta efectiva no incluye required_status_checks."
 }

@@ -27,7 +27,8 @@ def calcular(archivo):
         if not re.fullmatch(r"P\d{2,3}", participante) or participante in ids:
             raise ValueError("Cada participante debe tener un identificador P01, P02… único.")
         date.fromisoformat(fila["fecha"])
-        if not re.fullmatch(r"[1-9]\d*", fila.get("ancho") or ""):
+        ancho = fila.get("viewport_real") or fila.get("ancho")
+        if not re.fullmatch(r"[1-9]\d*", ancho or ""):
             raise ValueError(f"{participante}: registrar el ancho real de la pantalla en píxeles.")
         url = urlsplit(fila["url"])
         if url.scheme != "https" or not url.hostname or url.username or url.password:
@@ -39,7 +40,7 @@ def calcular(archivo):
             raise ValueError(f"{participante}: registrar el rol observado.")
         valor = puntuacion([int(fila[f"q{i}"]) for i in range(1, 11)])
         ids.add(participante)
-        participantes.append({"participante": participante, "rol": fila["rol"], "ancho": int(fila["ancho"]), "sus": valor})
+        participantes.append({"participante": participante, "rol": fila["rol"], "ancho": int(ancho), "sus": valor})
     if not participantes:
         raise ValueError("No hay respuestas: realizar las sesiones con personas antes de calcular SUS.")
     return {

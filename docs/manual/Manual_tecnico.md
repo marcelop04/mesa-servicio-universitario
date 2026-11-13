@@ -397,6 +397,8 @@ El [cuestionario listo para compartir](../pruebas/usuarios/Cuestionario_SUS.md) 
 el mensaje de invitación y los diez ítems. `/sus/` descarga un CSV por participante;
 no almacena respuestas en el servidor. Las herramientas de combinación y cálculo
 aceptan respuestas de sesiones registradas y no ofrecen un modo de simulación.
+Los [resultados recibidos](../pruebas/usuarios/Resultados_SUS.md) incluyen cinco
+cuestionarios y media SUS 87/100; allí se documentan sus metadatos y límites.
 
 ## 8. Diagnóstico
 

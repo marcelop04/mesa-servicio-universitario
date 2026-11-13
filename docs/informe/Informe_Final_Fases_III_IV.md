@@ -2,7 +2,7 @@
 ## Informe consolidado · fases III y IV
 
 **Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre main+B `5e83051`: 12/11/2026.
-Actualización del paquete B: 13/11/2026 (Lima), sobre main `df8cc39` y evidencias del PR #9.
+Actualización del paquete B: 13/11/2026 (Lima), con main `f8d8c9e` y cinco cuestionarios SUS recibidos.
 Esta revisión actualiza la sección B y sus filas de trazabilidad. Los demás aportes
 conservan su corte anterior para que los revisen sus responsables.
 
@@ -135,13 +135,14 @@ del paquete C. La consulta Code Scanning de main registra cinco alertas del prot
 histórico (tres high, dos medium), fuera de los contextos Docker backend/frontend;
 quedan para revisión de seguridad. Un workflow CodeQL exitoso no equivale a cero alertas.
 
-El protocolo de usuarios prevé cinco participantes reales, SUS y revisión responsive a
-360/1366 px. La revisión responsive final sobre HTTPS registra 32 capturas de cuatro
-roles y dos del formulario `/sus/`, sin desbordes/5xx. El formulario publicado permite
-descarga CSV y su combinación para calcular resultados; su verificación técnica no
-respondió cuestionarios. Las cinco sesiones y sus puntuaciones siguen pendientes de
-participación real. También quedan los ajustes administrativos de GitHub y la revisión
-de alertas del prototipo. Ver `docs/fase-iii-iv-david.md` y `entrega-main.json`.
+La revisión responsive sobre HTTPS registra 32 capturas de cuatro roles y dos del
+formulario `/sus/`, sin desbordes/5xx. Esa verificación técnica no respondió cuestionarios.
+Posteriormente se recibieron cinco CSV del rol Solicitante: puntuaciones 75, 95, 85,
+90 y 90, con **media SUS 87/100**. Las respuestas se conservan sin alteraciones y el
+cálculo es reproducible. El resumen prioriza el viewport observado. Las horas quedan
+sin validar y las notas de tarea, tiempos, ayuda y navegador constan como no registrados. Ver
+[resultados y limitaciones](../pruebas/usuarios/Resultados_SUS.md).
+Los ajustes administrativos de GitHub y la revisión de alertas del prototipo siguen pendientes.
 
 ### 4.5 Estado de cierre revisado el 13/11/2026 (Lima)
 
@@ -151,13 +152,13 @@ de alertas del prototipo. Ver `docs/fase-iii-iv-david.md` y `entrega-main.json`.
 | B2 · Ambientes y secretos | Perfiles y validaciones implementados; prod sin siembras verificado en la entrega registrada |
 | B3 · GHCR/CD y protección main | Entrega main aprobada; falta que el propietario active los ocho checks obligatorios |
 | B4 · Respaldo y recuperación | CI y ensayo aislado en VM aprobados, copia externa comprobada y timer activo |
-| B5 · Usuarios/SUS y responsive | Responsive técnico verificado; cuestionario preparado, cinco sesiones reales y análisis pendientes |
+| B5 · Usuarios/SUS y responsive | Cinco sesiones aportadas, media 87/100 y responsive técnico verificado; límites de observación registrados |
 | B6 · Manual técnico | Instalación, variables, CD, provisión y recuperación documentados |
 
 El [cuestionario](../pruebas/usuarios/Cuestionario_SUS.md) incluye una invitación y
 versión escrita. El formulario web descarga un CSV por persona, registra ancho real
-y fecha de Lima, y no envía respuestas al servidor. El archivo de respuestas permanece
-vacío hasta recoger sesiones reales. Se retiraron el ejemplo de respuestas y el modo
+y fecha de Lima, y no envía respuestas al servidor. El archivo de respuestas reúne
+los cinco CSV aportados por el responsable. Se retiraron el ejemplo de respuestas y el modo
 de simulación. El simulacro RNF08 y el ensayo RNF11 siguen siendo pruebas exigidas.
 
 La API de GitHub confirmó permisos WRITE sin ADMIN. El ruleset aditivo está preparado
@@ -165,6 +166,11 @@ en `despliegue/github/checks-main-ruleset.json`; configurarlo corresponde al pro
 No se declara B3 completamente cerrado mientras falten los checks de main.
 La revisión de las alertas CodeQL y el DAST corresponde a C; la integración de
 observabilidad y las pruebas completas de rendimiento corresponden a D/E.
+
+La nueva consulta de protección mantiene `enforcement_level=off`, `contexts=[]` y
+ninguna regla efectiva `required_status_checks`. La ejecución exitosa de los ocho
+checks no equivale a que GitHub los exija para integrar. La evidencia actual se
+conserva en `docs/evidencias/fase-iii-iv-david/proteccion.json`.
 
 ## 5. Seguridad y revisión de calidad · Marcelo (C)
 
@@ -244,6 +250,18 @@ consolidación del informe de pruebas, incluyendo seguridad aportada por C y usu
 No rellenar percentiles, puntuaciones SUS, tasas de error o «cero vulnerabilidades» sin evidencia de la
 versión y alcance correspondientes. Registrar ambiente, herramientas, fecha, tamaño de muestra y limitaciones.
 
+### 7.1 Resultados de usuario aportados por B
+
+Se incorporaron cinco cuestionarios de solicitantes, con diez ítems completos por
+persona. Media SUS **87/100**, mediana 90 y rango 75–95. La escala no representa un
+porcentaje de tareas completadas. Los comentarios recibidos destacan navegación,
+etiquetas, registro y seguimiento; P02 propone modo oscuro como mejora opcional.
+
+El responsable indicó que no registró tiempos, navegador, tareas observadas ni ayuda.
+El resumen usa el viewport observado y conserva las horas sin validarlas. El resultado es
+la descripción de estas respuestas y no acredita por sí solo usabilidad de otros
+roles o una tasa de éxito. [Datos, método y alcance](../pruebas/usuarios/Resultados_SUS.md).
+
 ## 8. Resultados y trazabilidad de la entrega
 
 | Requisito / producto | Fuente actual | Cierre pendiente |
@@ -254,6 +272,7 @@ versión y alcance correspondientes. Registrar ambiente, herramientas, fecha, ta
 | RNF08 operación/observabilidad | Por aportar Gabriel | Simulacro y evidencias |
 | RNF10 CI/CD | CI/CodeQL y CD main aprobados; sección 4 | Activación administrativa de checks obligatorios |
 | RNF11 restauración | Ensayo CI/VM y copia externa con hashes; sección 4 | Repetir si cambia el procedimiento o la release |
+| Usuario/SUS (B5) | Cinco CSV, media 87/100 y límites registrados; secciones 4 y 7.1 | Incorporar esta síntesis al informe de pruebas del equipo |
 | Manual de usuario | Documento de Emanuel enlazado arriba | Revisión de la release |
 | Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa | Verificar la futura release con D/E integrados |
 | Informe de pruebas | Aportes de seguridad disponibles | Consolidación de Alex |
