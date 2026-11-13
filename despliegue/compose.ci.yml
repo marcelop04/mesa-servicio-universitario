@@ -1,0 +1,6 @@
+# Añade etiquetas locales al build existente, para probar el mismo stack de nube.
+services:
+  backend:
+    image: msu-backend:prueba
+  frontend:
+    image: msu-frontend:prueba

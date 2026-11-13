@@ -1,0 +1,202 @@
+{
+  "fecha_utc": "2026-11-12T22:42:06.053Z",
+  "url": "https://msu-157-137-206-147.sslip.io",
+  "entorno": "desplegado",
+  "resultados": [
+    {
+      "archivo": "login-360.png",
+      "ruta": "/login",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "registro-360.png",
+      "ruta": "/registro",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-solicitudes-360.png",
+      "ruta": "/solicitudes",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-detalle-360.png",
+      "ruta": "/solicitudes/2",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-solicitudes-nueva-360.png",
+      "ruta": "/solicitudes/nueva",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-notificaciones-360.png",
+      "ruta": "/notificaciones",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-perfil-360.png",
+      "ruta": "/perfil",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-supervision-360.png",
+      "ruta": "/supervision",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-dashboard-360.png",
+      "ruta": "/dashboard",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-notificaciones-360.png",
+      "ruta": "/notificaciones",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "tecnico-atencion-360.png",
+      "ruta": "/atencion",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "tecnico-notificaciones-360.png",
+      "ruta": "/notificaciones",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-admin-usuarios-360.png",
+      "ruta": "/admin/usuarios",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-admin-configuracion-360.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-politicas-360.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-auditoria-360.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 360,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "login-1366.png",
+      "ruta": "/login",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "registro-1366.png",
+      "ruta": "/registro",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-solicitudes-1366.png",
+      "ruta": "/solicitudes",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-detalle-1366.png",
+      "ruta": "/solicitudes/2",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-solicitudes-nueva-1366.png",
+      "ruta": "/solicitudes/nueva",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-notificaciones-1366.png",
+      "ruta": "/notificaciones",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "solicitante-perfil-1366.png",
+      "ruta": "/perfil",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-supervision-1366.png",
+      "ruta": "/supervision",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-dashboard-1366.png",
+      "ruta": "/dashboard",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "supervisor-notificaciones-1366.png",
+      "ruta": "/notificaciones",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "tecnico-atencion-1366.png",
+      "ruta": "/atencion",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "tecnico-notificaciones-1366.png",
+      "ruta": "/notificaciones",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-admin-usuarios-1366.png",
+      "ruta": "/admin/usuarios",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-admin-configuracion-1366.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-politicas-1366.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 1366,
+      "sin_desborde": true
+    },
+    {
+      "archivo": "admin-auditoria-1366.png",
+      "ruta": "/admin/configuracion",
+      "ancho": 1366,
+      "sin_desborde": true
+    }
+  ],
+  "fallos": [],
+  "estado": "OK",
+  "nota": "Capturas automatizadas y desborde horizontal; completar revisión visual y SUS con personas."
+}

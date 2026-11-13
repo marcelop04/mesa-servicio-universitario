@@ -5,6 +5,8 @@ spring:
     password:
 
 msu:
+  jwt:
+    secreto: solo-pruebas-clave-ficticia-de-mas-de-32-bytes
   tareas:
     # Las pruebas ejecutan el cierre automático con un instante controlado.
     habilitadas: false

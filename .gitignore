@@ -23,3 +23,16 @@ tests/**/reportes/
 
 # Evidencias subidas en ejecución local (HU06)
 backend/archivos/
+
+# Despliegue: credenciales, estado de infraestructura y copias con datos
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+*.pem
+*.key
+backups/
+imagenes.env
+__pycache__/

@@ -1,0 +1,15 @@
+# Desarrollo: permite arrancar como antes con MySQL local o Docker Compose.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8}
+    username: ${DB_USER:msu}
+    password: ${DB_PASSWORD:msu_local}
+
+msu:
+  jwt:
+    secreto: ${JWT_SECRET:solo-desarrollo-cambie-este-secreto-de-32-bytes}
+    cookie-segura: false
+  datos-demo:
+    habilitado: ${DATOS_DEMO:true}
+    password: ${DEMO_PASSWORD:Demo12345!}
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:true}}
