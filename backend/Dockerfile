@@ -1,5 +1,6 @@
 # Backend Spring Boot: compila con Maven y ejecuta con un JRE liviano.
-FROM maven:3.9-eclipse-temurin-17 AS build
+# El JAR es portable: compilar en la arquitectura nativa evita Maven bajo QEMU.
+FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY pom.xml .
 RUN mvn -q -B dependency:go-offline

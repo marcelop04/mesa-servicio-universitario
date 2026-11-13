@@ -1,6 +1,7 @@
 # Fases III y IV · David · Paquete B: Nube y CI/CD
 
-Base: `main` (`87afec8`, funciones de Emanuel integradas). Rama: `feat/david-despliegue`.
+Entrega inicial: `feat/david-despliegue`, integrada en main por PR #4 (`5e83051`).
+Correcciones operacionales: `fix/despliegue-prod`, desde ese main.
 Fecha de preparación: 12/11/2026. Plataforma: OCI Free Trial para la demostración del curso;
 Always Free se conserva como alternativa de infraestructura.
 
@@ -10,9 +11,9 @@ Always Free se conserva como alternativa de infraestructura.
 |---|---|---|---|
 | B1 | MySQL, backend y frontend en nube con HTTPS | Desplegado en E5, HTTPS y login verificados en la URL pública | `https://msu-157-137-206-147.sslip.io`, `docs/evidencias/fase-iii-iv-david/https.json` |
 | B2 | Desarrollo, prueba, producción y secretos | Implementado; perfiles, generador y comportamiento de cookies en prod probados localmente | `application-{dev,prueba,prod}.yml`, `.env.example`, `crear-entorno.py`, `DespliegueHttpsTest` |
-| B3 | GHCR/CD solo tras CI y main protegida | PR #4, entrega demo desde rama autorizada tras cuatro checks; CD main preparado, integración/revisión y ajustes de environment pendientes del propietario | `.github/workflows/{ci,cd}.yml`, `entregar-ci.sh`, `despliegue/github/proteccion-main.json`, PR #4 |
-| B4 | Copia/restauración de MySQL y evidencias | Scripts y timer implementados; ensayo MySQL real en CI del PR; recuperación en VM y copia externa pendientes | `backup.sh`, `restaurar.sh`, `probar-recuperacion.sh`, `systemd/`, checks del PR #4 |
-| B5 | Cinco usuarios, SUS y responsive | Responsive desplegado: 32 capturas a 360/1366, sin desbordes/5xx. Cinco sesiones SUS pendientes | `docs/pruebas/usuarios/`, `docs/evidencias/fase-iii-iv-david/responsive/resultado.json` |
+| B3 | GHCR/CD solo tras CI y main protegida | PR #4 integrado. Reglas de main certificadas. Primer CD main cancelado al compilar frontend ARM; builds nativos y gate CI/CodeQL corregidos, nueva entrega definitiva en verificación | `entrega.json`, `proteccion.json`, `.github/workflows/{ci,cd}.yml` |
+| B4 | Copia/restauración de MySQL y evidencias | Aprobado en CI y en ensayo aislado de la VM; copia de la app descargada al equipo y cuatro SHA-256 verificados; timer diario activo | `recuperacion.json`, `backup.sh`, `restaurar.sh`, `systemd/` |
+| B5 | Cinco usuarios, SUS y responsive | Responsive desplegado aprobado. Formulario CSV y combinación preparados; ejemplo simulado separado. Cinco sesiones reales siguen pendientes | `docs/pruebas/usuarios/`, `/sus/`, `responsive/resultado.json` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
 | Todos | Sección del informe, demostración y uso de IA | Borradores documentados; incorporar evidencias reales al activar la nube | `docs/informe/Seccion_David_Nube_CD.md`, `docs/presentacion/Guion_David.md`, `docs/registro-uso-ia.md` |
 
@@ -23,9 +24,8 @@ Always Free se conserva como alternativa de infraestructura.
   saldo y vigencia. La alternativa A1 2/12 permanece por defecto en Terraform.
 - Caddy termina HTTPS y sirve API/SPA bajo el mismo origen. MySQL y backend quedan sin
   puertos del host. Certificados y evidencias persisten en volúmenes.
-- CD main usa el SHA aprobado y digests inmutables multi-arquitectura. La demo inicial
-  es un job separado, habilitado para la rama propia autorizada, después del éxito
-  de los cuatro checks; también usa el commit probado y sus digests GHCR.
+- CD main usa el SHA aprobado y digests multi-arquitectura. La primera demo de PR
+  quedó como evidencia histórica; su job y sus Secrets/variables ya se retiraron.
 - Copia coherente con el backend detenido, dump SQL, tar de evidencias y sumas SHA-256.
   Rollback de imágenes separado de restauración SQL si una migración no es retrocompatible.
 - Configuración nueva mediante GitHub Secrets, sin escribir secretos en Git ni en Terraform.
@@ -49,6 +49,10 @@ Always Free se conserva como alternativa de infraestructura.
 | Smoke sobre HTTPS público con cuenta real de demostración | Aprobado: TLS, HSTS, SPA, CSRF Secure, 401 JSON, OpenAPI, login/perfil/logout |
 | Playwright sobre la URL pública | 32 capturas de cuatro roles a 360/1366, 0 desbordes y 0 errores 5xx; `responsive/resultado.json` |
 | Regresión del detector de SPA de la entrega | 2 pruebas adicionales aprobadas; reconoce `id=raiz` y módulo compilado, rechaza páginas que no contienen la app |
+| CI completo y publicación/entrega GHCR | Aprobados en [run 43322815086](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086) |
+| Ensayo RNF11 en la VM | Aprobado: pérdida, copia corrupta, SQL/archivo/hash/permisos restaurados y servicios saludables |
+| Copia externa de la app pública | SQL, evidencias, imágenes y metadatos transferidos por SCP; las cuatro sumas SHA-256 coinciden |
+| Respaldo diario | `msu-backup.timer` activo; siguiente ejecución observada 13/11/2026 08:01:42 UTC |
 
 La prueba de proxy usa H2 y cabeceras de un terminador TLS simulado; **no demuestra un
 certificado público** ni sustituye MySQL real. El ensayo RNF11 ejecuta Docker/MySQL en
@@ -69,7 +73,7 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   Secret del repositorio y configurar `DEPLOY_USER=ubuntu`, `CD_ENABLED=false`.
 - GitHub informa `main` protegida; su resumen no muestra checks obligatorios. Crear el
   environment `production` devolvió 403 por requerir administrador. Marcelo debe revisar
-  las reglas existentes y añadir los cuatro checks sin eliminar reglas del equipo.
+  las reglas existentes y añadir los ocho checks de CI/CodeQL sin eliminar reglas del equipo.
 - El primer CI permitió comprobar los contenedores con MySQL real y detectó dos ajustes:
   expansión de rutas de ShellCheck en Docker y healthcheck Nginx con IPv4 explícito.
   Las correcciones se incluyen en la rama; ver el resultado actualizado en el PR.
@@ -85,18 +89,48 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   El smoke identificó un supuesto incorrecto de su propio detector HTML (`root` en
   vez de `raiz`). Se corrigió con parseo HTML y dos pruebas de regresión. El smoke
   externo con inicio/cierre de sesión ya está aprobado; ver checks para la nueva entrega.
+- La entrega corregida terminó con éxito: [CI y demo](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086).
+  Publicó y desplegó por digest el commit de merge probado `5b0a6aab9048669066ceabea2b032e56f2cae670`.
+  Los digests y estados están en `docs/evidencias/fase-iii-iv-david/entrega.json`.
+- Se ejecutó RNF11 en un proyecto efímero de la misma VM y se confirmó recuperación
+  SQL/archivo/hash/permisos. Después se copió la aplicación pública y se descargó la
+  instantánea al equipo del responsable; las cuatro sumas coinciden.
+- El timer diario está activo. `CD_ENABLED` se pausó en `false` mientras se revisa
+  prod y se completa CI del PR #8; se habilita para la entrega definitiva de main.
+  Los ajustes administrativos de GitHub los realiza el propietario.
+- El PR #4 se integró. El primer CD main duró 60 minutos y se canceló compilando
+  assets ARM bajo QEMU; se corrigieron los stages de build para usar arquitectura nativa.
+- Main integró el paquete C por PR #3 y la corrección A4/excepciones CVE por PR #7;
+  ambas se incorporaron a `fix/despliegue-prod`. El guard de Marcelo se conserva idéntico.
+  Prod rechaza cookies inseguras,
+  cuentas demo y solicitudes demo; sus tests HTTPS crean un fixture H2 sin activar siembra.
+- El archivo privado de producción se revisó preservando DB/JWT y datos existentes:
+  `DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`, `SEGURIDAD_DESPLIEGUE=true`.
+  El generador y el transporte rechazan configuraciones antiguas antes de entregarlas.
+- Se obtuvieron las reglas efectivas mediante `/rules/branches/main` y los rulesets:
+  borrado/force-push bloqueados, PR con 1 aprobación y bypass configurado. La respuesta
+  no contiene checks obligatorios; `proteccion.json` registra la configuración real.
+- No hay cinco participantes reales acreditados. P01–P05 en el ejemplo sintético no
+  se cuentan como participantes; el cálculo normal rechaza sus datos simulados.
+- La integración detectó una intermitencia al publicar políticas: MySQL/H2 redondeaba
+  nanosegundos y podía dejar la fecha en el futuro. Se normalizó a milisegundos, acorde
+  con `DATETIME(3)`, y se comprobó con reloj fijo y las pruebas de políticas.
+- Los CI `43355639076` y `43358822956` fallaron por HTTP 503 de la API NVD. Una carga
+  nueva desde los feeds oficiales NIST 2.0 y el análisis local terminaron correctamente.
+  CI usa ese transporte con caché separada; CVSS ≥ 7, `failOnError`, actualización y
+  excepciones de C se conservan. El resultado remoto se verifica en el PR.
+- La propuesta adicional `despliegue/github/checks-main-ruleset.json` recoge los ocho
+  checks de CI/CodeQL. Su creación por API devolvió 404 con WRITE, sin modificar las reglas.
 
 ## Dependencias para completar la operación
 
-1. Terminar y verificar la primera entrega de demostración en la E5, cuyo uso fue
-   autorizado para el período de prueba del curso.
-2. Administrador del repositorio para crear el environment y revisar/ampliar los checks
-   de la protección existente de `main`.
-3. Ejecutar RNF11 en la VM cuando exista; CI proporciona el ensayo aislado con MySQL real.
-4. Revisar e integrar el PR, completar host/Secrets restantes y activar CD con la VM lista.
-5. Ejecutar smoke HTTPS, ensayo de recuperación en VM y copia externa; registrar URL,
-   digests, hora, duración, resultado de CI/CD y hashes sin incluir datos ni secretos.
-6. Realizar las cinco sesiones y adjuntar los resultados reales de SUS/responsive.
+1. Completar y evidenciar la ejecución CD main con el entorno prod revisado, y consultar
+   la configuración efectiva del environment creado por el workflow.
+2. El propietario puede fortalecer reglas/environment; se distingue esa mejora de las
+   protecciones que ya se han verificado, sin certificar checks inexistentes.
+3. Realizar las cinco sesiones y adjuntar las respuestas reales SUS. Responsive web ya verificado.
+4. Acordar el cierre después de la revisión docente, conservar copias externas y
+   retirar la VM/discos antes de finalizar el período de prueba si ya no se necesitan.
 
 ## Evidencias de nube por completar
 
@@ -105,9 +139,10 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 | URL HTTPS y validación de sesión | `https://msu-157-137-206-147.sslip.io`, `https.json` |
 | Cuenta/home region/cupo y error real de capacidad OCI | `docs/evidencias/fase-iii-iv-david/oci-capacidad.json` |
 | Enlace a CI con ensayo de recuperación por commit | Checks del [PR #4](https://github.com/marcelop04/mesa-servicio-universitario/pull/4/checks) |
-| Enlace a CD exitoso y protección de main | Pendiente |
+| Entrega demo CI/GHCR exitosa | [Run 43322815086](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086), `entrega.json` |
+| Ruta CD main y ajustes de protección | Preparada; pendiente de revisión/integración y administrador |
 | Informe del smoke HTTPS y login | `docs/evidencias/fase-iii-iv-david/https.json` |
-| Copia externa, recuperación práctica, duración y hashes | Pendiente |
+| Copia externa y recuperación práctica con hashes | `docs/evidencias/fase-iii-iv-david/recuperacion.json` |
 | Responsive 360/1366 | `docs/evidencias/fase-iii-iv-david/responsive/` (32 capturas, 0 fallos) |
 | Cuestionarios P01–P05 | Pendientes de personas reales |
 

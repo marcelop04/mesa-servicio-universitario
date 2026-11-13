@@ -37,6 +37,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:?Usar prod o prueba}
+      SEGURIDAD_DESPLIEGUE: ${SEGURIDAD_DESPLIEGUE:-true}
       DB_URL: jdbc:mysql://mysql:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
       DB_USER: ${DB_USER:?Falta DB_USER}
       DB_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
@@ -50,7 +51,7 @@ services:
       ARCHIVOS_DIR: /app/archivos
       DATOS_DEMO: ${DATOS_DEMO:-false}
       DATOS_DEMO_SOLICITUDES: ${DATOS_DEMO_SOLICITUDES:-false}
-      DEMO_PASSWORD: ${DEMO_PASSWORD:?Falta DEMO_PASSWORD}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
       TAREAS_HABILITADAS: ${TAREAS_HABILITADAS:-true}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError
     volumes:

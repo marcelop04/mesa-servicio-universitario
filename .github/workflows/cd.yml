@@ -28,6 +28,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      actions: read
     outputs:
       backend: ${{ steps.referencias.outputs.backend }}
       frontend: ${{ steps.referencias.outputs.frontend }}
@@ -41,6 +42,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: test "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" = "$SOURCE_SHA"
+      - name: Exigir CI y seguridad del mismo SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: python3 despliegue/scripts/comprobar-ci.py --sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY"
       - name: Nombres de imágenes
         id: nombres
         env:
@@ -66,7 +72,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.nombres.outputs.backend }}
-          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
       - uses: docker/build-push-action@v6
@@ -76,7 +84,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.nombres.outputs.frontend }}
-          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
       - name: Guardar digests inmutables

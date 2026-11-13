@@ -99,21 +99,17 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.m2/dependency-check-data
-          key: dependency-check-13-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: dependency-check-13-${{ runner.os }}-
-      - name: Comprobar la clave de NVD sin mostrarla
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          if [ -z "$NVD_API_KEY" ]; then
-            echo '::error::Configure el secret NVD_API_KEY. No se considera aprobado un análisis que no pudo consultar NVD.'
-            exit 1
-          fi
+          # Separar la base completa del feed de descargas API incompletas.
+          key: dependency-check-13-nvd-feed-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: dependency-check-13-nvd-feed-${{ runner.os }}-
       - name: Analizar dependencias (CVSS >= 7 bloquea)
         working-directory: backend
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn -B -Pseguridad dependency-check:check
+        # Feed 2.0 del propio NIST, admitido por Dependency-Check 13. No requiere
+        # API key; conserva actualización automática, failOnError y CVSS del POM.
+        run: >-
+          mvn -B -Pseguridad
+          "-DnvdDatafeedUrl=https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{0}.json.gz"
+          -DconnectionTimeout=15000 -DreadTimeout=120000 dependency-check:check
       - name: Conservar los informes disponibles
         if: always()
         uses: actions/upload-artifact@v4
@@ -171,78 +167,3 @@ jobs:
           terraform fmt -check
           terraform init -backend=false -input=false
           terraform validate
-
-  demo:
-    name: GHCR y entrega de demostración
-    needs: [backend, frontend, docker, despliegue]
-    # Bootstrap académico explícito desde un PR propio y una rama autorizada.
-    # La entrega de main conserva el workflow CD y sus reglas de producción.
-    if: >-
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.head_ref == vars.DEMO_BRANCH && vars.DEMO_ENABLED == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    concurrency:
-      group: cd-produccion
-      cancel-in-progress: false
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-      - name: Referencias de imágenes de demostración
-        id: nombres
-        run: |
-          prefijo="ghcr.io/${GITHUB_REPOSITORY,,}"
-          {
-            echo "backend=$prefijo-backend:demo-$GITHUB_SHA"
-            echo "frontend=$prefijo-frontend:demo-$GITHUB_SHA"
-            echo "prefijo=$prefijo"
-          } >> "$GITHUB_OUTPUT"
-      - uses: docker/build-push-action@v6
-        id: backend
-        with:
-          context: backend
-          platforms: linux/amd64
-          push: true
-          tags: ${{ steps.nombres.outputs.backend }}
-          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          cache-from: type=gha,scope=backend-demo
-          cache-to: type=gha,mode=max,scope=backend-demo
-      - uses: docker/build-push-action@v6
-        id: frontend
-        with:
-          context: frontend
-          platforms: linux/amd64
-          push: true
-          tags: ${{ steps.nombres.outputs.frontend }}
-          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          cache-from: type=gha,scope=frontend-demo
-          cache-to: type=gha,mode=max,scope=frontend-demo
-      - name: Entregar el commit probado a la VM académica
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ github.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_HEAD: ${{ github.event.pull_request.head.sha }}
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-          PRODUCTION_ENV: ${{ secrets.DEMO_ENV }}
-          BACKEND_IMAGE: ${{ steps.nombres.outputs.prefijo }}-backend@${{ steps.backend.outputs.digest }}
-          FRONTEND_IMAGE: ${{ steps.nombres.outputs.prefijo }}-frontend@${{ steps.frontend.outputs.digest }}
-        run: |
-          test "$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state)" = open
-          test "$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .head.sha)" = "$PR_HEAD"
-          bash despliegue/scripts/entregar-ci.sh

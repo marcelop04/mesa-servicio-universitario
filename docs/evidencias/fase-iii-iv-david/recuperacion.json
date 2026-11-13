@@ -1,0 +1,30 @@
+{
+  "fecha": "2026-11-12",
+  "lugar": "VM del curso en OCI, proyecto Docker efímero separado del servicio público",
+  "script": "despliegue/scripts/probar-recuperacion.sh",
+  "resultado": "OK",
+  "comprobaciones": [
+    "MySQL 8 y aplicación real saludables antes del ensayo",
+    "Fila SQL y archivo escritos antes de la copia",
+    "Copia consistente SQL/archivos con backend pausado",
+    "Pérdida simulada mediante modificación de la fila y del archivo",
+    "Rechazo de copia corrupta antes de alterar la base o parar el backend",
+    "Restauración del valor SQL original y eliminación de tabla posterior a la copia",
+    "Archivo restaurado con hash original y eliminación de archivo sobrante",
+    "Permisos permiten volver a escribir desde el usuario del backend",
+    "Aplicación saludable después de restaurar"
+  ],
+  "copia_aplicacion_publica": {
+    "directorio_vm": "/opt/msu/backups/msu-20261112T224655Z-10986",
+    "copia_externa": "Equipo del responsable, carpeta privada .msu-respaldos fuera del repositorio",
+    "transferencia": "SCP con host SSH verificado",
+    "comprobacion_externa": "sha256sum --check SHA256SUMS: cuatro archivos OK",
+    "sha256": {
+      "mysql.sql.gz": "9489c90675f0e6dbe73c8a059038be4f739ff06d405d616f4172e18d66be5936",
+      "evidencias.tar.gz": "0505988fcb448ca909d02c8b62553b08fd031c2eebe53d64557aca55bfd43374",
+      "imagenes.env": "138c74628e1b064ae37f32bca1aab7b9b6ad746c2929ee03ed7dc02f6d36d6e9",
+      "metadatos.txt": "cbe297c997a47e2d7919012a12f3a2a3540957b22c157d47c2ed4a9440050041"
+    }
+  },
+  "nota": "El ensayo de pérdida/restauración se ejecutó en volúmenes aislados; la copia externa contiene la instantánea de la aplicación pública. Dumps y contraseñas no se publican en Git."
+}

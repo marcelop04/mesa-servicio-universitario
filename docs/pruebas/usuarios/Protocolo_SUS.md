@@ -4,6 +4,12 @@ Responsable: David. Muestra prevista: **5 personas reales**, idealmente 3 solici
 1 persona que pruebe supervisión y 1 que pruebe atención técnica/administración.
 Estado: protocolo e instrumentos preparados; sesiones y puntuaciones pendientes.
 
+Aplicación para las sesiones: <https://msu-157-137-206-147.sslip.io>.
+Cuestionario: <https://msu-157-137-206-147.sslip.io/sus/> (al integrar la actualización).
+La comprobación automatizada de cuatro roles a 360/1366 px ya produjo 32 capturas sin
+fallos en `docs/evidencias/fase-iii-iv-david/responsive/`; las sesiones con personas
+se registran separadamente en la tabla y el CSV.
+
 ## Preparación
 
 1. Confirmar la URL **HTTPS pública** y el commit/digest con el smoke del manual técnico.
@@ -40,6 +46,23 @@ Registrar duración, éxito/sin ayuda/con ayuda/fallo, errores y comentarios tex
 | P05 | Pendiente | Por asignar | Por asignar | Pendiente | Pendiente | No realizada |
 
 ## Cuestionario SUS
+
+El formulario usa solo seudónimos P01–P05 y descarga un CSV individual. Cada persona
+entrega su archivo al facilitador, que comprueba la sesión y reúne los cinco archivos.
+Se conserva el ancho previsto y también el viewport realmente observado. Para combinar:
+
+```bash
+python docs/pruebas/usuarios/combinar-sus.py SUS-P01.csv SUS-P02.csv SUS-P03.csv SUS-P04.csv SUS-P05.csv --salida respuestas-recogidas.csv
+python docs/pruebas/usuarios/calcular-sus.py respuestas-recogidas.csv
+```
+
+`ejemplo-SIMULADO.csv` contiene datos sintéticos para demostrar la herramienta, no
+participantes ni resultados reales. El cálculo normal los rechaza. Solo se procesa
+con `--simulacion`, devuelve cero participantes reales y no marca B5 como cerrado:
+
+```bash
+python docs/pruebas/usuarios/calcular-sus.py docs/pruebas/usuarios/ejemplo-SIMULADO.csv --simulacion
+```
 
 Después de las tareas y sin sugerir respuestas: **1 totalmente en desacuerdo, 2 en
 desacuerdo, 3 neutral, 4 de acuerdo, 5 totalmente de acuerdo**. Contestar los diez ítems.

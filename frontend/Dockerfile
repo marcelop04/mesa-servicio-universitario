@@ -1,6 +1,7 @@
 # Frontend React: compila con Vite y lo sirve con Nginx, que reenvía /api al backend
 # (mismo origen: las cookies de sesión y XSRF-TOKEN funcionan sin CORS).
-FROM node:22-alpine AS build
+# Los assets son estáticos e independientes de la arquitectura del Nginx final.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
