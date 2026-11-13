@@ -25,4 +25,18 @@ backend/archivos/
 # Informes automáticos de seguridad: conservar solo evidencias revisadas y sin datos sensibles.
 reports/
 frontend/npm-audit.json
+docs/pruebas/npm-audit.json
+alcance-dast.json
 *.sarif
+# Despliegue: credenciales, estado de infraestructura y copias con datos
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+*.pem
+*.key
+backups/
+imagenes.env
+__pycache__/

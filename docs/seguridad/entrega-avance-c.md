@@ -4,6 +4,10 @@ Corte de preparación: **12/11/2026**. No es una declaración de paquete termina
 Documentos de referencia aportados por Marcelo: reparto de fases III–IV (11/11/2026) y propuesta del proyecto.
 No se recibió una tabla de puntajes; esta trazabilidad no asigna una calificación ni inventa criterios.
 
+Este documento conserva la **primera publicación** del avance. La revisión que incorpora el main
+actualizado con B (`5e83051`) está en [integracion-main-b.md](integracion-main-b.md); sus evidencias
+no se confunden con las ejecuciones históricas descritas a continuación.
+
 ## 1. Rama y aislamiento del aporte
 
 - Repositorio: <https://github.com/marcelop04/mesa-servicio-universitario>.

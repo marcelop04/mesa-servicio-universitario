@@ -123,12 +123,14 @@ class LimiteIntentosLoginTest {
 
     @Test
     void despliegueExigeCookiesSegurasYSinCuentasDemo() {
-        assertThatThrownBy(() -> new VerificadorSeguridad(true, false, false, ""))
+        assertThatThrownBy(() -> new VerificadorSeguridad(true, false, false, false, ""))
                 .isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> new VerificadorSeguridad(true, true, true, "password-demo"))
+        assertThatThrownBy(() -> new VerificadorSeguridad(true, true, true, false, "password-demo"))
                 .isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> new VerificadorSeguridad(false, false, true, ""))
+        assertThatThrownBy(() -> new VerificadorSeguridad(false, false, true, false, ""))
                 .isInstanceOf(IllegalStateException.class);
-        assertThatCode(() -> new VerificadorSeguridad(true, true, false, "")).doesNotThrowAnyException();
+        assertThatThrownBy(() -> new VerificadorSeguridad(true, true, false, true, ""))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatCode(() -> new VerificadorSeguridad(true, true, false, false, "")).doesNotThrowAnyException();
     }
 }

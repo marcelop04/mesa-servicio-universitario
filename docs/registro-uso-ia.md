@@ -82,3 +82,30 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Límites | Sin nueva implementación ni migración, sin supresiones, sin escaneo de URL supuesta, sin atribuir revisión humana a Marcelo. Los reportes completos y credenciales no se publican |
 | Información pendiente | Decisión de tratamiento de Spring con el equipo; URL HTTPS, versión y autorización de David para C3; secciones verificadas para C6 |
 | Responsable | Marcelo; debe revisar el registro y las decisiones antes del cierre |
+## Registros del paquete B conservados desde main
+
+Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
+Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
+
+| Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
+|---|---|---|---|---|---|---|---|
+| 12/11/2026 | David | OpenCode (asistente de programación) | Implementar paquete B del reparto desde main: nube/HTTPS, ambientes, GHCR/CD, respaldo, usuarios y manual con servicios gratuitos | Terraform OCI, Compose/Caddy, perfiles, workflows, herramientas RNF11/SUS/responsive y documentación | Sí | JUnit, Python, ShellCheck, actionlint, Terraform, Compose/Caddy; MySQL real y RNF11 aprobados en CI del PR #4 | Se corrigieron rutas ShellCheck en Docker y healthcheck IPv4; A1 quedó bloqueada por capacidad |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Usar los créditos Free Trial para publicar la demo universitaria y entregar una URL web | Modo opt-in E5, transporte SSH compartido y entrega demo condicionada a CI | Sí | Promoción ACTIVE/FREE_TRIAL consultada, E5 creada, Terraform/ShellCheck/actionlint validados, Docker/SSH listos | Se separa bootstrap demo de CD main; HTTPS, recuperación en VM y sesiones reales se registran al ejecutarse |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Verificar la publicación real y revisar responsive con todos los roles | Smoke de TLS/cookies/sesión y capturas de la URL pública | Sí | 8 pruebas Python aprobadas, smoke HTTPS con login/perfil/logout aprobado, 32 capturas web sin desbordes/5xx | El detector asumía un elemento `root`; se cambió a parsear la raíz real `raiz` y el módulo compilado con dos pruebas de regresión |
+
+No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
+Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.
+
+## IA-C-06 · Integración de seguridad sobre main con B
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 |
+| Herramienta | OpenCode, GPT-6.1 Sol (OpenAI) |
+| Prompt / alcance | Marcelo pide cambios únicamente del paquete C en su PR sobre main actualizado con B, sin inventar información ni reemplazar tareas de compañeros |
+| Resultado generado | Integración C+B; defaults externos; guard prod y siembras; cabeceras/IP en Caddy; pruebas de perfiles/proxy; CI conserva SCA y B; alcance DAST con SHA; actualización del informe C6 |
+| ¿Se utilizó? | Incorporado a la rama C; aceptación humana pendiente. No se fusiona a main ni se despliega |
+| Validación realizada | Pruebas Java/React/Python, audit npm, Caddy/Nginx y proxy TLS local aislado; Dependency-Check con caché NVD conserva 23 CVE, 15 bloqueantes. Detalles en `docs/seguridad/integracion-main-b.md` |
+| Modificaciones tras revisar | Se conservaron healthcheck, ensayos B y registros IA; prod no permite semillas demo; pruebas comprueban causas del guard y cabeceras únicas; se distingue CA local de HTTPS público |
+| Límites | Sin migración mayor ni supresiones; sin ZAP no autorizado, sin corrección de A4, sin implementar D/E, sin rotar cuentas/Secrets ni atribuir firmas o validaciones humanas |
+| Responsable | Marcelo: revisar código, asserts, pendientes y resultados antes del cierre |

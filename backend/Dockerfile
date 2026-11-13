@@ -8,7 +8,9 @@ RUN mvn -q -B -DskipTests package
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-RUN useradd --system --uid 1001 msu && mkdir -p /app/archivos && chown msu /app/archivos
+RUN apt-get update && apt-get install -y --no-install-recommends curl tar \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 1001 msu && mkdir -p /app/archivos && chown msu /app/archivos
 COPY --from=build /app/target/msu-backend-*.jar app.jar
 USER msu
 EXPOSE 8080

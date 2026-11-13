@@ -3,18 +3,22 @@
 Inicio: 11/11/2026; evidencias remotas revisadas el 12/11/2026. Alcance aprobado: CodeQL en repositorio público, secretos externos, limitador para
 una instancia y actualización puntual de dependencias vulnerables. Base recibida: incluye HU15–19 y paquete A.
 
+**Actualización tras B en main (12/11/2026):** se incorpora `5e83051` en la rama C,
+conservando los aportes A/B y los controles de seguridad. No se integran los PR D/E ni se despliega.
+Cambios, pruebas y límites en [integración C sobre main+B](seguridad/integracion-main-b.md).
+
 **No declarar el paquete entero terminado:** controles y pruebas locales implementados; CI/CodeQL del
 PR #3 revisados. Faltan resolver los hallazgos Java, DAST, revisión humana, configuración del despliegue
 y aportes finales del equipo.
 
 | ID | Tarea | Estado comprobable | Evidencia |
 |---|---|---|---|
-| C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Código y pruebas backend implementados; verificar Nginx/HTTPS/IP real y rotaciones con David | [Checklist](seguridad/checklist-owasp.md); `SeguridadConfig`, `LimiteIntentosLogin`, `IpCliente`, `VerificadorSeguridad`, `.env.example`, generador y pruebas |
+| C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Integrado con perfiles y borde de B: secretos dev obligatorios, guard prod sin demo, cabeceras Caddy/Nginx y prueba de proxy aislada. Revalidación de la release pública pendiente | [Integración y evidencias](seguridad/integracion-main-b.md); [Checklist](seguridad/checklist-owasp.md) |
 | C2 | SAST, npm audit y Dependency-Check en CI | Ejecuciones remotas revisadas: CodeQL Java/JS con 0 resultados y sin alertas abiertas para la referencia analizada; npm audit 0. Dependency-Check completado con 23 CVE distintos, 15 bloqueantes. C2 sigue abierto por Spring | [Evidencias CI/CodeQL y hashes](seguridad/resultados-ci.md); [análisis y decisión Java](seguridad/analisis-dependencias.md); workflows y perfil `seguridad` |
-| C3 | ZAP baseline y corregir hallazgos | Workflow/procedimiento listos, escaneo NO ejecutado; depende de B1 y URL autorizada | `.github/workflows/dast.yml`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
+| C3 | ZAP baseline y corregir hallazgos | Workflow con autorización, origen controlado, SHA desplegado obligatorio y artifact de alcance; validación probada sin red. Falta autorización/versión y ZAP real sobre la release con C | `.github/workflows/dast.yml`; `scripts/validar-dast.py`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
 | C4 | Pruebas negativas por rol (RNF01) | Implementadas y ejecutadas con cadena real de seguridad | `AccesosPorRolTest` (34 casos), pruebas web/HTTPS/limitador y rutas React; [resultados](seguridad/resultados-locales.md) |
 | C5 | Arquitectura, patrones, errores y secretos | Revisión asistida realizada, correcciones puntuales aplicadas; aceptación humana pendiente | [Revisión](seguridad/revision-arquitectura.md), sanitización de auditoría y pruebas de errores |
-| C6 | Consolidar informe final | Borrador consolidado creado con tu sección y referencias existentes; falta entrega/revisión de secciones B/D/E y cierre de seguridad | [Informe consolidado](informe/Informe_Final_Fases_III_IV.md) |
+| C6 | Consolidar informe final | Sección B incorporada con referencias del main actualizado; faltan evidencias finales, aportes D/E y revisión del equipo | [Informe consolidado](informe/Informe_Final_Fases_III_IV.md) |
 
 ## Cómo verificar / qué explicar
 
@@ -36,7 +40,9 @@ No necesitas SonarCloud ni una cuenta cloud propia para C.
 - Recorridos existentes: leen `DEMO_PASSWORD` del entorno; ya no asumen una contraseña fija.
 - Documentación de arranque/manual: actualizada por el cambio de secretos y el nuevo bloqueo.
 
-No se modificaron migraciones, reglas de solicitudes, despliegue cloud, observabilidad, Newman, k6 o backups.
+El aporte inicial no modificó migraciones, reglas de solicitudes, despliegue cloud, observabilidad, Newman, k6 o backups.
+Tras incorporar B se ajustan únicamente su configuración de seguridad de perfiles/proxy, la integración
+del CI y las pruebas de esos controles; no se cambia Terraform, CD, backups, métricas, Newman ni k6.
 No se reescribieron los DOCX históricos ni se borraron datos. La copia inicial llegó sin Git; el 12/11/2026
 se preparó el aporte selectivamente en el clon y rama `feat/marcelo-seguridad`, sobre `origin/main`.
 El commit de implementación `55732c8` fue publicado en GitHub; no se modificó `main`.
@@ -51,7 +57,7 @@ Las evidencias del head `30bc5b2` ya se revisaron; consultar en GitHub los check
    soporte si están disponibles o revisión de aplicabilidad por CVE). NVD funcionó en CI; CodeQL y los
    artifacts ya tienen evidencias revisadas. Repetir/revisar los controles tras cambios: un análisis completado
    con hallazgos bloqueantes no cuenta como aprobado.
-3. David: entorno HTTPS de pruebas, configuración de secretos/cookies/HSTS/proxy y autorización de escaneo.
+3. David: el entorno HTTPS existe en B; falta validar la nueva release con C, sus secretos/cookies/HSTS/proxy y autorizar el escaneo.
    Acordar bootstrap de administrador/política sin demo y condicionamiento de CD a los controles.
 4. Marcelo: ZAP baseline real, análisis de hallazgos, corrección/reprueba y evidencia de release/fecha/alcance.
 5. Gabriel: validar logs sin secretos; Alex: incorporar resultados al informe de pruebas.

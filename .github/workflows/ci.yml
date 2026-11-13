@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend:
     name: Backend (Spring Boot)
@@ -69,12 +73,17 @@ jobs:
       - name: Fallar si hay vulnerabilidades altas o críticas
         working-directory: frontend
         run: npm audit --audit-level=high --json > npm-audit.json
+      - name: Auditar también las herramientas npm incorporadas por main
+        working-directory: docs/pruebas
+        run: npm audit --audit-level=high --json > npm-audit.json
       - name: Conservar resultado incluso si el análisis falla
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-audit
-          path: frontend/npm-audit.json
+          path: |
+            frontend/npm-audit.json
+            docs/pruebas/npm-audit.json
 
   dependency-check:
     name: OWASP Dependency-Check
@@ -119,8 +128,121 @@ jobs:
     needs: [backend, frontend, npm-audit, dependency-check]
     steps:
       - uses: actions/checkout@v4
+      - name: Credenciales efímeras para Compose (sin secretos predeterminados)
+        run: >-
+          python3 despliegue/scripts/crear-entorno.py --host prueba.example.org
+          --email pruebas@example.org --perfil prueba --demo --salida .env
       - name: Construir backend y frontend
-        # Construir no necesita credenciales de ejecución ni evaluar el .env de Compose.
+        run: docker compose -f docker-compose.yml -f despliegue/compose.ci.yml build
+      - name: Validar Caddy (sin solicitar certificados)
+        run: >-
+          docker run --rm -e APP_HOST=prueba.example.org -e ACME_EMAIL=pruebas@example.org
+          -v "$PWD/despliegue/Caddyfile:/etc/caddy/Caddyfile:ro"
+          caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: Validar Nginx con las cabeceras y healthcheck integrados
+        run: docker run --rm --add-host backend:127.0.0.1 msu-frontend:prueba nginx -t
+      - name: C1 · Cabeceras e IP real en proxy aislado (sin nube ni base de datos)
+        run: python3 docs/pruebas/proxy-seguridad.py --frontend msu-frontend:prueba
+      - name: RNF11 · Copia, pérdida y restauración de MySQL y evidencias
+        run: bash despliegue/scripts/probar-recuperacion.sh
+
+  despliegue:
+    name: Configuración de despliegue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pruebas del generador y del cálculo SUS
+        run: python -m unittest discover -s despliegue/tests -v
+      - name: C3 · Validación de autorización y alcance DAST (sin escanear)
+        run: python -m unittest discover -s docs/pruebas -p "test_seguridad_*.py" -v
+      - name: ShellCheck
+        run: >-
+          docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable
+          --external-sources -P despliegue/scripts despliegue/scripts/*.sh
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+      - name: Validar infraestructura (no crea recursos)
+        working-directory: despliegue/infra
         run: |
-          docker build -t msu-backend:ci ./backend
-          docker build -t msu-frontend:ci ./frontend
+          terraform fmt -check
+          terraform init -backend=false -input=false
+          terraform validate
+
+  demo:
+    name: GHCR y entrega de demostración
+    needs: [backend, frontend, docker, despliegue]
+    # Bootstrap académico explícito desde un PR propio y una rama autorizada.
+    # La entrega de main conserva el workflow CD y sus reglas de producción.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == vars.DEMO_BRANCH && vars.DEMO_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cd-produccion
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Referencias de imágenes de demostración
+        id: nombres
+        run: |
+          prefijo="ghcr.io/${GITHUB_REPOSITORY,,}"
+          {
+            echo "backend=$prefijo-backend:demo-$GITHUB_SHA"
+            echo "frontend=$prefijo-frontend:demo-$GITHUB_SHA"
+            echo "prefijo=$prefijo"
+          } >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        id: backend
+        with:
+          context: backend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.nombres.outputs.backend }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=backend-demo
+          cache-to: type=gha,mode=max,scope=backend-demo
+      - uses: docker/build-push-action@v6
+        id: frontend
+        with:
+          context: frontend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.nombres.outputs.frontend }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=frontend-demo
+          cache-to: type=gha,mode=max,scope=frontend-demo
+      - name: Entregar el commit probado a la VM académica
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          PRODUCTION_ENV: ${{ secrets.DEMO_ENV }}
+          BACKEND_IMAGE: ${{ steps.nombres.outputs.prefijo }}-backend@${{ steps.backend.outputs.digest }}
+          FRONTEND_IMAGE: ${{ steps.nombres.outputs.prefijo }}-frontend@${{ steps.frontend.outputs.digest }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .state)" = open
+          test "$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq .head.sha)" = "$PR_HEAD"
+          bash despliegue/scripts/entregar-ci.sh

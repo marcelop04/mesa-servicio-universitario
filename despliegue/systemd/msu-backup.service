@@ -1,0 +1,13 @@
+[Unit]
+Description=Copia consistente de MySQL y evidencias de MSU (RNF11)
+Requires=docker.service
+After=docker.service
+ConditionPathExists=/opt/msu/actual/despliegue/scripts/backup.sh
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+SupplementaryGroups=docker
+UMask=0077
+ExecStart=/usr/bin/bash /opt/msu/actual/despliegue/scripts/backup.sh

@@ -3,6 +3,21 @@
 Fecha: 11/11/2026. Alcance: copia local recibida, con el paquete A ya integrado; sin historial Git.
 Revisión asistida por IA; pendiente revisión y aceptación humana de Marcelo y del equipo.
 
+## Actualización sobre main con B · 12/11/2026
+
+Se conserva el monolito por capas y se incorpora el borde Caddy ya integrado en `5e83051`.
+Hallazgos concretos tratados en C: defaults sensibles en `application-dev.yml` y `.env.example`,
+falta de CSP en el borde, conflicto entre perfiles/guard, pérdida potencial de cabeceras/healthcheck al
+combinar Nginx y CI que debía conservar SCA junto al ensayo RNF11. El guard también rechaza la
+siembra de solicitudes aunque se desactive la de usuarios. Se prueban perfiles reales y errores HTTP
+detrás del proxy. [Alcance y evidencia](integracion-main-b.md).
+
+No se modifica el incidente A4, no se aceptan los PR D/E, no se cambia el pipeline CD ni se migran
+dependencias mayores. El servidor público debe recibir una release revisada antes de dar C1/C3 por cerrados.
+La configuración `forward-headers-strategy: framework` depende del aislamiento del backend y de que
+Caddy sanee las cabeceras reenviadas. No se inventa un CIDR de confianza; David debe validar su red real.
+La existencia de CSP/HTTPS no certifica autorización de rol ni ausencia de secretos en logs futuros.
+
 ## 1. Arquitectura y patrones encontrados
 
 La aplicación es un **monolito modular**, no microservicios: frontend React → API REST Spring Boot → MySQL,

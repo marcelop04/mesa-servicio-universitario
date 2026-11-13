@@ -3,6 +3,11 @@
 Esta guía corresponde a las fases III y IV, no sustituye el despliegue de David ni las pruebas de Alex.
 Consulta el [estado real y evidencias](../fase-iii-iv-marcelo.md) antes de presentar algo como terminado.
 
+**Después de incorporar B:** consulta [integracion-main-b.md](integracion-main-b.md).
+`prod` ahora rechaza ambas siembras demo; un `.env` antiguo con demo activada no debe desplegarse sin
+revisión de David. Para demostraciones controladas existe `prueba`; no se borran cuentas ni volúmenes.
+Los defaults de claves en `dev` ya no existen: prepara el entorno privado antes de arrancar.
+
 ## 1. Qué significa cada tecnología y qué cuenta necesitas
 
 | Término | Qué hace aquí | ¿Necesitas cuenta? |
@@ -246,7 +251,10 @@ ni asumir que está permitido escanear producción. Baseline no envía ataques a
 5. Ejecuta `node scripts/comprobar-cabeceras.mjs https://<origen-autorizado>`.
 6. **Actions → DAST (ZAP baseline autorizado) → Run workflow**, sobre la rama aprobada y confirmando autorización.
    No se dispara por PR ni acepta una URL arbitraria como input.
-7. Descarga artifact `zap-baseline`. Revisa `report_html.html` y los formatos JSON/Markdown disponibles.
+   El workflow exige además el SHA completo que David confirmó desplegado. No usar el SHA de herramientas
+   o de la rama C si el servidor aún ejecuta otra versión. `alcance-dast.json` registra esa declaración,
+   fecha, URL del run y referencia de herramientas; no comprueba por sí mismo la versión del servidor.
+7. Descarga artifacts `zap-baseline` y `alcance-dast`. Revisa `report_html.html` y los formatos JSON/Markdown disponibles.
    El workflow falla ante alertas: no se agregaron reglas para ocultarlas. Si no genera artifact, revisa los logs;
    un fallo al ejecutar o descargar el escáner tampoco es un análisis aprobado.
 8. Usa la [plantilla de hallazgos](plantilla-dast.md) para registrar regla, ruta, riesgo, evidencia sin secretos,

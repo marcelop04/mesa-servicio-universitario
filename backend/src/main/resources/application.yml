@@ -3,9 +3,11 @@
 spring:
   application:
     name: msu-backend
+  profiles:
+    default: dev
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8}
-    username: ${DB_USER:msu}
+    url: ${DB_URL}
+    username: ${DB_USER}
     password: ${DB_PASSWORD}
   jpa:
     open-in-view: false
@@ -75,4 +77,4 @@ msu:
     habilitado: ${DATOS_DEMO:false}
     password: ${DEMO_PASSWORD:}
     # MR07: solicitudes de ejemplo para la bandeja de supervisión, solo si la base no tiene ninguna.
-    solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:false}}
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:false}

@@ -3,6 +3,11 @@
 Revisión inicial del 11/11/2026; evidencias CI actualizadas el 12/11/2026. Referencia: [OWASP Top 10:2025](https://owasp.org/Top10/2025/).
 La rúbrica no fija edición. No es una certificación ni una afirmación de ausencia de vulnerabilidades.
 
+Actualización C sobre `main 5e83051`: [integración y pruebas](integracion-main-b.md).
+El perfil `prod` exige cookies seguras y prohíbe ambas siembras demo; el proxy Caddy aplica las
+cabeceras también al HTML y sobrescribe la IP proporcionada por el cliente. La prueba TLS local
+no sustituye la comprobación del servidor público ni autoriza ejecutar ZAP.
+
 **Estados:** «verificado» = revisión de código/prueba local; «preparado» = configuración sin ejecución externa;
 «pendiente» = requiere evidencia o decisiones del equipo. HTTPS simulado en MockMvc no demuestra TLS real.
 
@@ -23,7 +28,7 @@ La rúbrica no fija edición. No es una certificación ni una afirmación de aus
 
 - [x] Cookie de sesión `HttpOnly`, `SameSite=Lax`, `Secure` configurable y prueba de borrado con mismos atributos.
 - [x] Cookie CSRF `SameSite=Lax`, `Secure` con la misma opción; continúa legible por JS por diseño de SPA.
-- [x] Guard de despliegue: `SEGURIDAD_DESPLIEGUE=true` exige `COOKIE_SECURE=true` y `DATOS_DEMO=false`.
+- [x] Guard de despliegue: activo por defecto en `prod`; exige cookies seguras y ambas siembras demo desactivadas.
 - [x] CSP en Spring y Nginx; sin JavaScript inline/eval. Estilos inline conservados por compatibilidad con React.
 - [x] HSTS en respuestas HTTPS de Spring; Nginx solo si recibe HTTPS directamente, sin preload ni includeSubDomains.
 - [x] Límite 5 fallos por cuenta+IP / 50 por IP, 15 minutos, configurable y probado sin esperas reales.

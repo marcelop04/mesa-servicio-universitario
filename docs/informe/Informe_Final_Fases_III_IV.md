@@ -1,7 +1,7 @@
 # Sistema Web para la Gestión Integral de Servicios Universitarios
 ## Informe consolidado · fases III y IV
 
-**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte del aporte C: 12/11/2026.
+**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre main+B `5e83051`: 12/11/2026.
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
 
@@ -52,16 +52,18 @@ actuales no cubren ese camino de ejecución. Su corrección corresponde coordina
 
 ## 4. Nube, ambientes y CI/CD · David (B)
 
-**Pendiente de aporte y evidencia del responsable.** El Compose local y CI ya existentes no demuestran B1–B5.
+Se incorpora el aporte B desde main `5e83051` sin atribuir su implementación a Marcelo.
+Fuente: [sección de David](Seccion_David_Nube_CD.md), [bitácora](../fase-iii-iv-david.md) y
+[manual técnico](../manual/Manual_tecnico.md). La revisión del responsable y el cierre operacional siguen pendientes.
 
 | Evidencia requerida | Estado en esta consolidación |
 |---|---|
-| Plataforma elegida y justificación; frontend/backend/DB; origen HTTPS y release identificable | Pendiente |
-| Perfiles dev/prueba/prod; secretos privados; cookies Secure, HSTS y proxy confiable | Pendiente |
-| Main protegida, PR, publicación GHCR y CD bloqueado por pruebas/análisis fallidos (RNF10) | Pendiente |
-| Copia y restauración de MySQL/evidencias probada (RNF11) | Pendiente |
-| Pruebas de usuario, SUS y revisión 360/1366 px con datos reales de la sesión de prueba | Pendiente |
-| Manual técnico e instrucciones reproducibles de instalación/despliegue | Pendiente |
+| Plataforma elegida y justificación; frontend/backend/DB; origen HTTPS y release identificable | OCI E5 temporal; HTTPS y entrega demo documentados en B. Nueva release con C aún no desplegada |
+| Perfiles dev/prueba/prod; secretos privados; cookies Secure, HSTS y proxy confiable | Perfiles integrados; controles C en código/pruebas locales. Validación del servidor actualizado pendiente |
+| Main protegida, PR, publicación GHCR y CD bloqueado por pruebas/análisis fallidos (RNF10) | Workflows B incorporados; CD definitivo y bloqueo por CodeQL requieren evidencia/configuración de B |
+| Copia y restauración de MySQL/evidencias probada (RNF11) | Ensayo CI con MySQL real documentado por B; recuperación en VM/copia externa pendientes |
+| Pruebas de usuario, SUS y revisión 360/1366 px con datos reales de la sesión de prueba | Capturas responsive disponibles; cinco sesiones SUS y resultados reales pendientes |
+| Manual técnico e instrucciones reproducibles de instalación/despliegue | Documento B incorporado; nota C sobre perfiles/secretos y transición sin demo |
 
 Dependencias C: URL autorizada para DAST, bootstrap sin cuentas ficticias y controles del borde HTTPS.
 No se eligió una plataforma ni se creó infraestructura por Marcelo.
@@ -108,7 +110,9 @@ con protección de ramas y CD; C2 no se cierra hasta resolver el tratamiento de 
 Preparado workflow ZAP baseline manual con autorización, origen HTTPS configurado en un environment y
 reportes; sin escaneos automáticos de URLs aportadas por PR ni ataques activos.
 
-**Pendiente:** B1, ejecución autorizada, revisión de hallazgos, corrección y reprueba. No se presenta un
+**Pendiente:** validar release con C en el ambiente HTTPS ya existente, autorización explícita, ejecución,
+revisión de hallazgos, corrección y reprueba. Se exige SHA desplegado y se conserva el artifact de alcance.
+No se presenta un
 escaneo local de pruebas como resultado DAST de la aplicación publicada. Baseline no prueba toda la SPA
 autenticada ni sustituye los casos RNF01.
 
@@ -151,9 +155,9 @@ versión y alcance correspondientes. Registrar ambiente, herramientas, fecha, ta
 | RNF06 rendimiento | Por aportar Alex | Mediciones k6 y análisis de estrés |
 | RNF08 operación/observabilidad | Por aportar Gabriel | Simulacro y evidencias |
 | RNF10 CI/CD | CI y workflows preparados | Ejecuciones y despliegue condicionado por David |
-| RNF11 restauración | Por aportar David | Restauración comprobada con evidencia |
+| RNF11 restauración | Ensayo CI y scripts B incorporados | Recuperación en VM/copia externa y revisión del responsable |
 | Manual de usuario | Documento de Emanuel enlazado arriba | Revisión de la release |
-| Manual técnico, repositorio y URL final | Por aportar David | Release, permisos y procedimiento |
+| Manual técnico, repositorio y URL final | Aporte B incorporado | Release definitiva, permisos y validación del procedimiento |
 | Informe de pruebas | Aportes de seguridad disponibles | Consolidación de Alex |
 | Presentación/demo y registro IA | Aportes C disponibles | Consolidación de Gabriel y aportes de todos |
 

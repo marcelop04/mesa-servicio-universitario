@@ -43,6 +43,9 @@ docker compose logs -f backend
 Si ya existían volúmenes de MySQL, conserva sus credenciales: cambiar `.env` no cambia sus contraseñas.
 No uses `docker compose down -v` como solución rutinaria: elimina la base y las evidencias.
 Este Compose solo expone puertos en localhost; David debe preparar el despliegue HTTPS por separado.
+La integración C sobre el main con B conserva perfiles y healthchecks; el perfil `prod` rechaza
+cuentas/solicitudes demo. Revisar [la transición y pruebas de seguridad](docs/seguridad/integracion-main-b.md)
+con David antes de activar CD o reutilizar un archivo de entorno anterior.
 
 ## Opción 2 · Sin Docker (para desarrollar)
 
@@ -94,6 +97,19 @@ Docker si las pruebas y los análisis de dependencias pasan. Configura `NVD_API_
 - `frontend/`: React 18 · Vite ([README](frontend/README.md)).
 - `prototipo/`: prototipo de la fase I con json-server.
 - `docs/`: informe, diagramas, diseño y avance por integrante (`fase-ii-*.md`).
+
+## Despliegue gratuito y entrega continua (paquete B · David)
+
+- [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
+  y alternativa Always Free, HTTPS con Caddy,
+  perfiles `dev`/`prueba`/`prod`, GitHub Secrets, GHCR/CD y copia/restauración.
+- [`despliegue/`](despliegue/): infraestructura Terraform y Compose de nube; MySQL y
+  backend sin puertos públicos, imágenes desplegadas por digest tras CI exitoso.
+- [Pruebas de usuario/SUS y responsive](docs/pruebas/usuarios/Protocolo_SUS.md).
+- [Estado y evidencias de David](docs/fase-iii-iv-david.md).
+
+El stack de nube requiere configurar la cuenta OCI y GitHub; consultar la bitácora
+para el estado de la URL pública, primer CD y verificaciones realizadas.
 
 ## Problemas comunes
 

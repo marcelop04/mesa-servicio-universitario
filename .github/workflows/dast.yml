@@ -9,6 +9,10 @@ on:
         required: true
         type: boolean
         default: false
+      revision_desplegada:
+        description: 'SHA completo del commit que David confirmó desplegado en el ambiente autorizado'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -25,17 +29,9 @@ jobs:
         env:
           AUTORIZADO: ${{ inputs.autorizacion }}
           TARGET: ${{ vars.DAST_TARGET_URL }}
-        run: |
-          python3 - <<'PY'
-          import os
-          from urllib.parse import urlsplit
-          u = urlsplit(os.environ['TARGET'])
-          if os.environ['AUTORIZADO'] != 'true':
-              raise SystemExit('Debe confirmar la autorización del equipo.')
-          if (u.scheme != 'https' or not u.hostname or u.username or u.password
-                  or u.query or u.fragment or u.path not in ('', '/')):
-              raise SystemExit('Configure DAST_TARGET_URL como origen HTTPS de pruebas, sin credenciales ni rutas.')
-          PY
+          REVISION_DESPLEGADA: ${{ inputs.revision_desplegada }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 scripts/validar-dast.py
       - name: Escaneo pasivo con spider limitado (sin ataques activos)
         uses: zaproxy/action-baseline@v0.15.0
         with:
@@ -44,3 +40,10 @@ jobs:
           allow_issue_writing: false
           artifact_name: zap-baseline
           cmd_options: '-m 1 -T 5'
+      - name: Conservar alcance separado del resultado del escáner
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alcance-dast
+          path: alcance-dast.json
+          if-no-files-found: warn

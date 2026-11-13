@@ -1,0 +1,27 @@
+# Producción: DB_URL, DB_USER, DB_PASSWORD y JWT_SECRET son obligatorios.
+# Solo Caddy puede alcanzar el backend; es quien fija X-Forwarded-Proto.
+server:
+  forward-headers-strategy: framework
+  shutdown: graceful
+  compression:
+    enabled: true
+  tomcat:
+    threads:
+      max: 64
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+
+msu:
+  seguridad:
+    # C1: producción no admite siembra demo, ni siquiera por un .env antiguo.
+    despliegue: true
+  jwt:
+    cookie-segura: true
+  datos-demo:
+    habilitado: ${DATOS_DEMO:false}
+    solicitudes: ${DATOS_DEMO_SOLICITUDES:false}
