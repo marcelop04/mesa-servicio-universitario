@@ -52,7 +52,7 @@ services:
       - "127.0.0.1:3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-AdminObservabilidad2026!}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Defina GRAFANA_ADMIN_PASSWORD en el entorno}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - ./observabilidad/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro

@@ -5,11 +5,11 @@
 **Semestre:** 2026-II  
 **Duración total estimada:** 18 a 20 minutos  
 **Equipo de desarrollo:**
-- **Marcelo Ruiz** (Coordinación e Infraestructura Base)
+- **Marcelo Ruiz** (Coordinación, Paquete C · Seguridad y Revisión de Calidad)
 - **Emanuel Silva** (Paquete A · Políticas, Encuestas de Satisfacción y Auditoría)
-- **Alex Huamán** (Paquete B · Solicitudes, Bandejas Operativas y Gestión de Adjuntos)
-- **David Torres** (Paquete C / Nube · Autenticación JWT, Sesión Segura, CI/CD y RNF11)
+- **David Torres** (Paquete B · Nube, CI/CD y RNF11)
 - **Gabriel Salazar** (Paquete D · Observabilidad, Telemetría, Logs JSON y Simulacro RNF08)
+- **Alex Huamán** (Paquete E · Pruebas)
 
 ---
 
@@ -18,12 +18,12 @@
 | Bloque | Tema | Responsable | Minutos |
 |---|---|---|---|
 | **1** | Presentación, problema institucional y arquitectura general | Marcelo Ruiz | 0:00 – 2:30 |
-| **2** | Seguridad, autenticación JWT, RBAC y protección RNF02 | David Torres | 2:30 – 5:30 |
-| **3** | Flujo funcional central: radicación, bandejas y plazos | Alex Huamán | 5:30 – 9:30 |
-| **4** | Políticas de atención, encuestas de satisfacción y auditoría | Emanuel Silva | 9:30 – 12:30 |
-| **5** | Observabilidad, métricas, logs JSON y simulacro RNF08 | Gabriel Salazar | 12:30 – 16:30 |
-| **6** | Despliegue en la nube, pipeline CI/CD y recuperación RNF11 | David Torres / Marcelo Ruiz | 16:30 – 19:30 |
-| **7** | Conclusiones y ronda de preguntas del jurado | Todo el equipo | 19:30 – 20:00 |
+| **2** | Seguridad, autenticación JWT, RBAC y protección RNF02 (Paquete C) | Marcelo Ruiz | 2:30 – 5:30 |
+| **3** | Flujo funcional: políticas, encuestas de satisfacción y auditoría (Paquete A) | Emanuel Silva | 5:30 – 8:30 |
+| **4** | Despliegue en la nube, pipeline CI/CD y recuperación RNF11 (Paquete B) | David Torres | 8:30 – 11:30 |
+| **5** | Observabilidad, métricas, logs JSON y simulacro RNF08 (Paquete D) | Gabriel Salazar | 11:30 – 15:30 |
+| **6** | Pruebas del sistema y validación de calidad (Paquete E) | Alex Huamán | 15:30 – 18:00 |
+| **7** | Conclusiones y ronda de preguntas del jurado | Todo el equipo | 18:00 – 20:00 |
 
 ---
 
@@ -40,56 +40,57 @@
 > 4. *Stack de observabilidad desacoplado con **Prometheus, Jaeger y Grafana**.*
 > 5. *Infraestructura reproducible mediante **Docker Compose, Caddy y Terraform**.*
 > 
-> *A continuación, David presentará la arquitectura de seguridad y acceso."*
+> *A continuación presentaré la arquitectura de seguridad y control de acceso."*
 
 ---
 
-## Bloque 2: Seguridad y Control de Acceso (David · 3 min)
+## Bloque 2: Seguridad y Control de Acceso · Paquete C (Marcelo · 3 min)
 
-> *"Gracias, Marcelo. En el componente de seguridad garantizamos el cumplimiento del principio de menor privilegio y la protección de sesiones:*
+> *"En el componente de seguridad (Paquete C) garantizamos el cumplimiento del principio de menor privilegio y la protección de sesiones:*
 > 
-> *1. **Autenticación y Sesión:** Implementamos tokens JWT firmados con clave simétrica robusta, transmitidos en cookies `HttpOnly`, `Secure` y `SameSite=Lax`, impidiendo el robo de credenciales mediante ataques XSS.*
+> *1. **Autenticación y Sesión:** Implementamos tokens JWT firmados con clave secreta robusta, transmitidos en cookies `HttpOnly`, `Secure` y `SameSite=Lax`, impidiendo el robo de credenciales mediante ataques XSS.*
 > *2. **Control de Roles (RBAC):** La plataforma define cuatro roles institucionales: `SOLICITANTE` (estudiantes/docentes), `TECNICO` (resolutores), `SUPERVISOR` (asignación y reasignación) y `ADMINISTRADOR` (configuración del sistema y métricas).*
 > *3. **Protección CSRF:** Cada petición mutante requiere el encabezado `X-XSRF-TOKEN`, validado por Spring Security.*
+> *4. **Cabeceras de seguridad:** Content Security Policy, HSTS, Referrer-Policy y Permissions-Policy.*
+> *5. **Análisis estático de vulnerabilidades:** CodeQL, Dependency-Check (OWASP SCA) y validación con npm audit.*
 > 
 > *(Demostración en vivo en navegador / DevTools):*
 > - *Inicio de sesión exitoso con un usuario solicitante.*
 > - *Inspección de las cookies en DevTools mostrando las banderas de seguridad activas.*
 > - *Intento de acceso a un endpoint administrativo restringido, recibiendo HTTP 403 Forbidden.*
 > 
-> *Doy el pase a Alex para demostrar el ciclo de vida de las solicitudes."*
+> *Doy el pase a Emanuel para demostrar las políticas de atención."*
 
 ---
 
-## Bloque 3: Flujo Central de Solicitudes (Alex · 4 min)
+## Bloque 3: Políticas de Atención, Encuestas y Auditoría · Paquete A (Emanuel · 3 min)
 
-> *"Gracias, David. Ahora demostraremos el núcleo funcional del sistema:*
-> 
-> *1. **Radicación de Solicitud:** Desde el rol solicitante, registramos un nuevo trámite (por ejemplo, rectificación de matrícula o solicitud de constancia). El formulario valida tipos de archivo adjunto permitidos (PDF, imágenes hasta 5 MB), tamaño máximo y campos obligatorios.*
-> *2. **Cálculo de Plazos:** El sistema calcula automáticamente la fecha límite de atención en función de la política y prioridad asignada.*
-> *3. **Bandeja de Supervisor y Asignación:** Ingresamos como supervisor. En la bandeja se observa la solicitud recién creada. El supervisor la evalúa y la asigna al técnico disponible.*
-> *4. **Atención por el Técnico:** Entramos con la sesión del técnico asignado. El técnico cambia el estado a 'EN_PROCESO', redacta la respuesta formal, adjunta la resolución y marca la solicitud como 'ATENDIDA'.*
-> *5. **Confirmación del Solicitante:** El solicitante recibe la notificación del cambio de estado y visualiza la resolución en su historial.*
-> 
-> *Paso el turno a Emanuel para revisar las políticas y encuestas."*
-
----
-
-## Bloque 4: Políticas de Atención, Encuestas y Auditoría (Emanuel · 3 min)
-
-> *"Gracias, Alex. Mi paquete extiende la plataforma con tres capacidades complementarias clave:*
+> *"Gracias, Marcelo. Mi paquete extiende la plataforma con tres capacidades complementarias clave:*
 > 
 > *1. **Políticas de Atención Dinámicas:** Los administradores pueden configurar los plazos máximos (horas hábiles) por categoría de servicio y prioridad, permitiendo ajustar los tiempos según la carga estacional de la universidad.*
 > *2. **Encuesta de Satisfacción:** Una vez que la solicitud pasa a estado final ('ATENDIDA'), el solicitante tiene acceso a una encuesta tipo Likert (1 a 5 estrellas) con comentarios cualitativos. Estas métricas alimentan los reportes de calidad del servicio.*
 > *3. **Trazabilidad de Auditoría:** Cada transición de estado, reasignación o cambio de prioridad genera un registro inmutable de auditoría con usuario, timestamp y motivo del cambio.*
 > 
-> *Ahora Gabriel demostrará cómo se supervisa el comportamiento del sistema bajo el paquete de observabilidad."*
+> *Ahora David presentará el despliegue en la nube y la entrega continua."*
 
 ---
 
-## Bloque 5: Observabilidad, Telemetría y Simulacro RNF08 (Gabriel · 4 min)
+## Bloque 4: Nube, CI/CD y Recuperación · Paquete B (David · 3 min)
 
-> *"Gracias, Emanuel. En el Paquete D hemos implementado la observabilidad integral de la plataforma, cubriendo los requisitos no funcionales **RNF08 (diagnóstico rápido de incidentes)** y **RNF02 (seguridad y no exposición de secretos)**.*
+> *"Gracias, Emanuel. El Paquete B cubre la infraestructura de despliegue y resiliencia operativa:*
+> 
+> *1. **Despliegue en OCI:** Arquitectura reproducible sobre Oracle Cloud Infrastructure con VM Ubuntu ARM, MySQL 8, Spring Boot, React/Nginx y Caddy mediante Docker Compose, con TLS automático.*
+> *2. **Pipeline de Integración Continua (CI):** Cada pull request a `main` ejecuta automáticamente compilación, análisis estático, suite completa de pruebas unitarias y de integración tanto en backend como frontend, garantizando cero regresiones antes del merge.*
+> *3. **Despliegue Continuo (CD):** Imágenes amd64/arm64 publicadas en GHCR, desplegadas por digest mediante SSH con host verificado. Smoke test HTTPS externo valida cada entrega.*
+> *4. **Ensayo de Recuperación RNF11:** Procedimiento automatizado de respaldo consistente (dump SQL + evidencias binarias) y restauración comprobada con sumas de verificación SHA-256 ante escenarios de pérdida de datos.*
+> 
+> *Paso el turno a Gabriel para la observabilidad del sistema."*
+
+---
+
+## Bloque 5: Observabilidad, Telemetría y Simulacro RNF08 · Paquete D (Gabriel · 4 min)
+
+> *"Gracias, David. En el Paquete D hemos implementado la observabilidad integral de la plataforma, cubriendo los requisitos no funcionales **RNF08 (diagnóstico rápido de incidentes)** y **RNF02 (seguridad y no exposición de secretos)**.*
 > 
 > *Arquitectura de observabilidad implementada:*
 > - *Métricas HTTP y de negocio mediante Spring Boot Actuator, Micrometer y Prometheus.*
@@ -105,17 +106,23 @@
 > 5. *En Grafana (`:3000`) mostramos el panel institucional con histogramas percentiles, tasa de fallos y solicitudes con plazos vencidos.*
 > 6. *Ejecutamos la recuperación del sistema y confirmamos la normalización de las alertas.*
 > 
-> *Finalmente, David y Marcelo explicarán la infraestructura de despliegue y respaldo."*
+> *Finalmente, Alex presentará las pruebas del sistema."*
 
 ---
 
-## Bloque 6: Despliegue en la Nube, CI/CD y RNF11 (David / Marcelo · 3 min)
+## Bloque 6: Pruebas del Sistema · Paquete E (Alex · 2.5 min)
 
-> *"Gracias, Gabriel. Para finalizar, presentamos la entrega continua y la resiliencia operativa:*
+> *"Gracias, Gabriel. En el Paquete E me encargo de la validación y aseguramiento de calidad del sistema:*
 > 
-> *1. **Pipeline de Integración Continua (CI):** Cada pull request a `main` ejecuta automáticamente compilación, análisis estático, suite completa de pruebas unitarias y de integración tanto en backend como frontend, garantizando cero regresiones antes del merge.*
-> *2. **Despliegue Continuo (CD) en OCI:** Configuramos el despliegue hacia una máquina virtual Ubuntu en Oracle Cloud Infrastructure Always Free utilizando Docker Compose, imágenes versionadas en GitHub Container Registry (GHCR) y Caddy como reverse proxy con TLS automático.*
-> *3. **Ensayo de Recuperación RNF11:** Demostramos el procedimiento automatizado de respaldo consistente (dump SQL + evidencias binarias) y restauración comprobada con sumas de verificación SHA-256 ante escenarios de pérdida de datos.*
+> *1. **Pruebas unitarias y de integración:** Suite JUnit del backend y pruebas del frontend con Vitest.*
+> *2. **Pruebas de aceptación:** Recorridos completos del flujo de solicitudes con los 4 roles.*
+> *3. **Pruebas de usuario y SUS:** Protocolo de usabilidad con participantes reales y cuestionario System Usability Scale.*
+> *4. **Pruebas responsive:** Verificación a 360 px (móvil) y 1366 px (escritorio) de todas las vistas.*
 > 
-> *Con esto demostramos que el sistema cumple con todos los requisitos funcionales y no funcionales solicitados en la rúbrica del curso. Quedamos a disposición del jurado para sus preguntas."*
+> *Con esto demostramos que el sistema cumple con los requisitos funcionales y no funcionales de la rúbrica. Quedamos a disposición del jurado para sus preguntas."*
 
+---
+
+## Bloque 7: Conclusiones y Preguntas (Todo el equipo · 2 min)
+
+> *"En resumen, nuestra Mesa de Servicios Universitarios cubre de extremo a extremo la gestión de trámites con plazos de atención, incluyendo seguridad, despliegue en la nube, observabilidad en tiempo real y pruebas de calidad. Agradecemos su atención y estamos disponibles para responder cualquier consulta."*

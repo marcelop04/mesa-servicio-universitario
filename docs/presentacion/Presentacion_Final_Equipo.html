@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sustentación Final · Mesa de Servicios Universitarios</title>
+  <style>
+    :root {
+      --navy-dark: #0d2240;
+      --navy-light: #1a365d;
+      --gold: #c59b27;
+      --gold-light: #e5b83b;
+      --bg-gray: #f8fafc;
+      --card-bg: #ffffff;
+      --border-gray: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0b1526;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .deck-container {
+      width: 92vw;
+      max-width: 1200px;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-gray);
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 40px 50px;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .slide.active { display: flex; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Title Slide */
+    .slide.cover {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, #152c4e 100%);
+      color: white;
+      justify-content: center;
+      position: relative;
+    }
+    .slide.cover::before {
+      content: "";
+      position: absolute;
+      left: 50px;
+      top: 15%;
+      bottom: 15%;
+      width: 6px;
+      background: var(--gold);
+      border-radius: 4px;
+    }
+    .cover-content { margin-left: 30px; }
+    .cover-univ { font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+    .cover-faculty { font-size: 13px; color: #cbd5e1; margin-bottom: 20px; }
+    .cover-title { font-size: 34px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; color: white; }
+    .cover-subtitle { font-size: 18px; color: var(--gold-light); font-weight: 500; margin-bottom: 26px; }
+    .cover-team-title { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .cover-team-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .cover-team-list li { font-size: 13px; color: #e2e8f0; }
+    .cover-team-list strong { color: white; }
+
+    /* Standard Slide Header */
+    .slide-header { margin-bottom: 24px; border-bottom: 2px solid var(--border-gray); padding-bottom: 12px; }
+    .slide-category { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
+    .slide-title { font-size: 24px; font-weight: 800; color: var(--navy-dark); margin-top: 4px; }
+
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; flex: 1; }
+
+    /* Card styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gray);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 14px;
+      border-left: 3px solid var(--gold);
+      padding-left: 10px;
+    }
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card-list li {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--text-main);
+      position: relative;
+      padding-left: 16px;
+    }
+    .card-list li::before {
+      content: "•";
+      color: var(--gold);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    /* Conclusions Slide */
+    .slide.dark-conclusions {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, #152c4e 100%);
+      color: white;
+    }
+    .dark-conclusions .slide-header { border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .dark-conclusions .slide-title { color: white; }
+    .conclusion-item {
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.06);
+      padding: 12px 18px;
+      border-radius: 6px;
+      border-left: 3px solid var(--gold);
+    }
+    .conclusion-title { font-size: 14px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px; }
+    .conclusion-desc { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
+
+    /* Controls bar */
+    .controls {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: white;
+      font-size: 13px;
+    }
+    .btn {
+      background: var(--navy-light);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--gold); color: var(--navy-dark); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .progress-bar {
+      width: 140px;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      width: 10%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+    <!-- Slide 1: Portada -->
+    <div class="slide cover active" data-index="1">
+      <div class="cover-content">
+        <div class="cover-univ">Universidad Nacional Mayor de San Marcos</div>
+        <div class="cover-faculty">Facultad de Ingeniería de Sistemas e Informática • Taller de Construcción de Software Web</div>
+        <h1 class="cover-title">Mesa de Servicios Universitarios</h1>
+        <div class="cover-subtitle">Gestión Integral de Plazos de Atención y Observabilidad Operacional</div>
+        <div class="cover-team-title">Reparto Oficial del Equipo de Desarrollo:</div>
+        <ul class="cover-team-list">
+          <li>• <strong>Marcelo Ruiz:</strong> Coordinación y Paquete C (Seguridad y Revisión de Calidad)</li>
+          <li>• <strong>Emanuel Silva:</strong> Paquete A (Políticas de Atención, Encuestas y Auditoría)</li>
+          <li>• <strong>David Torres:</strong> Paquete B (Nube OCI, Pipeline CI/CD y Respaldo RNF11)</li>
+          <li>• <strong>Gabriel Salazar:</strong> Paquete D (Observabilidad, Telemetría y Simulacro RNF08)</li>
+          <li>• <strong>Alex Huamán:</strong> Paquete E (Pruebas del Sistema, SUS y Responsive)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 2: Problema y Solución -->
+    <div class="slide" data-index="2">
+      <div class="slide-header">
+        <div class="slide-category">Contexto Institucional</div>
+        <h2 class="slide-title">Problemática y Propuesta de Solución</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Situación Actual en la Universidad</div>
+          <ul class="card-list">
+            <li>Canales dispersos y fragmentados (mesas de partes presenciales, correos sin confirmación ni seguimiento).</li>
+            <li>Incertidumbre en los tiempos de respuesta para estudiantes y docentes.</li>
+            <li>Inexistencia de métricas objetivas de cumplimiento de plazos en dependencias.</li>
+            <li>Riesgo de retrasos prolongados y extravío de antecedentes documentarios.</li>
+            <li>Falta de visibilidad técnica ante caídas o lentitud de los servicios web.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Solución: Mesa de Servicios Universitarios</div>
+          <ul class="card-list">
+            <li>Portal web único con control de acceso institucional y perfiles de usuario (RBAC).</li>
+            <li>Motor dinámico de plazos de atención por categoría y prioridad en horas hábiles.</li>
+            <li>Historial inmutable de estados y resoluciones formales con evidencias adjuntas.</li>
+            <li>Encuestas de satisfacción de calidad de servicio tras la resolución del caso.</li>
+            <li>Observabilidad en tiempo real (Prometheus, logs correlacionados y trazas Jaeger).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Arquitectura Técnica -->
+    <div class="slide" data-index="3">
+      <div class="slide-header">
+        <div class="slide-category">Arquitectura de Software</div>
+        <h2 class="slide-title">Pila Tecnológica e Infraestructura</h2>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Backend y Persistencia</div>
+          <ul class="card-list">
+            <li>Spring Boot 3.5.16 con Java 17.</li>
+            <li>Spring Data JPA con Hibernate.</li>
+            <li>MySQL 8.0 con control de versiones Flyway.</li>
+            <li>Spring Security con JWT y cookies HttpOnly.</li>
+            <li>Pruebas unitarias e integración en JUnit 5.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Frontend y Experiencia</div>
+          <ul class="card-list">
+            <li>React 18 con Vite y TypeScript.</li>
+            <li>Tailwind CSS adaptativo.</li>
+            <li>Diseño responsive estricto (360 px y 1366 px).</li>
+            <li>Interceptores Axios para CSRF y correlación.</li>
+            <li>Pruebas de componentes con Vitest.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Infraestructura y Nube</div>
+          <ul class="card-list">
+            <li>Docker Compose multicontenedor.</li>
+            <li>Caddy como Reverse Proxy con TLS automático.</li>
+            <li>Oracle Cloud Infrastructure Always Free.</li>
+            <li>CI/CD con GitHub Actions y paquetes GHCR.</li>
+            <li>Stack de telemetría: Prometheus, Jaeger y Grafana.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Paquete C - Seguridad (Marcelo) -->
+    <div class="slide" data-index="4">
+      <div class="slide-header">
+        <div class="slide-category">Paquete C · Seguridad y Calidad</div>
+        <h2 class="slide-title">Seguridad, Hardening y Análisis de Código (Marcelo)</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Control de Acceso y Gestión de Sesión (RNF02)</div>
+          <ul class="card-list">
+            <li>Autenticación JWT en cookies con directivas HttpOnly, Secure y SameSite=Lax.</li>
+            <li>Matriz de roles institucionales: SOLICITANTE, TECNICO, SUPERVISOR y ADMINISTRADOR.</li>
+            <li>Mecanismo CSRF para aplicaciones SPA con doble verificación en mutaciones.</li>
+            <li>Protección contra fuerza bruta: limitador de intentos fallidos por usuario e IP.</li>
+            <li>Mecanismo de revocación inmediata en base de datos al realizar logout.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Hardening de Servidor y Escaneo de Seguridad</div>
+          <ul class="card-list">
+            <li>Cabeceras de protección: CSP estricta, HSTS (1 año), Referrer y Permissions Policy.</li>
+            <li>Análisis Estático de Código SAST con GitHub CodeQL sin alertas críticas.</li>
+            <li>Análisis de dependencias vulnerables SCA con OWASP Dependency-Check.</li>
+            <li>Parches de seguridad aplicados: Tomcat 10.1.61, Commons Lang 3.22, Jackson 2.21.5.</li>
+            <li>Comprobación automatizada de paquetes frontend mediante npm audit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Paquete A - Funcionalidades (Emanuel) -->
+    <div class="slide" data-index="5">
+      <div class="slide-header">
+        <div class="slide-category">Paquete A · Reglas de Negocio</div>
+        <h2 class="slide-title">Políticas de Plazos, Encuestas y Auditoría (Emanuel)</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Motor de Plazos y Cierre Automático</div>
+          <ul class="card-list">
+            <li>Definición de políticas paramétricas de SLA por tipo de servicio y prioridad.</li>
+            <li>Cálculo dinámico de fecha límite en horas hábiles institucionales.</li>
+            <li>Alertas preventivas programadas al cumplirse el 80% del tiempo reglamentario.</li>
+            <li>Cierre automático programado tras 72 horas de inactividad posterior a la atención.</li>
+            <li>Transición controlada de estados de trámite validados por rol.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Encuestas de Satisfacción y Trazabilidad</div>
+          <ul class="card-list">
+            <li>Encuesta obligatoria post-atención (escala 1 a 5 estrellas) con comentarios.</li>
+            <li>Cálculo consolidado de indicadores de calidad para supervisores y jefaturas.</li>
+            <li>Pistas de auditoría inmutables: registro de autor, timestamp y motivo de cambio.</li>
+            <li>Documentación de API viva con OpenAPI 3 / Swagger en /swagger-ui.html.</li>
+            <li>Manual de usuario interactivo y guías de procedimiento universitario.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Paquete B - Nube y CI/CD (David) -->
+    <div class="slide" data-index="6">
+      <div class="slide-header">
+        <div class="slide-category">Paquete B · Nube y DevOps</div>
+        <h2 class="slide-title">Despliegue Continuo en OCI y Respaldo RNF11 (David)</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Arquitectura en Oracle Cloud Infrastructure</div>
+          <ul class="card-list">
+            <li>Máquina virtual Ubuntu ARM en OCI Always Free orquestada con Docker Compose.</li>
+            <li>Proxy inverso Caddy con certificados SSL/TLS automáticos emitidos por Let's Encrypt.</li>
+            <li>Aislamiento de configuraciones por perfiles: dev, prueba, prod y test.</li>
+            <li>Gestión de secretos seguros externalizados mediante GitHub Secrets.</li>
+            <li>Publicación automatizada de imágenes docker versionadas en GitHub Container Registry.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Integración Continua y Respaldo Verificado (RNF11)</div>
+          <ul class="card-list">
+            <li>Flujo de CI en GitHub Actions que ejecuta pruebas unitarias y de integración completas.</li>
+            <li>Procedimiento de copia de respaldo consistente: pausa de escritura + dump SQL + tar.</li>
+            <li>Ensayo de recuperación automatizado verificado mediante sumas de verificación SHA-256.</li>
+            <li>Mecanismo de detección y rechazo de respaldos corruptos antes de restaurar.</li>
+            <li>Smoke tests externos sobre HTTPS para verificar la salud operativa del despliegue.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Paquete D - Observabilidad (Gabriel) -->
+    <div class="slide" data-index="7">
+      <div class="slide-header">
+        <div class="slide-category">Paquete D · Observabilidad y Telemetría</div>
+        <h2 class="slide-title">Los Tres Pilares de Observabilidad (Gabriel)</h2>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Métricas (Prometheus)</div>
+          <ul class="card-list">
+            <li>Spring Boot Actuator + Micrometer Prometheus.</li>
+            <li>Histogramas percentiles p50, p95 y p99 para peticiones HTTP.</li>
+            <li>Métrica de negocio: conteo directo en base de datos de casos vencidos (msu_solicitudes_vencidas).</li>
+            <li>Desacoplamiento entre métrica real operativa y métrica simulada.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">2. Logs JSON y Correlación</div>
+          <ul class="card-list">
+            <li>Salida estructurada en formato JSON mediante LogstashLogbackEncoder.</li>
+            <li>Inyección y propagación de idCorrelacion a través del encabezado X-Correlation-Id.</li>
+            <li>MDC de SLF4J con limpieza estricta en bloque finally.</li>
+            <li>Enmascaramiento de credenciales, tokens y cookies por RNF02.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Trazas & Grafana</div>
+          <ul class="card-list">
+            <li>OpenTelemetry Tracing Bridge exportando trazas vía OTLP HTTP a Jaeger.</li>
+            <li>Rastreo distribuido de llamadas y latencias con traceId y spanId.</li>
+            <li>Panel de control unificado en Grafana aprovisionado automáticamente.</li>
+            <li>Hardening de red: puertos locales 127.0.0.1 y OTLP interno.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Paquete D - Simulacro RNF08 (Gabriel) -->
+    <div class="slide" data-index="8">
+      <div class="slide-header">
+        <div class="slide-category">Paquete D · RNF08</div>
+        <h2 class="slide-title">Simulacro de Incidente y Recuperación RNF08 (Gabriel)</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Diagnóstico Rápido en Menos de 5 Minutos</div>
+          <ul class="card-list">
+            <li><strong>1. Inyección de Fallo:</strong> Petición con error HTTP 500 controlado propagando X-Correlation-Id.</li>
+            <li><strong>2. Diagnóstico en Logs:</strong> Identificación inmediata del fallo en log JSON usando idCorrelacion.</li>
+            <li><strong>3. Rastreo Distribuido:</strong> Extracción del traceId y visualización en Jaeger de la excepción.</li>
+            <li><strong>4. Alerta en Prometheus:</strong> Activación de regla TasaErroresHttp5xxAlta en estado FIRING.</li>
+            <li><strong>5. Visualización:</strong> Dashboard de Grafana refleja el incremento de tasa de fallos y latencia p95.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Seguridad de la Simulación y Recuperación</div>
+          <ul class="card-list">
+            <li>Endpoints protegidos: Condicionados por msu.simulacion.habilitada (@ConditionalOnProperty).</li>
+            <li>Control de Acceso: Exclusivo para rol ADMINISTRADOR y sin métodos GET para mutaciones.</li>
+            <li>Acción correctiva: Ejecución del endpoint de recuperación /simular-recuperacion.</li>
+            <li>Normalización: Alertas vuelven a estado INACTIVE y métricas se restablecen automáticamente.</li>
+            <li>Suite de integración: 6 pruebas JUnit automatizadas en ObservabilidadTest aprobadas.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Paquete E - Pruebas (Alex) -->
+    <div class="slide" data-index="9">
+      <div class="slide-header">
+        <div class="slide-category">Paquete E · Validación y Calidad</div>
+        <h2 class="slide-title">Pruebas Automatizadas, Usabilidad y Responsive (Alex)</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Pruebas Automatizadas y de Recorrido</div>
+          <ul class="card-list">
+            <li>Más de 100 pruebas unitarias y de integración JUnit 5 en el backend.</li>
+            <li>Pruebas de componentes y flujos de usuario con Vitest en el frontend.</li>
+            <li>Recorridos funcionales completos que validan todo el ciclo de vida de una solicitud.</li>
+            <li>Verificación de consistencia de estados entre base de datos y la interfaz visual.</li>
+            <li>Control de regresiones automatizado en cada pull request antes del merge.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Pruebas de Usuario (SUS) y Responsive</div>
+          <ul class="card-list">
+            <li>Evaluación con usuarios reales siguiendo el protocolo System Usability Scale (SUS).</li>
+            <li>Medición objetiva de efectividad, eficiencia y satisfacción del estudiante/docente.</li>
+            <li>Verificación responsive estricta en pantallas de 360 px (móvil) y 1366 px (escritorio).</li>
+            <li>Garantía de diseño adaptativo, legibilidad tipográfica y ausencia de desbordes.</li>
+            <li>Incorporación de observaciones de usabilidad identificadas en las pruebas previas.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Conclusiones -->
+    <div class="slide dark-conclusions" data-index="10">
+      <div class="slide-header">
+        <div class="slide-category">Evaluación Final</div>
+        <h2 class="slide-title">Conclusiones y Cumplimiento de Objetivos</h2>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="conclusion-item">
+          <div class="conclusion-title">✔ Cumplimiento Integral de Requisitos No Funcionales (RNF)</div>
+          <div class="conclusion-desc">RNF02 (Seguridad, sesiones y no exposición de secretos), RNF08 (Diagnóstico y observabilidad en menos de 5 min), RNF10 (CI/CD continuo) y RNF11 (Respaldo consistente y recuperación comprobada).</div>
+        </div>
+        <div class="conclusion-item">
+          <div class="conclusion-title">✔ Arquitectura Limpia, Pragmática y Robusta</div>
+          <div class="conclusion-desc">Integración armónica entre Spring Boot 3.5, React 18, MySQL 8 y stack de observabilidad, sin sobreingeniería innecesaria y con estándares unificados de código.</div>
+        </div>
+        <div class="conclusion-item">
+          <div class="conclusion-title">✔ Distribución Equitativa y Responsable del Reparto</div>
+          <div class="conclusion-desc">Cada integrante (Emanuel en A, David en B, Marcelo en C, Gabriel en D y Alex en E) sustentará y defenderá técnicamente los entregables de su especialidad.</div>
+        </div>
+        <div class="conclusion-item">
+          <div class="conclusion-title">✔ Observabilidad Operativa Lista para Producción</div>
+          <div class="conclusion-desc">Métricas, logs JSON correlacionados, trazas OpenTelemetry y panel Grafana completamente aprovisionados y comprobados ante fallas reales y simuladas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles de Navegación -->
+  <div class="controls">
+    <button class="btn" id="prevBtn" onclick="prevSlide()">◀ Anterior</button>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span id="slideCounter">1 / 10</span>
+    <button class="btn" id="nextBtn" onclick="nextSlide()">Siguiente ▶</button>
+    <button class="btn" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+      currentSlide = index;
+
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const activeSlide = document.querySelector(`.slide[data-index="${index}"]`);
+      if (activeSlide) activeSlide.classList.add('active');
+
+      document.getElementById('slideCounter').innerText = `${currentSlide} / ${totalSlides}`;
+      document.getElementById('progressFill').style.width = `${(currentSlide / totalSlides) * 100}%`;
+      document.getElementById('prevBtn').disabled = (currentSlide === 1);
+      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { showSlide(currentSlide - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+    });
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    showSlide(1);
+  </script>
+</body>
+</html>
+

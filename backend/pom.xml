@@ -19,10 +19,31 @@
 
   <properties>
     <java.version>17</java.version>
-    <springdoc.version>2.8.17</springdoc.version>
+    <!-- C2: parches compatibles; conservar Spring Boot 3.5 y Jackson 2.21. -->
+    <commons-lang3.version>3.22.0</commons-lang3.version>
+    <jackson-bom.version>2.21.5</jackson-bom.version>
+    <log4j2.version>2.26.1</log4j2.version>
+    <!-- Connector/J cambió de 9.x a numeración por calendario, sin cambiar el servidor MySQL. -->
+    <mysql.version>26.10.0</mysql.version>
+    <tomcat.version>10.1.61</tomcat.version>
+    <springdoc.version>2.10.0</springdoc.version>
+    <swagger-ui.version>5.34.1</swagger-ui.version>
+    <!-- D2: logs JSON estructurados -->
     <logstash-logback.version>8.0</logstash-logback.version>
+    <!-- D3: trazabilidad distribuida -->
     <opentelemetry.version>1.43.0</opentelemetry.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- 5.34.1 incluye DOMPurify 3.4.17; 5.34.0 de springdoc aún contiene 3.4.16. -->
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>swagger-ui</artifactId>
+        <version>${swagger-ui.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- Observabilidad (Paquete D: Actuator, Micrometer y Prometheus) -->
@@ -113,4 +134,36 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- C2: opt-in para no descargar NVD durante cada mvn test. CI ejecuta este perfil explícitamente. -->
+  <profiles>
+    <profile>
+      <id>seguridad</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>13.0.0</version>
+            <configuration>
+              <formats>
+                <format>HTML</format>
+                <format>JSON</format>
+              </formats>
+              <failBuildOnCVSS>7</failBuildOnCVSS>
+              <failOnError>true</failOnError>
+              <!-- Excepciones por CVE, con justificación, versión exacta y caducidad (C2). -->
+              <suppressionFiles>
+                <suppressionFile>${project.basedir}/dependency-check-suppressions.xml</suppressionFile>
+              </suppressionFiles>
+              <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+              <dataDirectory>${user.home}/.m2/dependency-check-data</dataDirectory>
+              <!-- No se envían coordenadas a OSS Index, que requiere credenciales adicionales. -->
+              <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

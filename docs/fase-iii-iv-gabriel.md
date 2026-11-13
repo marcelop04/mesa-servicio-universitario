@@ -159,6 +159,21 @@ cd backend
 docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --build
 ```
 
+### Coordinación para Despliegue en la Nube (VM de David · OCI Always Free)
+
+Conforme a la bitácora de David ([docs/fase-iii-iv-david.md](fase-iii-iv-david.md) y [docs/informe/Seccion_David_Nube_CD.md](informe/Seccion_David_Nube_CD.md)), el aprovisionamiento de la VM ARM en Oracle Cloud Infrastructure Always Free reportó `Out of host capacity` por cupo de capacidad del proveedor.
+
+El stack de observabilidad (`docker-compose.observabilidad.yml`) fue diseñado como una extensión desacoplada lista para operar en la nube:
+1. **Despliegue conjunto en la VM:** En la máquina virtual de David, el stack se levanta con:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up -d
+   ```
+2. **Hardening de red en producción:** Los servicios de Prometheus, Grafana y Jaeger están configurados para escuchar únicamente en `127.0.0.1`. El acceso administrativo durante la demostración en la nube se realiza mediante túnel SSH seguro:
+   ```bash
+   ssh -L 9090:127.0.0.1:9090 -L 3000:127.0.0.1:3000 -L 16686:127.0.0.1:16686 ubuntu@<IP_VM>
+   ```
+3. **Plan de contingencia para sustentación:** Si la VM gratuita experimenta indisponibilidad o falta de capacidad durante la evaluación, se presentará la demostración local idéntica y las evidencias registradas en `docs/evidencias/fase-iii-iv-gabriel/`, tal como prevé la guía de sustentación.
+
 ---
 
 ## 4. Reparto y Entregables del Paquete D7
@@ -166,6 +181,9 @@ docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --b
 El entregable **D7** oficial del reparto de Fases III y IV comprende la preparación integral para la sustentación, la sección correspondiente para el informe final y la consolidación ética del uso de herramientas de IA:
 
 1. **Guion Consolidado de Sustentación del Equipo:** Documentado con cronograma, tiempos y pautas de sustentación de los 5 integrantes en [docs/presentacion/Guion_Sustentacion_Equipo.md](presentacion/Guion_Sustentacion_Equipo.md) (y guion específico de observabilidad en [docs/presentacion/guion-sustentacion-observabilidad.md](presentacion/guion-sustentacion-observabilidad.md)).
-2. **Presentación Final del Equipo:** Estructura completa de diapositivas en [docs/presentacion/Presentacion_Final_Equipo.md](presentacion/Presentacion_Final_Equipo.md) (y diapositivas específicas de telemetría en [docs/presentacion/diapositivas-fase-iv-gabriel.md](presentacion/diapositivas-fase-iv-gabriel.md)).
+2. **Presentación Final del Equipo:** Disponible en formatos listos para exponer:
+   - Presentación PowerPoint oficial: [docs/presentacion/Presentacion_Final_Equipo.pptx](presentacion/Presentacion_Final_Equipo.pptx).
+   - Presentador web interactivo en pantalla completa: [docs/presentacion/Presentacion_Final_Equipo.html](presentacion/Presentacion_Final_Equipo.html).
+   - Estructura y contenidos en Markdown: [docs/presentacion/Presentacion_Final_Equipo.md](presentacion/Presentacion_Final_Equipo.md) (y diapositivas específicas de telemetría en [docs/presentacion/diapositivas-fase-iv-gabriel.md](presentacion/diapositivas-fase-iv-gabriel.md)).
 3. **Sección del Informe Final:** Documento técnico de cierre de observabilidad en [docs/informe/Seccion_Gabriel_Observabilidad.md](informe/Seccion_Gabriel_Observabilidad.md).
 4. **Registro Consolidado de IA del Equipo:** Completado rigurosamente preservando las entradas del equipo y detallando los casos de observabilidad en [docs/registro-uso-ia.md](registro-uso-ia.md).

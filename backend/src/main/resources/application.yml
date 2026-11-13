@@ -1,5 +1,5 @@
 # Configuración por variables de entorno (RNF02: secretos fuera del repositorio).
-# Los valores locales están exclusivamente en application-dev.yml.
+# DB_PASSWORD y JWT_SECRET son obligatorios incluso en local; ver scripts/preparar-entorno.ps1.
 spring:
   application:
     name: msu-backend
@@ -33,12 +33,17 @@ server:
   port: ${PORT:8080}
   error:
     include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
 
 springdoc:
   api-docs:
     path: /api/v1/openapi
   swagger-ui:
     path: /swagger-ui.html
+    # Maven filtra esta propiedad del POM para que la ruta coincida con el WebJar actualizado.
+    version: "@swagger-ui.version@"
 
 msu:
   jwt:
@@ -46,6 +51,16 @@ msu:
     secreto: ${JWT_SECRET}
     duracion: ${JWT_DURACION:PT2H}
     cookie-segura: ${COOKIE_SECURE:false}
+  seguridad:
+    # David debe activarlo en la nube; exige cookies seguras y desactiva la siembra de cuentas demo.
+    despliegue: ${SEGURIDAD_DESPLIEGUE:false}
+    login:
+      max-fallos: ${LOGIN_MAX_FALLOS:5}
+      max-fallos-ip: ${LOGIN_MAX_FALLOS_IP:50}
+      ventana: ${LOGIN_VENTANA:PT15M}
+      max-contadores: ${LOGIN_MAX_CONTADORES:10000}
+      # Lista CIDR de proxies que SOBRESCRIBEN X-Real-IP. Vacía = no confiar en cabeceras.
+      proxies-confiables: ${LOGIN_PROXIES_CONFIABLES:}
   tareas:
     # EM03: revisión del cierre automático a las 72 horas (RNF07: cada cinco minutos).
     habilitadas: ${TAREAS_HABILITADAS:true}
@@ -98,4 +113,3 @@ management:
   otlp:
     tracing:
       endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://jaeger:4318/v1/traces}
-

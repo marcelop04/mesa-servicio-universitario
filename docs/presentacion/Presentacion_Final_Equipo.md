@@ -11,11 +11,11 @@
 - **Título:** Mesa de Servicios Universitarios con Gestión de Plazos de Atención
 - **Subtítulo:** Sistema web integral para la radicación, asignación, resolución y supervisión de trámites académicos y administrativos
 - **Integrantes:**
-  - Marcelo Ruiz — Infraestructura y Coordinación
+  - Marcelo Ruiz — Coordinación, Paquete C (Seguridad y Revisión de Calidad)
   - Emanuel Silva — Paquete A (Políticas, Encuestas y Auditoría)
-  - Alex Huamán — Paquete B (Solicitudes, Bandejas y Adjuntos)
-  - David Torres — Paquete C / Nube (Seguridad, CI/CD y RNF11)
+  - David Torres — Paquete B (Nube, CI/CD y RNF11)
   - Gabriel Salazar — Paquete D (Observabilidad, Telemetría y RNF08)
+  - Alex Huamán — Paquete E (Pruebas)
 - **Docente:** Mg. Carlos Alarcón
 
 ---
@@ -44,7 +44,7 @@
 
 ---
 
-## Diapositiva 4: Paquete C · Seguridad y Control de Acceso (David)
+## Diapositiva 4: Paquete C · Seguridad y Revisión de Calidad (Marcelo)
 
 - **Principio de menor privilegio (RNF02):**
   - Roles institucionales: `SOLICITANTE`, `TECNICO`, `SUPERVISOR`, `ADMINISTRADOR`.
@@ -53,22 +53,12 @@
   - Tokens JWT con clave secreta segura entregada por variables de entorno.
   - Cookies resistentes a exfiltración XSS (`HttpOnly`, `Secure`).
   - Cabecera `X-XSRF-TOKEN` obligatoria en operaciones mutantes.
+- **Cabeceras de hardening:** CSP, HSTS, Referrer-Policy, Permissions-Policy.
+- **Análisis estático:** CodeQL (SAST), OWASP Dependency-Check (SCA), npm audit.
 
 ---
 
-## Diapositiva 5: Paquete B · Núcleo de Solicitudes y Bandejas (Alex)
-
-- **Ciclo de vida del trámite:**
-  - Radicación con validación de adjuntos (PDF/JPG/PNG hasta 5 MB).
-  - Bandeja unificada para supervisores con filtros por estado y categoría.
-  - Asignación manual o balanceada a técnicos resolutores.
-- **Atención y resolución:**
-  - Transición de estados: `REGISTRADA` → `ASIGNADA` → `EN_PROCESO` → `ATENDIDA` / `RECHAZADA`.
-  - Notificaciones de avance y descarga segura de resoluciones adjuntas.
-
----
-
-## Diapositiva 6: Paquete A · Políticas de Atención y Satisfacción (Emanuel)
+## Diapositiva 5: Paquete A · Políticas, Encuestas y Auditoría (Emanuel)
 
 - **Políticas de SLA:**
   - Configuración paramétrica de plazos máximos en horas hábiles.
@@ -78,6 +68,23 @@
   - Comentarios cualitativos para retroalimentación de las dependencias.
 - **Auditoría inmutable:**
   - Registro de cada cambio de estado, reasignación o ajuste de prioridad con usuario y fecha.
+
+---
+
+## Diapositiva 6: Paquete B · Nube, CI/CD y Recuperación (David)
+
+- **Despliegue en OCI Always Free:**
+  - VM Ubuntu ARM con Docker Compose, Caddy (HTTPS automático) y MySQL 8.
+  - Perfiles Spring (`dev`, `prueba`, `prod`) con secretos en GitHub Secrets.
+- **Pipeline de Integración Continua (CI):**
+  - Validación de backend (Maven / JUnit) y frontend (React / Vite / Vitest).
+  - Análisis estático con ShellCheck, actionlint y validación de Compose/Terraform.
+- **Despliegue Continuo (CD):**
+  - Imágenes multicapa publicadas en GHCR desplegadas por digest.
+  - Smoke HTTPS externo valida cada entrega registrada.
+- **Respaldo y Recuperación (RNF11):**
+  - Script automatizado de backup consistente (dump SQL + archivos binarios).
+  - Ensayo de restauración verificado con SHA-256 ante corrupción de datos.
 
 ---
 
@@ -106,17 +113,16 @@
 
 ---
 
-## Diapositiva 9: Despliegue en la Nube y CI/CD (David / Marcelo)
+## Diapositiva 9: Paquete E · Pruebas del Sistema (Alex)
 
-- **Pipeline de Integración Continua (CI):**
-  - Validación de backend (Spring Boot / Maven / JUnit) y frontend (React / Vite / TypeScript).
-  - Análisis estático con ShellCheck y validación de sintaxis Docker Compose y Terraform.
-- **Despliegue Continuo (CD) en OCI:**
-  - Imágenes multicapa publicadas en GitHub Container Registry (GHCR).
-  - VM en Oracle Cloud Infrastructure Always Free con proxy inverso Caddy (HTTPS automático).
-- **Plan de Respaldo y Recuperación (RNF11):**
-  - Script automatizado de backup consistente (base de datos MySQL + archivos binarios).
-  - Ensayo de restauración verificado con sumas de control SHA-256 ante corrupción de datos.
+- **Pruebas automatizadas:**
+  - Suite JUnit del backend y pruebas del frontend con Vitest.
+  - Recorridos completos del flujo de solicitudes por rol.
+- **Pruebas de usuario:**
+  - Protocolo System Usability Scale (SUS) con participantes reales.
+  - Evaluación de usabilidad y detección de defectos.
+- **Pruebas responsive:**
+  - Verificación a 360 px (móvil) y 1366 px (escritorio) de todas las vistas.
 
 ---
 
@@ -129,4 +135,3 @@
   - **RNF10:** Integración y entrega continua con compuertas de calidad automáticas.
   - **RNF11:** Respaldo y recuperación consistente y comprobada.
 - Código limpio, desacoplado y documentado, listo para su puesta en marcha y evaluación final.
-
