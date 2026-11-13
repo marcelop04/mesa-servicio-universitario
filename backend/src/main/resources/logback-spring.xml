@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Appender JSON estructurado con LogstashEncoder (D2) -->
+    <appender name="JSON_CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <includeContext>false</includeContext>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>nivel</level>
+                <thread>hilo</thread>
+                <logger>logger</logger>
+                <message>mensaje</message>
+                <stackTrace>excepcion</stackTrace>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <!-- Appender de texto plano para desarrollo local -->
+    <appender name="TEXTO_CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%15.15t] %cyan(%-40.40logger{39}) [corr=%X{idCorrelacion:-sin-corr} trace=%X{traceId:-} span=%X{spanId:-}] : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Perfil local usa texto formateado; default/docker usa JSON estructurado -->
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="TEXTO_CONSOLA"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLA"/>
+        </root>
+    </springProfile>
+</configuration>

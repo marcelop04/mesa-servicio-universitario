@@ -36,6 +36,7 @@ public class LimpiezaRevocacionesServicio {
     }
 
     /** Solo corre si msu.tareas.habilitadas es true (ver TareasConfig). Es idempotente. */
+    @Transactional
     @Scheduled(fixedDelayString = "${msu.tareas.limpieza-sesiones:PT1H}", initialDelayString = "PT2M")
     public void programado() {
         limpiar(Instant.now(reloj));

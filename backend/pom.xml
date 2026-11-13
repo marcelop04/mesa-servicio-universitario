@@ -20,9 +20,39 @@
   <properties>
     <java.version>17</java.version>
     <springdoc.version>2.8.17</springdoc.version>
+    <logstash-logback.version>8.0</logstash-logback.version>
+    <opentelemetry.version>1.43.0</opentelemetry.version>
   </properties>
 
   <dependencies>
+    <!-- Observabilidad (Paquete D: Actuator, Micrometer y Prometheus) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+
+    <!-- Logs estructurados en JSON (D2) -->
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>${logstash-logback.version}</version>
+    </dependency>
+
+    <!-- Trazabilidad distribuida con OpenTelemetry (D3) -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-otel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-otlp</artifactId>
+      <version>${opentelemetry.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
