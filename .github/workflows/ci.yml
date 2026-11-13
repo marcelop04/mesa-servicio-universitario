@@ -99,21 +99,17 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.m2/dependency-check-data
-          key: dependency-check-13-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: dependency-check-13-${{ runner.os }}-
-      - name: Comprobar la clave de NVD sin mostrarla
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          if [ -z "$NVD_API_KEY" ]; then
-            echo '::error::Configure el secret NVD_API_KEY. No se considera aprobado un análisis que no pudo consultar NVD.'
-            exit 1
-          fi
+          # Separar la base completa del feed de descargas API incompletas.
+          key: dependency-check-13-nvd-feed-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: dependency-check-13-nvd-feed-${{ runner.os }}-
       - name: Analizar dependencias (CVSS >= 7 bloquea)
         working-directory: backend
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn -B -Pseguridad dependency-check:check
+        # Feed 2.0 del propio NIST, admitido por Dependency-Check 13. No requiere
+        # API key; conserva actualización automática, failOnError y CVSS del POM.
+        run: >-
+          mvn -B -Pseguridad
+          "-DnvdDatafeedUrl=https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{0}.json.gz"
+          -DconnectionTimeout=15000 -DreadTimeout=120000 dependency-check:check
       - name: Conservar los informes disponibles
         if: always()
         uses: actions/upload-artifact@v4

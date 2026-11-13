@@ -7,8 +7,8 @@
 ## 1. Arquitectura y costo
 
 ```text
-Rama de trabajo → PR → CI (JUnit, Vitest, build, recuperación, configuración)
-                         ↓ main aprobado / demo de PR habilitada explícitamente
+Rama de trabajo → PR → CI (JUnit, Vitest, SCA, build, recuperación, configuración)
+                         ↓ push a main aprobado + CodeQL del mismo SHA
                       GHCR (amd64 + arm64, digest SHA-256)
                          ↓ SSH con host verificado
 Internet → Caddy :443 → React/Nginx
@@ -61,7 +61,7 @@ del repositorio para Secrets y protección de ramas. La VM instala Docker y Pyth
 
 | Ambiente | Perfil Spring | Persistencia y uso |
 |---|---|---|
-| Desarrollo | `dev` (predeterminado) | Compose raíz, MySQL local, claves de demostración explícitas en `application-dev.yml` |
+| Desarrollo | `dev` (predeterminado) | Compose raíz, MySQL local y credenciales externas generadas en `.env` |
 | Pruebas unitarias/integración Java | `test` | H2 en memoria, migraciones reales; configuración en `src/test/resources` |
 | Prueba del stack / usuarios | `prueba` | MySQL y volúmenes aislados; mismo HTTPS que producción cuando se publica |
 | Producción académica | `prod` | Stack `despliegue/compose.yml`, GHCR, TLS y volúmenes persistentes |
@@ -219,21 +219,23 @@ Requiere que el propietario/administrador del repositorio ejecute, una vez auten
 ```bash
 gh auth login
 gh api --method PUT repos/marcelop04/mesa-servicio-universitario/environments/production
-gh api --method PUT repos/marcelop04/mesa-servicio-universitario/branches/main/protection \
-  --input despliegue/github/proteccion-main.json
+gh api --method POST repos/marcelop04/mesa-servicio-universitario/rulesets \
+  --input despliegue/github/checks-main-ruleset.json
 ```
 
-El JSON es una propuesta de configuración mínima. La configuración **observada** por
+El JSON propone un ruleset adicional de ocho checks, sin sustituir los rulesets existentes.
+La configuración **observada** por
 la API de reglas efectivas de main bloquea borrado/force-push y exige PR con una
 aprobación, con bypass configurado para el usuario actual. No declara checks de estado
 obligatorios. Ver `docs/evidencias/fase-iii-iv-david/proteccion.json`; no se atribuyen
-a la rama checks que la API no muestra. El propietario puede añadir los cuatro checks.
+a la rama checks que la API no muestra. El propietario puede añadir los ocho checks de CI/CodeQL.
 El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
 Si `main` ya está protegida, el administrador debe conservar sus reglas y checks
 existentes e incorporar los del paquete B; el JSON es una referencia de configuración
-mínima, no una razón para borrar protecciones del equipo. La cuenta de David tiene
+mínima, no una razón para borrar protecciones del equipo. El intento de crear el ruleset
+adicional con la cuenta de David devolvió 404, sin cambiar las reglas. Esa cuenta tiene
 WRITE y pudo gestionar Secrets/variables del repositorio, pero crear el environment
 devolvió 403. Los Secrets también pueden guardarse a nivel de repositorio y ser usados
 por el job `production`; las preferencias de protección del environment las configura
@@ -254,6 +256,21 @@ El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
    y ejecuta el smoke HTTPS con validación de certificado, cookies, API y OpenAPI.
 6. Actualiza `/opt/msu/actual`, instala el timer de respaldo y registra los digests y fecha
    en `/opt/msu/shared/ultimo-despliegue.txt`. Cierra la sesión de GHCR al terminar.
+
+### Fuente de vulnerabilidades Java
+
+CI descarga los feeds JSON 2.0 oficiales de NIST mediante `nvdDatafeedUrl`, compatible
+con Dependency-Check 13. La carga inicial incluye todos los años desde 2002 y el feed
+`modified`; la caché completa se mantiene separada de la caché API. Se conserva la
+actualización automática (vigencia predeterminada de cuatro horas), el umbral CVSS ≥ 7,
+`failOnError=true` y las excepciones versionadas/caducables del paquete C.
+Un fallo de descarga o análisis sigue bloqueando CI/CD.
+
+La API NVD devolvió HTTP 503 en los runs `43355639076` y `43358822956`; el cambio de
+transporte se verificó con una descarga nueva de los feeds y un análisis local exitoso.
+Referencia: [fuentes oficiales NVD](https://nvd.nist.gov/vuln/data-feeds).
+El lanzador local `scripts/analizar-dependencias.ps1` conserva la vía API con
+`NVD_API_KEY`; el Secret no se necesita para el transporte por feed de CI.
 
 `CD_ENABLED=false` permite publicar sin intentar SSH. GHCR puede crear los paquetes como
 privados inicialmente; el token temporal permite descargarlos. Para descarga anónima,

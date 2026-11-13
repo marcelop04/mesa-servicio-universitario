@@ -73,7 +73,7 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   Secret del repositorio y configurar `DEPLOY_USER=ubuntu`, `CD_ENABLED=false`.
 - GitHub informa `main` protegida; su resumen no muestra checks obligatorios. Crear el
   environment `production` devolvió 403 por requerir administrador. Marcelo debe revisar
-  las reglas existentes y añadir los cuatro checks sin eliminar reglas del equipo.
+  las reglas existentes y añadir los ocho checks de CI/CodeQL sin eliminar reglas del equipo.
 - El primer CI permitió comprobar los contenedores con MySQL real y detectó dos ajustes:
   expansión de rutas de ShellCheck en Docker y healthcheck Nginx con IPv4 explícito.
   Las correcciones se incluyen en la rama; ver el resultado actualizado en el PR.
@@ -95,12 +95,14 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Se ejecutó RNF11 en un proyecto efímero de la misma VM y se confirmó recuperación
   SQL/archivo/hash/permisos. Después se copió la aplicación pública y se descargó la
   instantánea al equipo del responsable; las cuatro sumas coinciden.
-- El timer diario está activo y `CD_ENABLED=true` deja lista la entrega de main tras
-  integrar el PR. Los ajustes administrativos de GitHub los realiza el propietario.
+- El timer diario está activo. `CD_ENABLED` se pausó en `false` mientras se revisa
+  prod y se completa CI del PR #8; se habilita para la entrega definitiva de main.
+  Los ajustes administrativos de GitHub los realiza el propietario.
 - El PR #4 se integró. El primer CD main duró 60 minutos y se canceló compilando
   assets ARM bajo QEMU; se corrigieron los stages de build para usar arquitectura nativa.
-- El guard de producción del PR #3 de Marcelo se incorporó idéntico (mismo hash de
-  archivo), sin atribuir a B el resto del paquete C. Prod rechaza cookies inseguras,
+- Main integró el paquete C por PR #3 y la corrección A4/excepciones CVE por PR #7;
+  ambas se incorporaron a `fix/despliegue-prod`. El guard de Marcelo se conserva idéntico.
+  Prod rechaza cookies inseguras,
   cuentas demo y solicitudes demo; sus tests HTTPS crean un fixture H2 sin activar siembra.
 - El archivo privado de producción se revisó preservando DB/JWT y datos existentes:
   `DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`, `SEGURIDAD_DESPLIEGUE=true`.
@@ -110,6 +112,15 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   no contiene checks obligatorios; `proteccion.json` registra la configuración real.
 - No hay cinco participantes reales acreditados. P01–P05 en el ejemplo sintético no
   se cuentan como participantes; el cálculo normal rechaza sus datos simulados.
+- La integración detectó una intermitencia al publicar políticas: MySQL/H2 redondeaba
+  nanosegundos y podía dejar la fecha en el futuro. Se normalizó a milisegundos, acorde
+  con `DATETIME(3)`, y se comprobó con reloj fijo y las pruebas de políticas.
+- Los CI `43355639076` y `43358822956` fallaron por HTTP 503 de la API NVD. Una carga
+  nueva desde los feeds oficiales NIST 2.0 y el análisis local terminaron correctamente.
+  CI usa ese transporte con caché separada; CVSS ≥ 7, `failOnError`, actualización y
+  excepciones de C se conservan. El resultado remoto se verifica en el PR.
+- La propuesta adicional `despliegue/github/checks-main-ruleset.json` recoge los ocho
+  checks de CI/CodeQL. Su creación por API devolvió 404 con WRITE, sin modificar las reglas.
 
 ## Dependencias para completar la operación
 

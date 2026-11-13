@@ -200,7 +200,10 @@ en GitHub. No hacer push directo a `main` ni reemplazar avances posteriores de l
    **no** que no haya alertas. Revisa y corrige cada alerta; registra cualquier falso positivo con justificación.
 
 El CI bloquea la construcción de imágenes si falla una prueba, hay avisos npm altos/críticos, hay un CVSS
-de al menos 7 en Dependency-Check o el análisis no puede completarse. Sin clave de NVD falla explícitamente.
+de al menos 7 en Dependency-Check o el análisis no puede completarse. Desde el ajuste
+operacional de B, CI usa los feeds oficiales NIST 2.0 con caché completa separada;
+ese transporte no requiere clave. Conserva actualización automática y `failOnError`.
+La vía API del lanzador local sigue requiriendo la clave NVD.
 Los PR de forks no reciben secrets: requieren revisión y ejecución en una rama interna de confianza;
 no uses `pull_request_target` para ejecutar código no confiable con secretos.
 
