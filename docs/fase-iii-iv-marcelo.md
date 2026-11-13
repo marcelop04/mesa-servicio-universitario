@@ -14,7 +14,7 @@ y aportes finales del equipo.
 | ID | Tarea | Estado comprobable | Evidencia |
 |---|---|---|---|
 | C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Integrado con perfiles y borde de B: secretos dev obligatorios, guard prod sin demo, cabeceras Caddy/Nginx y prueba de proxy aislada. Revalidación de la release pública pendiente | [Integración y evidencias](seguridad/integracion-main-b.md); [Checklist](seguridad/checklist-owasp.md) |
-| C2 | SAST, npm audit y Dependency-Check en CI | Ejecuciones remotas revisadas: CodeQL Java/JS con 0 resultados y sin alertas abiertas para la referencia analizada; npm audit 0. Dependency-Check completado con 23 CVE distintos, 15 bloqueantes. C2 sigue abierto por Spring | [Evidencias CI/CodeQL y hashes](seguridad/resultados-ci.md); [análisis y decisión Java](seguridad/analisis-dependencias.md); workflows y perfil `seguridad` |
+| C2 | SAST, npm audit y Dependency-Check en CI | Ejecuciones remotas revisadas: CodeQL Java/JS con 0 resultados y sin alertas abiertas para la referencia analizada; npm audit 0. Dependency-Check completado con 23 CVE distintos, 15 bloqueantes. El 12/11/2026 se registraron excepciones documentadas por CVE, con versión exacta y caducidad al 31/01/2027 (`backend/dependency-check-suppressions.xml`). Falta confirmar el resultado en el CI | [Evidencias CI/CodeQL y hashes](seguridad/resultados-ci.md); [análisis y decisión Java](seguridad/analisis-dependencias.md); workflows y perfil `seguridad` |
 | C3 | ZAP baseline y corregir hallazgos | Workflow con autorización, origen controlado, SHA desplegado obligatorio y artifact de alcance; validación probada sin red. Falta autorización/versión y ZAP real sobre la release con C | `.github/workflows/dast.yml`; `scripts/validar-dast.py`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
 | C4 | Pruebas negativas por rol (RNF01) | Implementadas y ejecutadas con cadena real de seguridad | `AccesosPorRolTest` (34 casos), pruebas web/HTTPS/limitador y rutas React; [resultados](seguridad/resultados-locales.md) |
 | C5 | Arquitectura, patrones, errores y secretos | Revisión asistida realizada, correcciones puntuales aplicadas; aceptación humana pendiente | [Revisión](seguridad/revision-arquitectura.md), sanitización de auditoría y pruebas de errores |
@@ -53,7 +53,7 @@ Las evidencias del head `30bc5b2` ya se revisaron; consultar en GitHub los check
 ## Pendientes para cerrar, en orden
 
 1. Marcelo/equipo: revisar el código generado en la rama publicada y su PR; no integrar antes de resolver los controles bloqueantes.
-2. Marcelo/equipo: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada, parches de
+2. **Decidido el 12/11/2026:** excepciones documentadas por CVE (ver [análisis](seguridad/analisis-dependencias.md)); falta que el equipo las confirme en el PR y que el CI las valide. Texto original: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada, parches de
    soporte si están disponibles o revisión de aplicabilidad por CVE). NVD funcionó en CI; CodeQL y los
    artifacts ya tienen evidencias revisadas. Repetir/revisar los controles tras cambios: un análisis completado
    con hallazgos bloqueantes no cuenta como aprobado.

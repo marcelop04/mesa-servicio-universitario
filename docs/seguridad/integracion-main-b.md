@@ -71,7 +71,7 @@ o evaluación de aplicabilidad por CVE con evidencia/revisión humana. No se ocu
    ejecutar ZAP, analizar/corregir y repetir sobre la misma release identificable.
 4. **B3:** comprobar protección y condicionamiento de CD a seguridad, incluyendo resultados de CodeQL.
    El workflow CD y la configuración remota no se modifican en este avance C.
-5. **A4:** sigue pendiente coordinar la transacción de limpieza programada con Emanuel; no se toca su tarea.
+5. **A4:** corregido por Emanuel el 12/11/2026 con una prueba sin transacción previa; ver la [revisión](revision-arquitectura.md).
 6. **D/E/C6:** recibir aportes aceptados y evidencias finales para consolidar sin declarar validaciones ajenas.
 
 ## Repetir las verificaciones
