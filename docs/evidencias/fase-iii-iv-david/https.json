@@ -1,0 +1,12 @@
+{
+  "fecha_utc": "2026-11-12T22:41:22.751120+00:00",
+  "url": "https://msu-157-137-206-147.sslip.io",
+  "estado": "OK",
+  "comprobaciones": [
+    "TLS válido y ruta SPA",
+    "CSRF Secure detrás de HTTPS",
+    "Acceso sin sesión devuelve 401 JSON",
+    "OpenAPI accesible",
+    "Login, cookie HttpOnly/Secure, perfil y logout"
+  ]
+}
