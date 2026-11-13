@@ -600,7 +600,7 @@
           ]
         },
         {
-          "name": "02.03 - HU04: POST /solicitudes - Registrar solicitud exitosamente",
+          "name": "02.03 - HU04/HU14: POST /solicitudes - Registrar solicitud exitosamente con plazos calculados",
           "request": {
             "method": "POST",
             "header": [
@@ -645,6 +645,11 @@
                   "    pm.environment.set(\"solicitud_id\", json.id);",
                   "    pm.environment.set(\"solicitud_codigo\", json.codigo);",
                   "    pm.environment.set(\"solicitud_version\", json.version);",
+                  "});",
+                  "pm.test(\"HU14: Límites de primera atención y resolución calculados y congelados\", function() {",
+                  "    pm.expect(json.limite_atencion).to.not.be.empty;",
+                  "    pm.expect(json.limite_resolucion).to.not.be.empty;",
+                  "    pm.expect(json.politica_version).to.be.a(\"number\");",
                   "});"
                 ]
               }
@@ -1237,7 +1242,59 @@
           ]
         },
         {
-          "name": "03.05 - HU08: POST /solicitudes/{id}/asignaciones - Asignar técnico Tomás Soporte",
+          "name": "03.05 - HU24: POST /solicitudes/{id}/evaluacion - 409 Conflicto por versión desactualizada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}/evaluacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_id}}",
+                "evaluacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\":0,\"impacto\":\"ALTO\",\"motivo\":\"Intento de modificación con versión previa desactualizada\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Cabecera X-Correlation-Id presente\", function() {",
+                  "    pm.expect(pm.response.headers.get(\"X-Correlation-Id\")).to.not.be.empty;",
+                  "});",
+                  "pm.test(\"Status 409 Conflict\", function() { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi CONFLICTO_VERSION\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"CONFLICTO_VERSION\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.06 - HU08: POST /solicitudes/{id}/asignaciones - Asignar técnico Tomás Soporte",
           "request": {
             "method": "POST",
             "header": [
@@ -1288,7 +1345,7 @@
           ]
         },
         {
-          "name": "03.06 - HU17/HU18: GET /indicadores - Dashboard de indicadores del supervisor",
+          "name": "03.07 - HU17/HU18: GET /indicadores - Dashboard de indicadores del supervisor",
           "request": {
             "method": "GET",
             "header": [],
@@ -1323,7 +1380,7 @@
           ]
         },
         {
-          "name": "03.07 - HU19: GET /reportes/solicitudes.csv - Exportar CSV de solicitudes",
+          "name": "03.08 - HU19: GET /reportes/solicitudes.csv - Exportar CSV de solicitudes",
           "request": {
             "method": "GET",
             "header": [],
@@ -2491,7 +2548,97 @@
           ]
         },
         {
-          "name": "08.04 - CSRF: Petición con token CSRF inválido responde 403",
+          "name": "08.04 - HU24: Solicitante intenta acceder a solicitud ajena por ID (403 Prohibido)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_ajena_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "solicitudes",
+                "{{solicitud_ajena_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var base = pm.environment.get(\"base_url\");",
+                  "var csrf = pm.environment.get(\"csrf_token\");",
+                  "var stamp = Date.now();",
+                  "var correoOtro = \"ajeno.postman.\" + stamp + \"@msu.test\";",
+                  "pm.sendRequest({",
+                  "    url: base + \"/api/v1/auth/registro\",",
+                  "    method: \"POST\",",
+                  "    header: { \"Content-Type\": \"application/json\", \"X-XSRF-TOKEN\": csrf, \"Cookie\": \"XSRF-TOKEN=\" + csrf },",
+                  "    body: { mode: \"raw\", raw: JSON.stringify({ nombre: \"Usuario Ajeno\", correo: correoOtro, password: \"Password123!\", vinculo: \"ESTUDIANTE\" }) }",
+                  "}, function (err, resReg) {",
+                  "    if (err) return console.error(err);",
+                  "    pm.sendRequest({",
+                  "        url: base + \"/api/v1/auth/login\",",
+                  "        method: \"POST\",",
+                  "        header: { \"Content-Type\": \"application/json\", \"X-XSRF-TOKEN\": csrf, \"Cookie\": \"XSRF-TOKEN=\" + csrf },",
+                  "        body: { mode: \"raw\", raw: JSON.stringify({ correo: correoOtro, password: \"Password123!\" }) }",
+                  "    }, function (err, resLogin) {",
+                  "        if (err) return console.error(err);",
+                  "        var cookies = resLogin.headers.all().filter(function(h) { return h.key.toLowerCase() === \"set-cookie\"; });",
+                  "        var ajenoCookie = \"\";",
+                  "        for (var i = 0; i < cookies.length; i++) {",
+                  "            var m = cookies[i].value.match(/MSU_SESION=([^;]+)/);",
+                  "            if (m) { ajenoCookie = \"MSU_SESION=\" + m[1]; break; }",
+                  "        }",
+                  "        pm.sendRequest({",
+                  "            url: base + \"/api/v1/solicitudes\",",
+                  "            method: \"POST\",",
+                  "            header: { \"Content-Type\": \"application/json\", \"X-XSRF-TOKEN\": csrf, \"Cookie\": \"XSRF-TOKEN=\" + csrf + \"; \" + ajenoCookie },",
+                  "            body: { mode: \"raw\", raw: JSON.stringify({ categoria_id: 1, ubicacion_id: 1, descripcion: \"Solicitud ajena privada para verificar 403 HU24\", urgencia: \"BAJA\", impacto: \"BAJO\" }) }",
+                  "        }, function (err, resSol) {",
+                  "            if (err) return console.error(err);",
+                  "            var sol = resSol.json();",
+                  "            pm.environment.set(\"solicitud_ajena_id\", sol.id);",
+                  "            // Restaurar sesión de solicitante@msu.test en el cookie jar de Newman",
+                  "            pm.sendRequest({",
+                  "                url: base + \"/api/v1/auth/login\",",
+                  "                method: \"POST\",",
+                  "                header: { \"Content-Type\": \"application/json\", \"X-XSRF-TOKEN\": csrf, \"Cookie\": \"XSRF-TOKEN=\" + csrf },",
+                  "                body: { mode: \"raw\", raw: JSON.stringify({ correo: \"solicitante@msu.test\", password: pm.environment.get(\"demo_password\") || \"Demo12345!\" }) }",
+                  "            }, function (err, resRestore) {",
+                  "                if (err) console.error(err);",
+                  "            });",
+                  "        });",
+                  "    });",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Cabecera X-Correlation-Id presente\", function() {",
+                  "    pm.expect(pm.response.headers.get(\"X-Correlation-Id\")).to.not.be.empty;",
+                  "});",
+                  "pm.test(\"Status 403 Forbidden\", function() { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test(\"ErrorApi ACCESO_DENEGADO\", function() {",
+                  "    pm.expect(json.codigo).to.eql(\"ACCESO_DENEGADO\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08.05 - CSRF: Petición con token CSRF inválido responde 403",
           "request": {
             "method": "POST",
             "header": [
@@ -2542,7 +2689,7 @@
           ]
         },
         {
-          "name": "08.05 - HU02: POST /auth/logout - Cerrar sesión y revocar JWT",
+          "name": "08.06 - HU02: POST /auth/logout - Cerrar sesión y revocar JWT",
           "request": {
             "method": "POST",
             "header": [],
@@ -2572,7 +2719,7 @@
           ]
         },
         {
-          "name": "08.06 - HU02: GET /me sin sesión responde 401 Sin Sesión",
+          "name": "08.07 - HU02: GET /me sin sesión responde 401 Sin Sesión",
           "request": {
             "method": "GET",
             "header": [

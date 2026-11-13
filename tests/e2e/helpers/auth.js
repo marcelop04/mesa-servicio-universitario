@@ -19,6 +19,7 @@ export const USUARIOS = {
  * @param {string} [password]
  */
 export async function login(page, correo, password = DEMO_PASSWORD) {
+  await page.context().clearCookies();
   await page.goto('/login');
   await page.getByLabel('Correo institucional').fill(correo);
   await page.getByLabel('Contraseña', { exact: true }).fill(password);

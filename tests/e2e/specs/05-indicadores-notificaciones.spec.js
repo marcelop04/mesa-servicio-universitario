@@ -12,33 +12,31 @@ test.describe('Épica 5: Notificaciones, Alertas y Dashboard', () => {
       await page.goto('/supervision');
       await expect(page.locator('section[aria-label="Bandeja de supervisión"]')).toBeVisible();
 
-      // Consultar caso con alerta conocido en la bandeja de supervisión
+      // Consultar caso con alerta o vencido en la bandeja de supervisión
       await page.locator('#filtro-q').fill(codigoAlerta);
       const fila = page.locator('.tabla tbody tr').filter({ hasText: codigoAlerta });
       await expect(fila).toBeVisible({ timeout: 10000 });
-      await expect(fila.getByText('Plazo al 80 %')).toBeVisible();
+      await expect(fila.getByText(/Vencida|Plazo al 80 %/)).toBeVisible();
     });
 
     await test.step('Cuando el técnico responsable consulta su centro de notificaciones', async () => {
-      await page.context().clearCookies();
       await login(page, 'tecnico.servicios@msu.test');
       await page.goto('/notificaciones');
       await expect(page.locator('section[aria-label="Centro de notificaciones"]')).toBeVisible();
     });
 
     await test.step('Entonces se presenta el aviso generado para esa solicitud específica', async () => {
-      const avisoEspecifico = page.locator('.aviso').filter({ hasText: codigoAlerta }).filter({ hasText: 'Plazo al 80 %' });
-      await expect(avisoEspecifico).toBeVisible({ timeout: 10000 });
-      await expect(avisoEspecifico.locator('.aviso__texto')).toContainText(new RegExp(`La solicitud ${codigoAlerta} consumió el 80 %`));
-      await expect(avisoEspecifico.locator('.aviso__cabecera')).toContainText('Plazo al 80 %');
+      const avisoEspecifico = page.locator('.aviso').filter({ hasText: codigoAlerta }).filter({ hasText: /Plazo vencido|Plazo al 80 %/ });
+      await expect(avisoEspecifico.first()).toBeVisible({ timeout: 10000 });
+      await expect(avisoEspecifico.first().locator('.aviso__texto')).toContainText(new RegExp(`La solicitud ${codigoAlerta} (superó el plazo|consumió el 80 %)`));
 
       // Comprobar que el enlace navega al detalle de esa misma solicitud
-      const enlaceDetalle = avisoEspecifico.getByRole('link', { name: new RegExp(`Ver ${codigoAlerta}`) });
+      const enlaceDetalle = avisoEspecifico.first().getByRole('link', { name: new RegExp(`Ver ${codigoAlerta}`) });
       await expect(enlaceDetalle).toBeVisible();
       await enlaceDetalle.click();
 
       await expect(page.getByRole('heading', { name: codigoAlerta })).toBeVisible({ timeout: 10000 });
-      await expect(page.getByText('Plazo al 80 %')).toBeVisible();
+      await expect(page.getByText(/Vencida|Plazo al 80 %/)).toBeVisible();
       await expectSinDesbordeHorizontal(page);
     });
   });

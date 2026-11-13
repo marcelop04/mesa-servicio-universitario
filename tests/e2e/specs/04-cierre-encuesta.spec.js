@@ -4,28 +4,39 @@ import { prepararSolicitud } from '../helpers/datos.js';
 
 test.describe('Épica 4: Conformidad y Encuesta de Satisfacción', () => {
 
-  test('@HU12 Confirmar solución por el solicitante y cerrar solicitud', async ({ page }) => {
-    let solicitud;
+  test('@HU12 Conformidad de solución (BDD 1) y reapertura por persistencia (BDD 2)', async ({ page }) => {
+    let solicitudResuelta1;
+    let solicitudResuelta2;
 
-    await test.step('Dado que existe una solicitud en estado Resuelta para el solicitante', async () => {
-      solicitud = await prepararSolicitud('RESUELTA', {
-        descripcion: 'Caso para confirmar solución HU12',
+    await test.step('Dado que existe una solicitud en estado Resuelta que el solicitante aprueba (BDD 1)', async () => {
+      solicitudResuelta1 = await prepararSolicitud('RESUELTA', {
+        descripcion: 'Caso para conformidad de solución HU12 BDD 1',
       });
       await login(page, USUARIOS.solicitante);
-      await page.goto(`/solicitudes/${solicitud.id}`);
+      await page.goto(`/solicitudes/${solicitudResuelta1.id}`);
       await expect(page.locator('#titulo-detalle')).toBeVisible({ timeout: 10000 });
-    });
-
-    await test.step('Cuando el solicitante abre el caso y presiona Confirmar solución', async () => {
       await expect(page.locator('#titulo-conformidad')).toBeVisible({ timeout: 10000 });
-      const botonConfirmar = page.getByRole('button', { name: 'Confirmar solución' });
-      await expect(botonConfirmar).toBeVisible();
-      await botonConfirmar.click();
-    });
-
-    await test.step('Entonces la solicitud queda Cerrada y se despliega la encuesta', async () => {
+      await page.getByRole('button', { name: 'Confirmar solución' }).click();
       await expect(page.getByText('Gracias: la solicitud quedó cerrada.')).toBeVisible({ timeout: 10000 });
       await expect(page.locator('.detalle__cabecera').getByText('Cerrada')).toBeVisible();
+    });
+
+    await test.step('Y cuando existe otra solicitud resuelta donde el problema persiste y se sustenta reapertura (BDD 2)', async () => {
+      solicitudResuelta2 = await prepararSolicitud('RESUELTA', {
+        descripcion: 'Caso para reapertura de solicitud HU12 BDD 2',
+      });
+      await page.goto(`/solicitudes/${solicitudResuelta2.id}`);
+      await expect(page.locator('#titulo-detalle')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('#titulo-conformidad')).toBeVisible({ timeout: 10000 });
+
+      await page.getByRole('button', { name: 'El problema persiste' }).click();
+      const campoMotivo = page.locator('#motivo-reapertura');
+      await expect(campoMotivo).toBeVisible({ timeout: 5000 });
+      await campoMotivo.fill('El inconveniente con el proyector persiste tras reiniciar los equipos.');
+      await page.getByRole('dialog').getByRole('button', { name: 'Reabrir' }).click();
+
+      await expect(page.getByText('Solicitud reabierta: el técnico retomará la atención.')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('.detalle__cabecera').getByText(/En atención|Asignada/)).toBeVisible();
       await expectSinDesbordeHorizontal(page);
     });
   });
@@ -63,39 +74,6 @@ test.describe('Épica 4: Conformidad y Encuesta de Satisfacción', () => {
       await page.reload();
       const botonEnviar = page.getByRole('button', { name: 'Enviar calificación' });
       expect(await botonEnviar.count()).toBe(0);
-      await expectSinDesbordeHorizontal(page);
-    });
-  });
-
-  test('@HU14 Reapertura de solicitud por el Solicitante ante persistencia del problema', async ({ page }) => {
-    let solicitud;
-
-    await test.step('Dado que existe una solicitud en estado Resuelta que presenta fallas persistentes', async () => {
-      solicitud = await prepararSolicitud('RESUELTA', {
-        descripcion: 'Caso para reapertura de solicitud HU14',
-      });
-      await login(page, USUARIOS.solicitante);
-      await page.goto(`/solicitudes/${solicitud.id}`);
-      await expect(page.locator('#titulo-detalle')).toBeVisible({ timeout: 10000 });
-    });
-
-    await test.step('Cuando el solicitante presiona El problema persiste y sustenta con motivo obligatorio', async () => {
-      await expect(page.locator('#titulo-conformidad')).toBeVisible({ timeout: 10000 });
-      const botonReabrirModal = page.getByRole('button', { name: 'El problema persiste' });
-      await expect(botonReabrirModal).toBeVisible();
-      await botonReabrirModal.click();
-
-      const campoMotivo = page.locator('#motivo-reapertura');
-      await expect(campoMotivo).toBeVisible({ timeout: 5000 });
-      await campoMotivo.fill('El inconveniente con el proyector persiste tras reiniciar los equipos en el laboratorio.');
-
-      const botonConfirmarReapertura = page.getByRole('dialog').getByRole('button', { name: 'Reabrir' });
-      await botonConfirmarReapertura.click();
-    });
-
-    await test.step('Entonces la solicitud se reabre retornando a atención técnica', async () => {
-      await expect(page.getByText('Solicitud reabierta: el técnico retomará la atención.')).toBeVisible({ timeout: 10000 });
-      await expect(page.locator('.detalle__cabecera').getByText(/En atención|Asignada/)).toBeVisible();
       await expectSinDesbordeHorizontal(page);
     });
   });

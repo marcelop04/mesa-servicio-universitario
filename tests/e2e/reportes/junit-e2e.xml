@@ -1,122 +1,122 @@
-<testsuites id="" name="" tests="48" failures="0" skipped="0" errors="0" time="36.42863800000001">
-<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="3" failures="0" skipped="0" time="1.574" errors="0">
-<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="0.596">
+<testsuites id="" name="" tests="48" failures="0" skipped="0" errors="0" time="37.496296">
+<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="3" failures="0" skipped="0" time="1.466" errors="0">
+<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="0.516">
 </testcase>
-<testcase name="Épica 1: Identidad y Acceso › @HU02 Inicio de sesión exitoso y rechazo de credenciales inválidas" classname="01-auth-identidad.spec.js" time="0.542">
+<testcase name="Épica 1: Identidad y Acceso › @HU02 Inicio de sesión exitoso y rechazo de credenciales inválidas" classname="01-auth-identidad.spec.js" time="0.545">
 </testcase>
-<testcase name="Épica 1: Identidad y Acceso › @HU03 Consulta de perfil institucional del solicitante" classname="01-auth-identidad.spec.js" time="0.436">
-</testcase>
-</testsuite>
-<testsuite name="02-solicitudes.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="4" failures="0" skipped="0" time="2.592" errors="0">
-<testcase name="Épica 2: Solicitudes de Servicio › @HU04 Registro de nueva solicitud con prioridad inicial calculada" classname="02-solicitudes.spec.js" time="0.58">
-</testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU05 Consulta de Mis Solicitudes con filtros y visualización de detalle" classname="02-solicitudes.spec.js" time="0.511">
-</testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU06 Agregar comentario en el seguimiento de una solicitud activa" classname="02-solicitudes.spec.js" time="0.755">
-</testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU24 Visualización del historial de transiciones y eventos operativos" classname="02-solicitudes.spec.js" time="0.746">
+<testcase name="Épica 1: Identidad y Acceso › @HU03 Consulta de perfil institucional del solicitante" classname="01-auth-identidad.spec.js" time="0.405">
 </testcase>
 </testsuite>
-<testsuite name="03-atencion-supervision.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="5" failures="0" skipped="0" time="4.768" errors="0">
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU07 Evaluación y priorización de solicitudes por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.886">
+<testsuite name="02-solicitudes.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="5" failures="0" skipped="0" time="3.276" errors="0">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU04 Registro de nueva solicitud con prioridad inicial calculada" classname="02-solicitudes.spec.js" time="0.545">
 </testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU08 Asignación de técnico activo por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.85">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU05 Consulta de Mis Solicitudes con filtros y visualización de detalle" classname="02-solicitudes.spec.js" time="0.528">
 </testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU09 Cancelación de solicitudes con motivo obligatorio por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.835">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU06 Agregar comentario en el seguimiento de una solicitud activa" classname="02-solicitudes.spec.js" time="0.681">
 </testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU10 Inicio de atención técnica por el Técnico asignado" classname="03-atencion-supervision.spec.js" time="0.808">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU14 Cálculo y congelamiento de plazos de atención y resolución según política vigente" classname="02-solicitudes.spec.js" time="0.622">
 </testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU11 Registro de solución técnica por el Técnico" classname="03-atencion-supervision.spec.js" time="1.389">
-</testcase>
-</testsuite>
-<testsuite name="04-cierre-encuesta.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="3" failures="0" skipped="0" time="2.777" errors="0">
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU12 Confirmar solución por el solicitante y cerrar solicitud" classname="04-cierre-encuesta.spec.js" time="0.821">
-</testcase>
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU13 Envío de encuesta de satisfacción única en solicitud cerrada" classname="04-cierre-encuesta.spec.js" time="0.996">
-</testcase>
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU14 Reapertura de solicitud por el Solicitante ante persistencia del problema" classname="04-cierre-encuesta.spec.js" time="0.96">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU24 Reglas comunes de autorización por propiedad y concurrencia optimista" classname="02-solicitudes.spec.js" time="0.9">
 </testcase>
 </testsuite>
-<testsuite name="05-indicadores-notificaciones.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="5" failures="0" skipped="0" time="3.238" errors="0">
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU15 Detección y visualización de alertas tempranas de plazos (80% y vencidas)" classname="05-indicadores-notificaciones.spec.js" time="0.717">
+<testsuite name="03-atencion-supervision.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="5" failures="0" skipped="0" time="4.609" errors="0">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU07 Evaluación y priorización de solicitudes por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.828">
 </testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU16 Centro de notificaciones internas y marcado de lectura" classname="05-indicadores-notificaciones.spec.js" time="0.974">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU08 Asignación de técnico activo por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.766">
 </testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU17 Visualización de indicadores operativos y tiempos de atención en Dashboard" classname="05-indicadores-notificaciones.spec.js" time="0.457">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU09 Cancelación de solicitudes con motivo obligatorio por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.777">
 </testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU18 Visualización de distribuciones por categoría, área y estado" classname="05-indicadores-notificaciones.spec.js" time="0.424">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU10 Inicio de atención técnica por el Técnico asignado" classname="03-atencion-supervision.spec.js" time="0.792">
 </testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU19 Exportación de solicitudes a archivo CSV con descarga y validación" classname="05-indicadores-notificaciones.spec.js" time="0.666">
-</testcase>
-</testsuite>
-<testsuite name="06-administracion.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="desktop-1366" tests="4" failures="0" skipped="0" time="2.113" errors="0">
-<testcase name="Épica 6: Administración y Auditoría › @HU20 Gestión de usuarios internos por el Administrador" classname="06-administracion.spec.js" time="0.44">
-</testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU21 Mantenimiento y consulta de catálogos del sistema por el Administrador" classname="06-administracion.spec.js" time="0.494">
-</testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU22 Versionado y consulta de políticas de atención" classname="06-administracion.spec.js" time="0.689">
-</testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU23 Registro y consulta de auditoría administrativa" classname="06-administracion.spec.js" time="0.49">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU11 Registro de solución técnica por el Técnico" classname="03-atencion-supervision.spec.js" time="1.446">
 </testcase>
 </testsuite>
-<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="3" failures="0" skipped="0" time="1.585" errors="0">
-<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="0.623">
+<testsuite name="04-cierre-encuesta.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="2" failures="0" skipped="0" time="1.994" errors="0">
+<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU12 Conformidad de solución (BDD 1) y reapertura por persistencia (BDD 2)" classname="04-cierre-encuesta.spec.js" time="1.117">
 </testcase>
-<testcase name="Épica 1: Identidad y Acceso › @HU02 Inicio de sesión exitoso y rechazo de credenciales inválidas" classname="01-auth-identidad.spec.js" time="0.539">
-</testcase>
-<testcase name="Épica 1: Identidad y Acceso › @HU03 Consulta de perfil institucional del solicitante" classname="01-auth-identidad.spec.js" time="0.423">
+<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU13 Envío de encuesta de satisfacción única en solicitud cerrada" classname="04-cierre-encuesta.spec.js" time="0.877">
 </testcase>
 </testsuite>
-<testsuite name="02-solicitudes.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="4" failures="0" skipped="0" time="2.51" errors="0">
-<testcase name="Épica 2: Solicitudes de Servicio › @HU04 Registro de nueva solicitud con prioridad inicial calculada" classname="02-solicitudes.spec.js" time="0.539">
+<testsuite name="05-indicadores-notificaciones.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="5" failures="0" skipped="0" time="3.287" errors="0">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU15 Detección y visualización de alertas tempranas de plazos (80% y vencidas)" classname="05-indicadores-notificaciones.spec.js" time="0.714">
 </testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU05 Consulta de Mis Solicitudes con filtros y visualización de detalle" classname="02-solicitudes.spec.js" time="0.537">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU16 Centro de notificaciones internas y marcado de lectura" classname="05-indicadores-notificaciones.spec.js" time="0.98">
 </testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU06 Agregar comentario en el seguimiento de una solicitud activa" classname="02-solicitudes.spec.js" time="0.715">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU17 Visualización de indicadores operativos y tiempos de atención en Dashboard" classname="05-indicadores-notificaciones.spec.js" time="0.466">
 </testcase>
-<testcase name="Épica 2: Solicitudes de Servicio › @HU24 Visualización del historial de transiciones y eventos operativos" classname="02-solicitudes.spec.js" time="0.719">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU18 Visualización de distribuciones por categoría, área y estado" classname="05-indicadores-notificaciones.spec.js" time="0.452">
 </testcase>
-</testsuite>
-<testsuite name="03-atencion-supervision.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="5" failures="0" skipped="0" time="4.718" errors="0">
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU07 Evaluación y priorización de solicitudes por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.823">
-</testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU08 Asignación de técnico activo por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.799">
-</testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU09 Cancelación de solicitudes con motivo obligatorio por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.886">
-</testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU10 Inicio de atención técnica por el Técnico asignado" classname="03-atencion-supervision.spec.js" time="0.83">
-</testcase>
-<testcase name="Épica 3: Supervisión y Atención Técnica › @HU11 Registro de solución técnica por el Técnico" classname="03-atencion-supervision.spec.js" time="1.38">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU19 Exportación de solicitudes a archivo CSV con descarga y validación" classname="05-indicadores-notificaciones.spec.js" time="0.675">
 </testcase>
 </testsuite>
-<testsuite name="04-cierre-encuesta.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="3" failures="0" skipped="0" time="2.623" errors="0">
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU12 Confirmar solución por el solicitante y cerrar solicitud" classname="04-cierre-encuesta.spec.js" time="0.797">
+<testsuite name="06-administracion.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="desktop-1366" tests="4" failures="0" skipped="0" time="3.21" errors="0">
+<testcase name="Épica 6: Administración y Auditoría › @HU20 Gestión de usuarios internos: alta de técnico y bloqueo de desactivación con carga" classname="06-administracion.spec.js" time="1.003">
 </testcase>
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU13 Envío de encuesta de satisfacción única en solicitud cerrada" classname="04-cierre-encuesta.spec.js" time="1.02">
+<testcase name="Épica 6: Administración y Auditoría › @HU21 Mantenimiento de catálogos: desactivación lógica de categoría y protección de catálogos fijos" classname="06-administracion.spec.js" time="0.608">
 </testcase>
-<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU14 Reapertura de solicitud por el Solicitante ante persistencia del problema" classname="04-cierre-encuesta.spec.js" time="0.806">
+<testcase name="Épica 6: Administración y Auditoría › @HU22 Versionado y consulta de políticas de atención" classname="06-administracion.spec.js" time="0.641">
 </testcase>
-</testsuite>
-<testsuite name="05-indicadores-notificaciones.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="5" failures="0" skipped="0" time="3.346" errors="0">
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU15 Detección y visualización de alertas tempranas de plazos (80% y vencidas)" classname="05-indicadores-notificaciones.spec.js" time="0.748">
-</testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU16 Centro de notificaciones internas y marcado de lectura" classname="05-indicadores-notificaciones.spec.js" time="0.927">
-</testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU17 Visualización de indicadores operativos y tiempos de atención en Dashboard" classname="05-indicadores-notificaciones.spec.js" time="0.506">
-</testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU18 Visualización de distribuciones por categoría, área y estado" classname="05-indicadores-notificaciones.spec.js" time="0.469">
-</testcase>
-<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU19 Exportación de solicitudes a archivo CSV con descarga y validación" classname="05-indicadores-notificaciones.spec.js" time="0.696">
+<testcase name="Épica 6: Administración y Auditoría › @HU23 Historial operativo y consulta de auditoría administrativa" classname="06-administracion.spec.js" time="0.958">
 </testcase>
 </testsuite>
-<testsuite name="06-administracion.spec.js" timestamp="2026-11-13T01:28:33.460Z" hostname="mobile-360" tests="4" failures="0" skipped="0" time="2.135" errors="0">
-<testcase name="Épica 6: Administración y Auditoría › @HU20 Gestión de usuarios internos por el Administrador" classname="06-administracion.spec.js" time="0.455">
+<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="3" failures="0" skipped="0" time="1.474" errors="0">
+<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="0.539">
 </testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU21 Mantenimiento y consulta de catálogos del sistema por el Administrador" classname="06-administracion.spec.js" time="0.511">
+<testcase name="Épica 1: Identidad y Acceso › @HU02 Inicio de sesión exitoso y rechazo de credenciales inválidas" classname="01-auth-identidad.spec.js" time="0.532">
 </testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU22 Versionado y consulta de políticas de atención" classname="06-administracion.spec.js" time="0.685">
+<testcase name="Épica 1: Identidad y Acceso › @HU03 Consulta de perfil institucional del solicitante" classname="01-auth-identidad.spec.js" time="0.403">
 </testcase>
-<testcase name="Épica 6: Administración y Auditoría › @HU23 Registro y consulta de auditoría administrativa" classname="06-administracion.spec.js" time="0.484">
+</testsuite>
+<testsuite name="02-solicitudes.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="5" failures="0" skipped="0" time="3.175" errors="0">
+<testcase name="Épica 2: Solicitudes de Servicio › @HU04 Registro de nueva solicitud con prioridad inicial calculada" classname="02-solicitudes.spec.js" time="0.493">
+</testcase>
+<testcase name="Épica 2: Solicitudes de Servicio › @HU05 Consulta de Mis Solicitudes con filtros y visualización de detalle" classname="02-solicitudes.spec.js" time="0.528">
+</testcase>
+<testcase name="Épica 2: Solicitudes de Servicio › @HU06 Agregar comentario en el seguimiento de una solicitud activa" classname="02-solicitudes.spec.js" time="0.668">
+</testcase>
+<testcase name="Épica 2: Solicitudes de Servicio › @HU14 Cálculo y congelamiento de plazos de atención y resolución según política vigente" classname="02-solicitudes.spec.js" time="0.613">
+</testcase>
+<testcase name="Épica 2: Solicitudes de Servicio › @HU24 Reglas comunes de autorización por propiedad y concurrencia optimista" classname="02-solicitudes.spec.js" time="0.873">
+</testcase>
+</testsuite>
+<testsuite name="03-atencion-supervision.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="5" failures="0" skipped="0" time="4.517" errors="0">
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU07 Evaluación y priorización de solicitudes por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.777">
+</testcase>
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU08 Asignación de técnico activo por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.764">
+</testcase>
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU09 Cancelación de solicitudes con motivo obligatorio por el Supervisor" classname="03-atencion-supervision.spec.js" time="0.847">
+</testcase>
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU10 Inicio de atención técnica por el Técnico asignado" classname="03-atencion-supervision.spec.js" time="0.737">
+</testcase>
+<testcase name="Épica 3: Supervisión y Atención Técnica › @HU11 Registro de solución técnica por el Técnico" classname="03-atencion-supervision.spec.js" time="1.392">
+</testcase>
+</testsuite>
+<testsuite name="04-cierre-encuesta.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="2" failures="0" skipped="0" time="1.954" errors="0">
+<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU12 Conformidad de solución (BDD 1) y reapertura por persistencia (BDD 2)" classname="04-cierre-encuesta.spec.js" time="1.098">
+</testcase>
+<testcase name="Épica 4: Conformidad y Encuesta de Satisfacción › @HU13 Envío de encuesta de satisfacción única en solicitud cerrada" classname="04-cierre-encuesta.spec.js" time="0.856">
+</testcase>
+</testsuite>
+<testsuite name="05-indicadores-notificaciones.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="5" failures="0" skipped="0" time="3.026" errors="0">
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU15 Detección y visualización de alertas tempranas de plazos (80% y vencidas)" classname="05-indicadores-notificaciones.spec.js" time="0.695">
+</testcase>
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU16 Centro de notificaciones internas y marcado de lectura" classname="05-indicadores-notificaciones.spec.js" time="0.876">
+</testcase>
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU17 Visualización de indicadores operativos y tiempos de atención en Dashboard" classname="05-indicadores-notificaciones.spec.js" time="0.409">
+</testcase>
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU18 Visualización de distribuciones por categoría, área y estado" classname="05-indicadores-notificaciones.spec.js" time="0.415">
+</testcase>
+<testcase name="Épica 5: Notificaciones, Alertas y Dashboard › @HU19 Exportación de solicitudes a archivo CSV con descarga y validación" classname="05-indicadores-notificaciones.spec.js" time="0.631">
+</testcase>
+</testsuite>
+<testsuite name="06-administracion.spec.js" timestamp="2026-11-13T16:00:12.368Z" hostname="mobile-360" tests="4" failures="0" skipped="0" time="3.246" errors="0">
+<testcase name="Épica 6: Administración y Auditoría › @HU20 Gestión de usuarios internos: alta de técnico y bloqueo de desactivación con carga" classname="06-administracion.spec.js" time="1.055">
+</testcase>
+<testcase name="Épica 6: Administración y Auditoría › @HU21 Mantenimiento de catálogos: desactivación lógica de categoría y protección de catálogos fijos" classname="06-administracion.spec.js" time="0.635">
+</testcase>
+<testcase name="Épica 6: Administración y Auditoría › @HU22 Versionado y consulta de políticas de atención" classname="06-administracion.spec.js" time="0.631">
+</testcase>
+<testcase name="Épica 6: Administración y Auditoría › @HU23 Historial operativo y consulta de auditoría administrativa" classname="06-administracion.spec.js" time="0.925">
 </testcase>
 </testsuite>
 </testsuites>
