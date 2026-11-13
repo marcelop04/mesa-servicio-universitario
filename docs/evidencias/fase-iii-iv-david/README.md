@@ -1,5 +1,10 @@
 # Evidencias de David
 
+- [Resultados SUS recibidos](../../pruebas/usuarios/Resultados_SUS.md): cinco cuestionarios
+  y media 87/100; los datos no registrados y las horas sin validar se distinguen del cálculo.
+- `proteccion.json`: revisión de las reglas efectivas de main. Distingue los checks
+  ejecutados en CI de los checks obligatorios para integrar.
+
 - `responsive-local/`: revisión previa en localhost con backend real, H2 efímero y
   frontend compilado. El informe indica explícitamente `entorno: local`; no acredita
   HTTPS público, MySQL ni participación de usuarios reales.

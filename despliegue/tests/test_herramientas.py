@@ -60,10 +60,19 @@ class SusTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sus.puntuacion(valores)
 
-    def test_no_inventa_resultados_para_la_plantilla_vacia(self):
-        with (RAIZ / "docs/pruebas/usuarios/respuestas-sus.csv").open() as archivo:
-            with self.assertRaises(ValueError):
-                sus.calcular(archivo)
+    def test_no_inventa_resultados_para_una_cabecera_sin_respuestas(self):
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen\n"
+        with self.assertRaisesRegex(ValueError, "No hay respuestas"):
+            sus.calcular(io.StringIO(cabecera))
+
+    def test_prefiere_el_viewport_observado_al_ancho_de_referencia(self):
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen,viewport_real\n"
+        fila = "P01,2026-11-13,Solicitante,1366,https://msu.example.org," + ",".join(["3"] * 10) + ",RESPUESTA_USUARIO,1536\n"
+        resultado = sus.calcular(io.StringIO(cabecera + fila))
+        self.assertEqual(resultado["resultados"][0]["ancho"], 1536)
+        self.assertEqual(resultado["media_sus"], 50)
+        with self.assertRaisesRegex(ValueError, "ancho real"):
+            sus.calcular(io.StringIO((cabecera + fila).replace(",1536\n", ",desconocido\n")))
 
     def test_csv_real_exige_https_y_detecta_muestra_y_duplicados(self):
         cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen\n"

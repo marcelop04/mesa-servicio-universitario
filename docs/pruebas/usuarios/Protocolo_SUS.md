@@ -2,7 +2,9 @@
 
 Responsable: David. Muestra prevista: **5 personas reales** representativas de los
 usuarios del sistema. Pueden ser cinco solicitantes; probar otros roles es complementario.
-Estado: cuestionario e instrumentos preparados; sesiones y puntuaciones pendientes.
+Estado: cinco sesiones aportadas por el responsable y cuestionarios calculados,
+**media 87/100**. Notas de tarea, tiempos, ayuda y navegador: no registrado.
+Ver [resultados y limitaciones](Resultados_SUS.md).
 
 - Aplicación: <https://msu-157-137-206-147.sslip.io>.
 - Cuestionario web: <https://msu-157-137-206-147.sslip.io/sus/>.
@@ -46,11 +48,11 @@ atribuyen al participante. No es necesario esperar el ciclo de atención para re
 
 | Persona | Fecha Lima | Rol | Dispositivo/navegador y ancho real | Tareas, resultado y duración | Ayuda y hallazgos | SHA/digests | Estado |
 |---|---|---|---|---|---|---|---|
-| P01 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
-| P02 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
-| P03 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
-| P04 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
-| P05 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
+| P01 | 13/11/2026 | Solicitante | No registrados; viewport 1536 | No registrados | Comentario favorable; ayuda no registrada | No registrado | Cuestionario registrado |
+| P02 | 13/11/2026 | Solicitante | No registrados; viewport 360 | No registrados | Sugiere modo oscuro; ayuda no registrada | No registrado | Cuestionario registrado |
+| P03 | 13/11/2026 | Solicitante | No registrados; viewport 1920 | No registrados | Comentario favorable; ayuda no registrada | No registrado | Cuestionario registrado |
+| P04 | 13/11/2026 | Solicitante | No registrados; viewport 1366 | No registrados | Destaca seguimiento; ayuda no registrada | No registrado | Cuestionario registrado |
+| P05 | 13/11/2026 | Solicitante | No registrados; viewport 414 | No registrados | Destaca comprensión del flujo; ayuda no registrada | No registrado | Cuestionario registrado |
 
 ## Recolección y cálculo
 
@@ -71,7 +73,7 @@ URL HTTPS, `q1`…`q10` entre 1 y 5, observaciones, `origen=RESPUESTA_USUARIO`,
 `viewport_real` y `fecha_utc`. Si se usa la versión escrita, el facilitador transcribe
 las respuestas y los datos de su ficha de sesión sin completar campos por suposición.
 
-`respuestas-sus.csv` conserva solo la cabecera hasta recibir los resultados reales.
+`respuestas-sus.csv` contiene las cinco respuestas recibidas, conservadas sin cambios de valores.
 El cálculo rechaza CSV vacíos, duplicados, respuestas incompletas, otros orígenes de
 datos y la combinación de distintas aplicaciones HTTPS. No tiene modo de simulación.
 Las pruebas unitarias de la fórmula son verificaciones técnicas y no se registran
@@ -127,4 +129,7 @@ debe generar su propia evidencia; no sobrescribir las anteriores para cambiarles
 5. Corregir los problemas encontrados y documentar su reprueba; Gabriel integra la
    síntesis en la presentación del equipo.
 
-B5 sigue pendiente hasta contar con las sesiones, las respuestas y su análisis real.
+B5 tiene sus cinco sesiones aportadas, respuestas, cálculo y revisión responsive registrados.
+Las notas de tarea, tiempos, ayuda y navegador constan como no registrados. El resumen
+prioriza el viewport observado, conserva las horas sin validar y documenta estas
+limitaciones en los resultados y en las secciones del paquete B del informe.

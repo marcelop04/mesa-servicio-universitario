@@ -114,6 +114,20 @@ Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-ema
 | Modificaciones | Se registra ancho real y fecha de Lima; se exige confirmación de uso; se rechazan otras procedencias, duplicados y aplicaciones distintas. Capturas históricas conservadas por decisión del responsable |
 | Límites | No se atribuyen respuestas a participantes, aprobación humana ni checks de main aplicados. Las cinco sesiones y la configuración administrativa siguen pendientes |
 
+## IA-B-09 · Integración de los cuestionarios recibidos
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026, America/Lima |
+| Responsable | David; aportó los cinco CSV y declaró las notas no registradas |
+| Herramienta | Codex, asistente de programación de OpenAI |
+| Prompt / alcance | Incorporar los cinco CSV de sesiones entregados y comprobar si los ocho checks de main ya están activos |
+| Resultado generado | Respuestas consolidadas sin cambiar valores, cálculo SUS y síntesis en protocolo, bitácora e informe; actualización de evidencia de protección |
+| ¿Se utilizó? | Incorporado a la rama de resultados para su revisión mediante PR |
+| Validación realizada | Cinco identificadores únicos, diez valores por persona entre 1 y 5 y mismo origen HTTPS; puntuaciones 75/95/85/90/90 y media 87/100; consulta de resumen de rama, reglas efectivas y rulesets |
+| Modificaciones | La prueba de entrada vacía usa una cabecera en memoria, independiente de los datos recibidos. El cálculo prioriza viewport_real con regresión para P01; respuestas y metadatos fuente se conservan |
+| Límites y pendientes | Por indicación del responsable, tareas, duraciones, ayuda y navegador constan como no registrados. Horas sin validar. Sin atribuir revisión humana no realizada. GitHub sigue mostrando checks obligatorios desactivados |
+
 ## IA-C-06 · Integración de seguridad sobre main con B
 
 | Campo | Valor |
