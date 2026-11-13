@@ -163,8 +163,9 @@ docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --b
 
 ## 4. Reparto y Entregables del Paquete D7
 
-El entregable **D7** oficial del reparto de Fases III y IV comprende la preparación integral para la sustentación y la consolidación ética del uso de herramientas de IA:
+El entregable **D7** oficial del reparto de Fases III y IV comprende la preparación integral para la sustentación, la sección correspondiente para el informe final y la consolidación ética del uso de herramientas de IA:
 
-1. **Guion de Demostración:** Documentado con cronograma y pautas de sustentación en [docs/presentacion/guion-sustentacion-observabilidad.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/presentacion/guion-sustentacion-observabilidad.md).
-2. **Estructura de Diapositivas:** Elaborada en [docs/presentacion/diapositivas-fase-iv-gabriel.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/presentacion/diapositivas-fase-iv-gabriel.md).
-3. **Registro Consolidado de IA:** Completado rigurosamente según los 6 criterios de la rúbrica institucional en [docs/registro-uso-ia.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/registro-uso-ia.md).
+1. **Guion Consolidado de Sustentación del Equipo:** Documentado con cronograma, tiempos y pautas de sustentación de los 5 integrantes en [docs/presentacion/Guion_Sustentacion_Equipo.md](presentacion/Guion_Sustentacion_Equipo.md) (y guion específico de observabilidad en [docs/presentacion/guion-sustentacion-observabilidad.md](presentacion/guion-sustentacion-observabilidad.md)).
+2. **Presentación Final del Equipo:** Estructura completa de diapositivas en [docs/presentacion/Presentacion_Final_Equipo.md](presentacion/Presentacion_Final_Equipo.md) (y diapositivas específicas de telemetría en [docs/presentacion/diapositivas-fase-iv-gabriel.md](presentacion/diapositivas-fase-iv-gabriel.md)).
+3. **Sección del Informe Final:** Documento técnico de cierre de observabilidad en [docs/informe/Seccion_Gabriel_Observabilidad.md](informe/Seccion_Gabriel_Observabilidad.md).
+4. **Registro Consolidado de IA del Equipo:** Completado rigurosamente preservando las entradas del equipo y detallando los casos de observabilidad en [docs/registro-uso-ia.md](registro-uso-ia.md).

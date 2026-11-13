@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import pe.edu.unmsm.msu.comun.observabilidad.MetricasMsuServicio;
 import pe.edu.unmsm.msu.comun.web.FiltroCorrelacion;
@@ -52,15 +53,17 @@ class ObservabilidadTest extends PruebaApi {
     @Test
     @DisplayName("D2: FiltroCorrelacion propaga y genera cabecera X-Correlation-Id")
     void correlacionGeneraYPropagaCabecera() throws Exception {
+        MockHttpSession admin = sesion("admin@msu.test");
+
         // Sin cabecera previa -> genera un identificador
-        mvc.perform(get("/api/v1/diagnostico/exito"))
+        mvc.perform(get("/api/v1/diagnostico/exito").session(admin))
                 .andExpect(status().isOk())
                 .andExpect(header().exists(FiltroCorrelacion.CABECERA))
                 .andExpect(header().string(FiltroCorrelacion.CABECERA, notNullValue()));
 
         // Con cabecera previa -> preserva el identificador enviado
         String idEnviado = "corr-test-12345678";
-        mvc.perform(get("/api/v1/diagnostico/exito")
+        mvc.perform(get("/api/v1/diagnostico/exito").session(admin)
                         .header(FiltroCorrelacion.CABECERA, idEnviado))
                 .andExpect(status().isOk())
                 .andExpect(header().string(FiltroCorrelacion.CABECERA, idEnviado));
@@ -79,10 +82,25 @@ class ObservabilidadTest extends PruebaApi {
     }
 
     @Test
+    @DisplayName("Seguridad: Endpoints de diagnóstico exigen rol ADMINISTRADOR")
+    void diagnosticoExigeRolAdministrador() throws Exception {
+        // Petición anónima es rechazada
+        mvc.perform(post("/api/v1/diagnostico/simular-error-500").with(xsrf()))
+                .andExpect(status().isUnauthorized());
+
+        // Petición de solicitante es rechazada con 403
+        MockHttpSession solicitante = sesion("solicitante@msu.test");
+        mvc.perform(post("/api/v1/diagnostico/simular-error-500").session(solicitante).with(xsrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("D4 y D5: Simular casos vencidos impacta la métrica y permite recuperación a cero")
     void simularCasosVencidosYRecuperacion() throws Exception {
-        // 1. Simulación controlada
-        mvc.perform(post("/api/v1/diagnostico/simular-vencidas")
+        MockHttpSession admin = sesion("admin@msu.test");
+
+        // 1. Simulación controlada por Administrador
+        mvc.perform(post("/api/v1/diagnostico/simular-vencidas").session(admin)
                         .with(xsrf())
                         .param("cantidad", "7")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
@@ -97,7 +115,7 @@ class ObservabilidadTest extends PruebaApi {
                 .andExpect(content().string(containsString("7.0")));
 
         // 2. Mitigación y Recuperación (D5)
-        mvc.perform(post("/api/v1/diagnostico/simular-recuperacion")
+        mvc.perform(post("/api/v1/diagnostico/simular-recuperacion").session(admin)
                         .with(xsrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.casos_vencidos_simulados").value(0));
@@ -108,8 +126,10 @@ class ObservabilidadTest extends PruebaApi {
     @Test
     @DisplayName("D5: Validación de límites en simulación de latencia (máximo 5000 ms)")
     void validacionLimitesLatencia() throws Exception {
+        MockHttpSession admin = sesion("admin@msu.test");
+
         // Latencia excesiva (> 5000 ms) debe ser rechazada con 400
-        mvc.perform(post("/api/v1/diagnostico/simular-latencia")
+        mvc.perform(post("/api/v1/diagnostico/simular-latencia").session(admin)
                         .with(xsrf())
                         .param("milisegundos", "60000"))
                 .andExpect(status().isBadRequest())

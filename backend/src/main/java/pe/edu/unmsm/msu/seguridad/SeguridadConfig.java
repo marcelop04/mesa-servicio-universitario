@@ -78,7 +78,7 @@ public class SeguridadConfig {
                             .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
                             .requestMatchers("/error").permitAll();
                     if (simulacionHabilitada) {
-                        a.requestMatchers("/api/v1/diagnostico/**").permitAll();
+                        a.requestMatchers("/api/v1/diagnostico/**").hasRole("ADMINISTRADOR");
                     }
                     a.requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
                             .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")

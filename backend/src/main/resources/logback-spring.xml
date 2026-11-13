@@ -37,14 +37,14 @@
         </encoder>
     </appender>
 
-    <!-- Perfil local usa texto formateado; default/docker usa JSON estructurado -->
-    <springProfile name="local">
+    <!-- Perfil dev usa texto formateado; default/prod/prueba/docker usa JSON estructurado -->
+    <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="TEXTO_CONSOLA"/>
         </root>
     </springProfile>
 
-    <springProfile name="!local">
+    <springProfile name="!dev">
         <root level="INFO">
             <appender-ref ref="JSON_CONSOLA"/>
         </root>

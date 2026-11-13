@@ -59,26 +59,14 @@ public class MetricasMsuServicio {
     }
 
     /**
-     * Calcula dinámicamente las solicitudes vencidas reales.
+     * Calcula dinámicamente las solicitudes vencidas reales mediante un COUNT optimizado en base de datos.
      * En caso de error de acceso a datos, devuelve Double.NaN para indicar formalmente fallo de medición.
      */
     @Transactional(readOnly = true)
     public double obtenerCasosVencidosReales() {
         try {
             Instant ahora = Instant.now(reloj);
-            long totalVencidas = 0;
-            for (Solicitud s : solicitudes.findByEstado_CodigoIn(Solicitud.PENDIENTES)) {
-                boolean atencionVencida = s.getPrimeraAtencionEn() == null
-                        && s.getLimiteAtencion() != null
-                        && !ahora.isBefore(s.getLimiteAtencion());
-                boolean resolucionVencida = s.getLimiteResolucion() != null
-                        && !ahora.isBefore(s.getLimiteResolucion());
-
-                if (atencionVencida || resolucionVencida) {
-                    totalVencidas++;
-                }
-            }
-            return (double) totalVencidas;
+            return (double) solicitudes.contarVencidas(Solicitud.PENDIENTES, ahora);
         } catch (Exception e) {
             log.error("Fallo al calcular solicitudes vencidas en base de datos: error de medición.", e);
             // Devuelve NaN para que Prometheus reporte fallo de cálculo y no un falso cero

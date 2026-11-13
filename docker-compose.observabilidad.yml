@@ -8,11 +8,11 @@
 #   - Contraseña administrativa de Grafana configurable por variable de entorno (GRAFANA_ADMIN_PASSWORD).
 
 services:
-  # Extiende el backend para inyectar la URL interna del colector de trazas y habilitar simulación controlada
+  # Extiende el backend para inyectar la URL interna del colector de trazas
   backend:
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318/v1/traces
-      SIMULACION_HABILITADA: ${SIMULACION_HABILITADA:-true}
+      SIMULACION_HABILITADA: ${SIMULACION_HABILITADA:-false}
     depends_on:
       jaeger:
         condition: service_started
