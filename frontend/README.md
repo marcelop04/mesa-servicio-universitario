@@ -1,6 +1,6 @@
 # Frontend · React
 
-React 18 · React Router 6 · Vite · Vitest.
+React 18 · React Router 7 · Vite · Vitest. Node.js 22.12+.
 
 ## Ejecutar en local
 
@@ -14,7 +14,7 @@ npm run build      # versión de producción en dist/
 Vite reenvía `/api` al backend, así el navegador ve un solo origen y las cookies funcionan sin CORS.
 Otro backend: `VITE_BACKEND_URL=http://host:puerto npm run dev`.
 
-Cuentas de prueba (contraseña `Demo12345!`): `admin@msu.test`, `supervisor@msu.test`,
+Cuentas locales (contraseña privada `DEMO_PASSWORD` de `.env`): `admin@msu.test`, `supervisor@msu.test`,
 `tecnico.soporte@msu.test`, `tecnico.mantenimiento@msu.test`, `tecnico.servicios@msu.test`,
 `solicitante@msu.test`.
 

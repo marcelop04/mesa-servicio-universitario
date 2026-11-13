@@ -6,6 +6,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -56,12 +57,81 @@ jobs:
       - name: Compilación
         run: npm run build
 
+  npm-audit:
+    name: npm audit (incluye desarrollo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - name: Fallar si hay vulnerabilidades altas o críticas
+        working-directory: frontend
+        run: npm audit --audit-level=high --json > npm-audit.json
+      - name: Auditar también las herramientas npm incorporadas por main
+        working-directory: docs/pruebas
+        run: npm audit --audit-level=high --json > npm-audit.json
+      - name: Conservar resultado incluso si el análisis falla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit
+          path: |
+            frontend/npm-audit.json
+            docs/pruebas/npm-audit.json
+
+  dependency-check:
+    name: OWASP Dependency-Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/dependency-check-data
+          key: dependency-check-13-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: dependency-check-13-${{ runner.os }}-
+      - name: Comprobar la clave de NVD sin mostrarla
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -z "$NVD_API_KEY" ]; then
+            echo '::error::Configure el secret NVD_API_KEY. No se considera aprobado un análisis que no pudo consultar NVD.'
+            exit 1
+          fi
+      - name: Analizar dependencias (CVSS >= 7 bloquea)
+        working-directory: backend
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: mvn -B -Pseguridad dependency-check:check
+      - name: Conservar los informes disponibles
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check
+          path: backend/target/dependency-check-report.*
+          if-no-files-found: warn
+
   docker:
     name: Imágenes Docker
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [backend, frontend, npm-audit, dependency-check]
     steps:
       - uses: actions/checkout@v4
+      - name: Credenciales efímeras para Compose (sin secretos predeterminados)
+        run: >-
+          python3 despliegue/scripts/crear-entorno.py --host prueba.example.org
+          --email pruebas@example.org --perfil prueba --demo --salida .env
       - name: Construir backend y frontend
         run: docker compose -f docker-compose.yml -f despliegue/compose.ci.yml build
       - name: Validar Caddy (sin solicitar certificados)
@@ -69,6 +139,10 @@ jobs:
           docker run --rm -e APP_HOST=prueba.example.org -e ACME_EMAIL=pruebas@example.org
           -v "$PWD/despliegue/Caddyfile:/etc/caddy/Caddyfile:ro"
           caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: Validar Nginx con las cabeceras y healthcheck integrados
+        run: docker run --rm --add-host backend:127.0.0.1 msu-frontend:prueba nginx -t
+      - name: C1 · Cabeceras e IP real en proxy aislado (sin nube ni base de datos)
+        run: python3 docs/pruebas/proxy-seguridad.py --frontend msu-frontend:prueba
       - name: RNF11 · Copia, pérdida y restauración de MySQL y evidencias
         run: bash despliegue/scripts/probar-recuperacion.sh
 
@@ -82,6 +156,8 @@ jobs:
           python-version: '3.12'
       - name: Pruebas del generador y del cálculo SUS
         run: python -m unittest discover -s despliegue/tests -v
+      - name: C3 · Validación de autorización y alcance DAST (sin escanear)
+        run: python -m unittest discover -s docs/pruebas -p "test_seguridad_*.py" -v
       - name: ShellCheck
         run: >-
           docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable

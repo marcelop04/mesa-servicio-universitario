@@ -41,6 +41,11 @@ Las cuentas de técnicos, supervisores y administradores no se registran desde a
 La sesión dura dos horas. Por seguridad también se cierra si cambias tu contraseña o si el administrador
 cambia tu rol, tu área o desactiva tu cuenta.
 
+**Protección ante intentos repetidos:** con la configuración habitual, cinco intentos fallidos desde la misma
+cuenta y dirección de red bloquean nuevos inicios por 15 minutos. El sistema muestra un aviso de demasiados
+intentos; espera el plazo indicado. No es un cambio de contraseña ni elimina tus datos. Las redes con muchos
+intentos fallidos también tienen un límite general.
+
 ### 1.3 Mi perfil
 
 En **Mi perfil** puedes cambiar tu nombre y tu contraseña. Para cambiar la contraseña escribe la actual, la

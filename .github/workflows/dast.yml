@@ -1,0 +1,49 @@
+# C3: ejecución MANUAL. Nunca escanear dominios ajenos ni una URL recibida desde un PR.
+name: DAST (ZAP baseline autorizado)
+
+on:
+  workflow_dispatch:
+    inputs:
+      autorizacion:
+        description: 'Tengo autorización del equipo para escanear el ambiente de pruebas configurado'
+        required: true
+        type: boolean
+        default: false
+      revision_desplegada:
+        description: 'SHA completo del commit que David confirmó desplegado en el ambiente autorizado'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  zap:
+    name: ZAP baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: seguridad-dast
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar autorización y URL del ambiente
+        env:
+          AUTORIZADO: ${{ inputs.autorizacion }}
+          TARGET: ${{ vars.DAST_TARGET_URL }}
+          REVISION_DESPLEGADA: ${{ inputs.revision_desplegada }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 scripts/validar-dast.py
+      - name: Escaneo pasivo con spider limitado (sin ataques activos)
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: ${{ vars.DAST_TARGET_URL }}
+          fail_action: true
+          allow_issue_writing: false
+          artifact_name: zap-baseline
+          cmd_options: '-m 1 -T 5'
+      - name: Conservar alcance separado del resultado del escáner
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alcance-dast
+          path: alcance-dast.json
+          if-no-files-found: warn
