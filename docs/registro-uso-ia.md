@@ -1,0 +1,13 @@
+# Registro de uso de IA del equipo
+
+Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
+Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
+
+| Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
+|---|---|---|---|---|---|---|---|
+| 12/11/2026 | David | OpenCode (asistente de programación) | Implementar paquete B del reparto desde main: nube/HTTPS, ambientes, GHCR/CD, respaldo, usuarios y manual con servicios gratuitos | Terraform OCI, Compose/Caddy, perfiles, workflows, herramientas RNF11/SUS/responsive y documentación | Sí | JUnit, Python, ShellCheck, actionlint, Terraform, Compose/Caddy; MySQL real y RNF11 aprobados en CI del PR #4 | Se corrigieron rutas ShellCheck en Docker y healthcheck IPv4; A1 quedó bloqueada por capacidad |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Usar los créditos Free Trial para publicar la demo universitaria y entregar una URL web | Modo opt-in E5, transporte SSH compartido y entrega demo condicionada a CI | Sí | Promoción ACTIVE/FREE_TRIAL consultada, E5 creada, Terraform/ShellCheck/actionlint validados, Docker/SSH listos | Se separa bootstrap demo de CD main; HTTPS, recuperación en VM y sesiones reales se registran al ejecutarse |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Verificar la publicación real y revisar responsive con todos los roles | Smoke de TLS/cookies/sesión y capturas de la URL pública | Sí | 8 pruebas Python aprobadas, smoke HTTPS con login/perfil/logout aprobado, 32 capturas web sin desbordes/5xx | El detector asumía un elemento `root`; se cambió a parsear la raíz real `raiz` y el módulo compilado con dos pruebas de regresión |
+
+No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
+Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.

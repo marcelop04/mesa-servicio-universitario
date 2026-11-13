@@ -81,6 +81,19 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 - `prototipo/`: prototipo de la fase I con json-server.
 - `docs/`: informe, diagramas, diseño y avance por integrante (`fase-ii-*.md`).
 
+## Despliegue gratuito y entrega continua (paquete B · David)
+
+- [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
+  y alternativa Always Free, HTTPS con Caddy,
+  perfiles `dev`/`prueba`/`prod`, GitHub Secrets, GHCR/CD y copia/restauración.
+- [`despliegue/`](despliegue/): infraestructura Terraform y Compose de nube; MySQL y
+  backend sin puertos públicos, imágenes desplegadas por digest tras CI exitoso.
+- [Pruebas de usuario/SUS y responsive](docs/pruebas/usuarios/Protocolo_SUS.md).
+- [Estado y evidencias de David](docs/fase-iii-iv-david.md).
+
+El stack de nube requiere configurar la cuenta OCI y GitHub; consultar la bitácora
+para el estado de la URL pública, primer CD y verificaciones realizadas.
+
 ## Problemas comunes
 
 - **Puerto ocupado** (8080, 8081 o 3307): cierre el programa que lo usa o cambie el puerto izquierdo en
