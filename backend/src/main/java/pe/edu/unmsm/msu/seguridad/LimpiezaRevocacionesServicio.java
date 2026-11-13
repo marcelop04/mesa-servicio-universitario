@@ -8,7 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.identidad.repositorio.RevocacionSesionRepositorio;
 
@@ -26,10 +27,12 @@ public class LimpiezaRevocacionesServicio {
 
     private final RevocacionSesionRepositorio revocaciones;
     private final AuditoriaServicio auditoria;
+    private final TransactionTemplate transaccion;
     private final Clock reloj;
 
     public LimpiezaRevocacionesServicio(RevocacionSesionRepositorio revocaciones, AuditoriaServicio auditoria,
-                                        Clock reloj) {
+                                        PlatformTransactionManager tm, Clock reloj) {
+        this.transaccion = new TransactionTemplate(tm);
         this.revocaciones = revocaciones;
         this.auditoria = auditoria;
         this.reloj = reloj;
@@ -41,14 +44,22 @@ public class LimpiezaRevocacionesServicio {
         limpiar(Instant.now(reloj));
     }
 
-    /** Borra las revocaciones que vencieron antes de {@code ahora} menos el margen; devuelve cuántas. */
-    @Transactional
+    /**
+     * Borra las revocaciones que vencieron antes de {@code ahora} menos el margen; devuelve cuántas.
+     * La transacción se abre de forma explícita: {@link #programado()} llama a este método desde la misma
+     * clase, y una anotación {@code @Transactional} no se aplicaría en esa llamada interna.
+     */
     public int limpiar(Instant ahora) {
-        int borradas = revocaciones.borrarVencidasAntesDe(ahora.minus(MARGEN));
-        if (borradas > 0) {
+        Integer borradas = transaccion.execute(estado -> {
+            int n = revocaciones.borrarVencidasAntesDe(ahora.minus(MARGEN));
+            if (n > 0) {
+                auditoria.registrarComo(null, "TOKENS_LIMPIEZA", "SESION", null, Map.of("eliminadas", n));
+            }
+            return n;
+        });
+        if (borradas != null && borradas > 0) {
             log.info("Limpieza de sesiones: {} revocaciones vencidas eliminadas.", borradas);
-            auditoria.registrarComo(null, "TOKENS_LIMPIEZA", "SESION", null, Map.of("eliminadas", borradas));
         }
-        return borradas;
+        return borradas == null ? 0 : borradas;
     }
 }

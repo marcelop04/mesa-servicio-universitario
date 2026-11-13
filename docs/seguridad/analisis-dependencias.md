@@ -117,3 +117,40 @@ NVD consultado el `2026-11-12T05:35:39Z`, 23 CVE distintos, 15 bloqueantes y 0 s
 El fallo por vulnerabilidades se reproduce en GitHub; no es un error de clave ni una conclusión basada
 solo en caché local. CodeQL Java/JS y npm audit también se revisaron, con 0 resultados/hallazgos
 en el alcance indicado en [las evidencias remotas](resultados-ci.md). El control Java continúa NO aprobado.
+
+## Excepciones aprobadas · 12/11/2026
+
+**Decisión:** mantener Spring Boot 3.5.16 y registrar una excepción documentada por cada CVE restante, en
+lugar de migrar a Spring Boot 4 antes de la sustentación. La tomó el responsable del PR el 12/11/2026 y
+queda sujeta a la confirmación del equipo en la revisión del PR #3.
+
+**Dónde:** [`backend/dependency-check-suppressions.xml`](../../backend/dependency-check-suppressions.xml),
+referenciado desde el perfil `seguridad` de `backend/pom.xml`.
+
+**Condiciones de las excepciones:**
+
+- Cubren solo los 23 CVE listados arriba (17 de Framework, 5 de Security y 1 de Data JPA), uno por uno.
+- Están atadas a las versiones exactas analizadas (Framework 6.2.19, Security 6.5.11, Data JPA 3.5.13).
+  Si se actualiza cualquiera de ellas, la excepción deja de aplicar y el hallazgo vuelve a evaluarse.
+- **Caducan el 31/01/2027.** Después de esa fecha el control vuelve a fallar y hay que revisarlas.
+- No se cambió `failBuildOnCVSS=7` ni `failOnError=true`. Un CVE nuevo con CVSS de 7 o más sigue
+  rompiendo el CI.
+
+**Comprobación en el código (12/11/2026):** se buscaron en `backend/pom.xml` y `backend/src/main` las
+dependencias y clases que cada CVE necesita para ser explotable: WebFlux, RSocket, `SseEmitter`,
+`text/event-stream`, XSLT, FreeMarker, `UrlHandlerFilter`, `UrlFilenameViewController`,
+`SpelExpressionParser`, `AutoPopulatingList`, LDAP, OAuth2/DPoP, WebAuthn, `AesBytesEncryptor`, Password4j
+y `nativeQuery`. **No hubo ninguna coincidencia.** Todos los `Sort` se construyen en el servidor con
+propiedades fijas.
+
+**Riesgo residual aceptado:** CVE-2026-59314 es la única excepción en la que la clase afectada
+(`ContentDisposition`) sí se usa, en la descarga del CSV y de las evidencias. Se acepta por la mitigación
+que indica el proveedor (Tomcat rechaza los caracteres maliciosos en cabeceras de respuesta) y porque no se
+genera multipart saliente.
+
+**Pendiente de verificar:** el análisis con las excepciones no se pudo ejecutar en local (no hay base NVD
+descargada en esta máquina). El resultado debe confirmarse en el CI del PR al subir estos cambios; hasta
+entonces C2 no se da por cerrado.
+
+**Trabajo futuro:** planificar la migración a Spring Boot 4 después de la sustentación y retirar entonces
+este archivo.

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  C2 · Excepciones documentadas de OWASP Dependency-Check (paquete C).
+
+  Reglas de este archivo:
+  - Solo CVE concretos, nunca una librería completa ni un rango de severidad.
+  - Cada excepción está atada a la versión exacta analizada: al actualizar Spring deja de aplicar y el
+    hallazgo vuelve a evaluarse.
+  - Todas caducan el 31/01/2027 (atributo until): pasada esa fecha el control vuelve a fallar y obliga a
+    revisarlas.
+  - El umbral failBuildOnCVSS=7 y failOnError=true no se modifican.
+
+  Motivo general: Framework 6.2.20, Security 6.5.12 y Data JPA 3.5.14 solo se publican con soporte de pago;
+  el parche libre exige migrar a Spring Boot 4 (cambio de versión mayor), que el equipo no hará antes de la
+  sustentación. La justificación por CVE y la búsqueda en el código están en
+  docs/seguridad/analisis-dependencias.md (apartado «Excepciones aprobadas»).
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+  <!-- ===================== Spring Framework 6.2.19 ===================== -->
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Funciones de WebFlux, RSocket y SSE. La aplicación usa Spring MVC sobre Tomcat: no incluye
+      spring-boot-starter-webflux ni rsocket, y no tiene endpoints SSE (sin SseEmitter ni text/event-stream).
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@6\.2\.19$</packageUrl>
+    <cve>CVE-2026-47885</cve>
+    <cve>CVE-2026-47889</cve>
+    <cve>CVE-2026-47891</cve>
+    <cve>CVE-2026-47892</cve>
+    <cve>CVE-2026-47893</cve>
+    <cve>CVE-2026-47888</cve>
+    <cve>CVE-2026-47890</cve>
+    <cve>CVE-2026-59313</cve>
+  </suppress>
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Motores de vistas del servidor (XsltView, FreeMarker) y controladores de vistas por nombre de archivo
+      (UrlFilenameViewController, UrlHandlerFilter). La API solo tiene @RestController que responden JSON, CSV
+      o imágenes; no hay vistas, plantillas ni esos filtros configurados.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@6\.2\.19$</packageUrl>
+    <cve>CVE-2026-47884</cve>
+    <cve>CVE-2026-59280</cve>
+    <cve>CVE-2026-47883</cve>
+    <cve>CVE-2026-47887</cve>
+  </suppress>
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Evaluación de expresiones SpEL con datos del usuario. El código no usa SpelExpressionParser ni evalúa
+      expresiones recibidas en peticiones; las únicas expresiones son propiedades fijas de configuración.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@6\.2\.19$</packageUrl>
+    <cve>CVE-2026-47886</cve>
+    <cve>CVE-2026-59283</cve>
+  </suppress>
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Binding de rutas del usuario sobre listas que se autopueblan, y renderizado HTML de errores de validación.
+      Las entradas son records JSON deserializados con Jackson (sin binding de formularios ni
+      AutoPopulatingList), y los errores de validación se devuelven como JSON desde ManejadorGlobalErrores,
+      nunca como HTML.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@6\.2\.19$</packageUrl>
+    <cve>CVE-2026-59282</cve>
+    <cve>CVE-2026-59281</cve>
+  </suppress>
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      ContentDisposition. Sí se usa en dos respuestas (CSV con nombre generado por el servidor y descarga de
+      evidencias con el nombre original del archivo). Según el aviso del proveedor, Tomcat rechaza los
+      caracteres maliciosos en cabeceras de respuesta, y la aplicación no genera multipart saliente.
+      Riesgo residual aceptado: es la única excepción en la que la clase afectada sí se utiliza.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@6\.2\.19$</packageUrl>
+    <cve>CVE-2026-59314</cve>
+  </suppress>
+
+  <!-- ===================== Spring Security 6.5.11 ===================== -->
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Requieren LDAP embebido, DPoP (OAuth2), WebAuthn con sesión distribuida, AesBytesEncryptor o
+      comparadores específicos (Digest, Password4j, servicios OAuth2). La aplicación autentica con BCrypt y
+      un JWT propio en cookie HttpOnly; no incluye módulos LDAP, OAuth2 ni WebAuthn, ni usa esas clases.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-.*@6\.5\.11$</packageUrl>
+    <cve>CVE-2026-59270</cve>
+    <cve>CVE-2026-41707</cve>
+    <cve>CVE-2026-47841</cve>
+    <cve>CVE-2026-47842</cve>
+    <cve>CVE-2026-59276</cve>
+  </suppress>
+
+  <!-- ===================== Spring Data JPA 3.5.13 ===================== -->
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      Orden no confiable (Sort/Pageable) en consultas nativas. No hay consultas con nativeQuery, y todos los
+      Sort se construyen en el servidor con propiedades fijas; el parámetro «orden» del listado se traduce con
+      una lista permitida en ListadoSolicitudesServicio.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.data/spring\-data\-jpa@3\.5\.13$</packageUrl>
+    <cve>CVE-2026-47834</cve>
+  </suppress>
+
+</suppressions>
