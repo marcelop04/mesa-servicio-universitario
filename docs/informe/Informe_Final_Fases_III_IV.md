@@ -1,7 +1,11 @@
 # Sistema Web para la Gestión Integral de Servicios Universitarios
 ## Informe consolidado · fases III y IV
 
-**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Revisión B: 13/11/2026 (Lima), sobre main `df8cc39` y evidencias del PR #9.
+**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre main+B `5e83051`: 12/11/2026.
+Actualización del paquete B: 13/11/2026 (Lima), sobre main `df8cc39` y evidencias del PR #9.
+Esta revisión actualiza la sección B y sus filas de trazabilidad. Los demás aportes
+conservan su corte anterior para que los revisen sus responsables.
+
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
 
@@ -47,8 +51,8 @@ La base recibida contiene el avance funcional de fase II, HU15–19 y el paquete
 
 **Pendiente A:** revisar esta síntesis, confirmar la revisión final de API/ejemplos y adjuntar evidencia de la
 versión integrada. Los cambios C en auditoría, documentación y credenciales de recorridos requieren su revisión.
-La corrección de transacción de A4 se incorporó en el PR #7 (`4d72d91`). Su estado
-ya no se considera un bloqueo pendiente; el equipo debe revisar la versión final.
+La tarea programada A4 conserva un defecto de transacción documentado en la revisión C5; sus pruebas
+actuales no cubren ese camino de ejecución. Su corrección corresponde coordinarla con Emanuel.
 
 ## 4. Nube, ambientes y CI/CD · Paquete B
 
@@ -187,28 +191,24 @@ CodeQL se configura para Java y JavaScript con consultas `security-extended` en 
 OWASP Dependency-Check se incorporan al CI, con artifacts y fallo ante gravedad alta/crítica (npm) o
 CVSS ≥ 7 (Java), sin ocultar fallas técnicas.
 
-**Resultados históricos y estado actual:** npm audit posterior a las correcciones no reportó vulnerabilidades.
-En la revisión inicial, los parches compatibles con Boot 3.5/Java 17 redujeron los CVE
-distintos de 68 a 23; entonces quedaban 15 con CVSS ≥ 7 y el control fallaba, aunque
-la regresión y el empaquetado aprobaban 155 pruebas. Las excepciones por CVE se
-incorporaron después en el PR #7 y CI main aprobó el análisis; véanse la sección 4 y
-`backend/dependency-check-suppressions.xml`. Un resultado con excepciones no significa
-ausencia de vulnerabilidades. [Análisis y justificación](../seguridad/analisis-dependencias.md).
+**Resultados reales/limitaciones:** npm audit posterior a las correcciones no reportó vulnerabilidades.
+Marcelo completó la descarga NVD y Dependency-Check generó informes. Se aplicaron parches compatibles sin
+migrar Boot 3.5/Java 17: los CVE distintos bajaron de 68 a 23; quedan 15 con CVSS ≥ 7 en Spring y el
+control continúa fallando. La regresión y el empaquetado pasan con 155 pruebas. No existe análisis Java
+aprobado todavía ni excepciones autorizadas; [evidencia y decisión pendiente](../seguridad/analisis-dependencias.md).
 Se revisó la ejecución real de CodeQL del PR #3, head `30bc5b2` y referencia `refs/pull/3/merge`:
 Java y JavaScript/TypeScript finalizaron sin errores, con **0 resultados en ambos SARIF** y sin alertas
 abiertas para esa referencia. CI confirmó 155 pruebas backend, 80 frontend y npm audit 0; Dependency-Check
 reprodujo los 23 CVE, 15 bloqueantes, con NVD consultado correctamente. [Evidencias, URLs y hashes](../seguridad/resultados-ci.md).
-El resultado SAST no certifica ausencia absoluta de vulnerabilidades. Los controles CI/CodeQL ya condicionan CD del mismo SHA; activar los checks obligatorios
-de main requiere al propietario. C debe revisar las excepciones y las cinco alertas
-abiertas del prototipo registradas en la sección 4 antes de su cierre.
+El resultado SAST no certifica ausencia absoluta de vulnerabilidades. David debe integrar los controles
+con protección de ramas y CD; C2 no se cierra hasta resolver el tratamiento de los hallazgos Java.
 
 ### 5.3 DAST
 
 Preparado workflow ZAP baseline manual con autorización, origen HTTPS configurado en un environment y
 reportes; sin escaneos automáticos de URLs aportadas por PR ni ataques activos.
 
-La release main `df8cc39`, que incluye C, ya tiene HTTPS y CD comprobados.
-**Pendiente C:** autorización explícita del alcance del escaneo, ejecución,
+**Pendiente:** validar release con C en el ambiente HTTPS ya existente, autorización explícita, ejecución,
 revisión de hallazgos, corrección y reprueba. Se exige SHA desplegado y se conserva el artifact de alcance.
 No se presenta un
 escaneo local de pruebas como resultado DAST de la aplicación publicada. Baseline no prueba toda la SPA
@@ -225,9 +225,7 @@ escáneres externos. Detalle y responsables en la [revisión C5](../seguridad/re
 
 ## 6. Observabilidad · Gabriel (D)
 
-El [PR #6](https://github.com/marcelop04/mesa-servicio-universitario/pull/6) contiene el
-aporte D; sigue pendiente su integración y validación contra el despliegue actual.
-Incluye Actuator/Micrometer/Prometheus, logs JSON sin secretos
+**Pendiente de aporte y validación del responsable:** Actuator/Micrometer/Prometheus, logs JSON sin secretos
 con correlación, OpenTelemetry y Jaeger/Tempo, Grafana, alertas demostrables, Compose de observabilidad
 y simulacro de incidente RNF08. El filtro de correlación existente no acredita por sí solo estas tareas.
 
@@ -239,9 +237,7 @@ con petición, identificación y resolución, evitando incluir datos sensibles.
 Resultados locales de seguridad y regresión disponibles en
 [resultados-locales.md](../seguridad/resultados-locales.md). No equivalen a resultados de carga o nube.
 
-El [PR #5](https://github.com/marcelop04/mesa-servicio-universitario/pull/5) contiene el
-aporte E y resultados locales; siguen pendientes su integración y la medición final en nube.
-Su alcance incluye colección Newman en CI; E2E BDD por historia; k6 con 2000 casos/20 VU; p95 y criterios
+**Pendiente E:** colección Newman en CI; E2E BDD por historia; k6 con 2000 casos/20 VU; p95 y criterios
 RNF06, estrés hasta el límite con recursos medidos; revisión humana de pruebas asistidas por IA y
 consolidación del informe de pruebas, incluyendo seguridad aportada por C y usuario aportado por B.
 
