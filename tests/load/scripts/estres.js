@@ -1,13 +1,13 @@
 /**
  * Escenario de Estrés Escalonado y Punto de Quiebre - k6
  * Sube la carga por etapas (20 -> 50 -> 100 -> 200 -> 400 VU) y evalúa
- * la recuperación final (cooldown a 20 VU).
+ * la contención del pool de conexiones HikariCP y la recuperación final.
  *
  * Criterios de quiebre evaluados:
  * - Tasa de error > 5 % (http_req_failed > 0.05)
  * - Latencia p95 > 5000 ms (5 s)
  *
- * Ejecución: k6 run --summary-export=tests/load/resultados/resumen-estres.json tests/load/scripts/estres.js
+ * Ejecución: k6 run tests/load/scripts/estres.js
  */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
@@ -15,12 +15,12 @@ import { BASE_URL, CUENTAS, autenticar } from './comun.js';
 
 export const options = {
   stages: [
-    { duration: '15s', target: 20 },  // Etapa 1: 20 VU (Línea base)
+    { duration: '10s', target: 20 },  // Etapa 1: 20 VU (Línea base)
     { duration: '15s', target: 50 },  // Etapa 2: 50 VU
     { duration: '15s', target: 100 }, // Etapa 3: 100 VU
-    { duration: '15s', target: 200 }, // Etapa 4: 200 VU
-    { duration: '15s', target: 400 }, // Etapa 5: 400 VU (Estrés extremo)
-    { duration: '15s', target: 20 },  // Etapa 6: Recuperación / Cooldown a 20 VU
+    { duration: '20s', target: 200 }, // Etapa 4: 200 VU (Inicio saturación hilos)
+    { duration: '25s', target: 400 }, // Etapa 5: 400 VU (Saturación pool HikariCP 10 conexiones)
+    { duration: '15s', target: 20 },  // Etapa 6: Cooldown / Recuperación a 20 VU
     { duration: '10s', target: 0 },   // Cierre
   ],
   thresholds: {
@@ -125,6 +125,17 @@ export default function (data) {
     });
   }
 
-  // Pausa corta para mantener presión constante
-  sleep(0.1 + Math.random() * 0.2);
+  // Pausa reducida en estrés para maximizar concurrencia en pool de conexiones
+  sleep(0.05 + Math.random() * 0.1);
+}
+
+/**
+ * Hook de resumen k6: exporta el resultado de estrés sanitizado
+ * excluyendo credenciales y tokens JWT de setup_data (RNF01).
+ */
+export function handleSummary(data) {
+  delete data.setup_data;
+  return {
+    'tests/load/resultados/resumen-estres.json': JSON.stringify(data, null, 2),
+  };
 }
