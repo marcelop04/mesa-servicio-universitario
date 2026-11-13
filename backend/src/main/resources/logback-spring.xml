@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <!-- Appender JSON estructurado con LogstashEncoder (D2) -->
+    <!-- Appender JSON estructurado con LogstashEncoder y Enmascaramiento de Secretos (D2, RNF02) -->
     <appender name="JSON_CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdc>true</includeMdc>
@@ -15,6 +15,18 @@
                 <message>mensaje</message>
                 <stackTrace>excepcion</stackTrace>
             </fieldNames>
+
+            <!-- RNF02: Enmascaramiento de claves sensibles para evitar fugas de contraseñas, tokens y cookies -->
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <defaultMask>****</defaultMask>
+                <path>password</path>
+                <path>contrasena</path>
+                <path>token</path>
+                <path>secreto</path>
+                <path>jwt</path>
+                <path>authorization</path>
+                <path>cookie</path>
+            </jsonGeneratorDecorator>
         </encoder>
     </appender>
 

@@ -2,6 +2,7 @@ package pe.edu.unmsm.msu;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,13 +15,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import pe.edu.unmsm.msu.comun.observabilidad.MetricasMsuServicio;
 import pe.edu.unmsm.msu.comun.web.FiltroCorrelacion;
 
 /**
- * Pruebas del Paquete D (Observabilidad: D1, D2, D3, RNF08).
- * Valida Actuator, Prometheus scraping, correlación y métricas de negocio.
+ * Pruebas del Paquete D (Observabilidad: D1, D2, D3, D4, D5, RNF08).
+ * Valida Actuator, Prometheus scraping, correlación, métricas de negocio y seguridad en simulación.
  */
+@TestPropertySource(properties = "msu.simulacion.habilitada=true")
 class ObservabilidadTest extends PruebaApi {
 
     @Autowired
@@ -64,8 +67,21 @@ class ObservabilidadTest extends PruebaApi {
     }
 
     @Test
-    @DisplayName("D4: Simular casos vencidos impacta la métrica expuesta en Prometheus")
-    void simularCasosVencidosActualizaMetrica() throws Exception {
+    @DisplayName("D2: Errores no exponen secretos ni datos sensibles en la respuesta (RNF02)")
+    void errorNoExponeSecretosNiTokens() throws Exception {
+        mvc.perform(post("/api/v1/auth/login")
+                        .with(xsrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"correo\":\"inexistente@msu.test\",\"password\":\"ClaveSuperSecreta123!\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(not(containsString("ClaveSuperSecreta123!"))))
+                .andExpect(content().string(not(containsString("token"))));
+    }
+
+    @Test
+    @DisplayName("D4 y D5: Simular casos vencidos impacta la métrica y permite recuperación a cero")
+    void simularCasosVencidosYRecuperacion() throws Exception {
+        // 1. Simulación controlada
         mvc.perform(post("/api/v1/diagnostico/simular-vencidas")
                         .with(xsrf())
                         .param("cantidad", "7")
@@ -73,14 +89,30 @@ class ObservabilidadTest extends PruebaApi {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.casos_vencidos_simulados").value(7));
 
-        assertThat(metricas.obtenerCasosVencidos()).isEqualTo(7.0);
+        assertThat(metricas.obtenerCasosSimulados()).isEqualTo(7.0);
 
         mvc.perform(get("/actuator/prometheus"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("msu_solicitudes_vencidas")))
+                .andExpect(content().string(containsString("msu_solicitudes_vencidas_simuladas")))
                 .andExpect(content().string(containsString("7.0")));
 
-        // Restaurar estado a 0
-        metricas.simularCasosVencidos(0);
+        // 2. Mitigación y Recuperación (D5)
+        mvc.perform(post("/api/v1/diagnostico/simular-recuperacion")
+                        .with(xsrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.casos_vencidos_simulados").value(0));
+
+        assertThat(metricas.obtenerCasosSimulados()).isEqualTo(0.0);
+    }
+
+    @Test
+    @DisplayName("D5: Validación de límites en simulación de latencia (máximo 5000 ms)")
+    void validacionLimitesLatencia() throws Exception {
+        // Latencia excesiva (> 5000 ms) debe ser rechazada con 400
+        mvc.perform(post("/api/v1/diagnostico/simular-latencia")
+                        .with(xsrf())
+                        .param("milisegundos", "60000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Parámetro inválido"));
     }
 }

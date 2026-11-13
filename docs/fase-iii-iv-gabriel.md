@@ -1,26 +1,26 @@
 # Fases III y IV · Parte de Gabriel (paquete D: observabilidad y telemetría)
 
-Estado al 12/11/2026. Reparto según `Division_Fases_III_y_IV.pdf` (sorteo del equipo).
+Estado al 12/11/2026. Reparto oficial según `Division_Fases_III_y_IV.pdf` (sorteo del equipo).
 
 | ID | Tarea | Terminado cuando | Estado | Evidencia |
 |---|---|---|---|---|
-| D1 | Métricas HTTP y de negocio con Actuator, Micrometer y Prometheus | Endpoints expuestos sin autenticación (`/actuator/health`, `/actuator/prometheus`) y métricas de negocio registradas | Hecho | `MetricasMsuServicio.java`, `application.yml`, `SeguridadConfig.java`; `ObservabilidadTest` (4 pruebas) |
-| D2 | Logs estructurados en JSON con ID de correlación (RNF08) y sin secretos | Emisión en consola en formato JSON con timestamp, nivel, mensaje, `idCorrelacion`, `traceId` y `spanId` | Hecho | `FiltroCorrelacion.java`, `logback-spring.xml`; captura `04-logs-json-correlacion.png` |
-| D3 | Trazas distribuidas con OpenTelemetry y Jaeger | Spans OTLP exportados a Jaeger con sampling 100 % configurable por entorno | Hecho | `pom.xml`, `application.yml`, `docker-compose.observabilidad.yml`; captura `03-jaeger-trazas.png` |
-| D4 | Reglas de alerta demostrables en Prometheus | Alertas activas para 5xx, latencia p95 > 1s y casos vencidos detectados | Hecho | `observabilidad/prometheus/alertas.yml`; captura `01-prometheus-alertas-firing.png` |
-| D5 | Simulacro de incidente (RNF08) documentado paso a paso | Guía reproducible de inyección de falla, rastreo por correlación y causa raíz | Hecho | Guía de simulacro en este documento y `DiagnosticoObservabilidadControlador.java` |
-| D6 | Orquestación del stack de observabilidad con Docker Compose | Archivo complementario para levantar Prometheus, Jaeger y Grafana junto al sistema | Hecho | `docker-compose.observabilidad.yml` |
-| D7 | Provisioning automático de Grafana y dashboard de supervisión | Dashboard pre-cargado con throughput, tasa de 5xx, latencia p95 y solicitudes vencidas | Hecho | `observabilidad/grafana/dashboards/msu-dashboard.json`; captura `02-grafana-dashboard.png` |
+| D1 | Métricas HTTP y de negocio con Actuator, Micrometer y Prometheus | Endpoints expuestos sin autenticación (`/actuator/health`, `/actuator/prometheus`) y métricas de negocio con manejo de error (NaN) | Hecho | `MetricasMsuServicio.java`, `application.yml`, `SeguridadConfig.java`; `ObservabilidadTest` (6 pruebas) |
+| D2 | Logs estructurados en JSON con correlación (RNF08) y sin secretos (RNF02) | Formato JSON en consola con `timestamp`, `nivel`, `logger`, `idCorrelacion`, `traceId`, `spanId` y enmascaramiento de datos sensibles | Hecho | `FiltroCorrelacion.java`, `logback-spring.xml`; captura `04-logs-json-correlacion.png` |
+| D3 | Trazas distribuidas con OpenTelemetry y Jaeger | Spans OTLP exportados internamente a Jaeger con sampling 100 % configurable por entorno | Hecho | `pom.xml`, `application.yml`, `docker-compose.observabilidad.yml`; captura `03-jaeger-trazas.png` |
+| D4 | Reglas de alerta demostrables en Prometheus con umbrales justificados | Alertas activas para 5xx (> 0.05 req/s), latencia p95 (> 1s) y casos vencidos, con ciclo disparo/recuperación | Hecho | `observabilidad/prometheus/alertas.yml`; capturas `01-prometheus-alertas-firing.png` y `05-recuperacion-errores-5xx.png` |
+| D5 | Simulacro de incidente (RNF08) documentado paso a paso | Ciclo cerrado completo: inyección controlada → correlación en logs → traza en Jaeger → causa raíz → mitigación → recuperación | Hecho | Guía de simulacro en este documento y `DiagnosticoObservabilidadControlador.java` |
+| D6 | Orquestación segura del stack con Docker Compose | Prometheus, Jaeger y Grafana confinados a `127.0.0.1`, OTLP interno y contraseña externalizada | Hecho | `docker-compose.observabilidad.yml`, `observabilidad/grafana/dashboards/msu-dashboard.json`; captura `02-grafana-dashboard.png` |
+| D7 | Presentación final, guion de sustentación y registro integral de IA | Estructura de diapositivas, guion con tiempos y registro completo de IA con los 6 campos de la rúbrica | Hecho | `docs/presentacion/guion-sustentacion-observabilidad.md`, `diapositivas-fase-iv-gabriel.md`, `docs/registro-uso-ia.md` |
 
 ---
 
-## 1. Arquitectura de Observabilidad Implementada
+## 1. Arquitectura de Observabilidad y Seguridad (Hardening)
 
-La observabilidad de la Mesa de Servicios Universitarios se diseñó de forma pragmática y desacoplada, cumpliendo los requisitos no funcionales **RNF08 (trazabilidad y diagnóstico)** y **RNF02 (seguridad y no exposición de secretos)**:
+La observabilidad de la Mesa de Servicios Universitarios se diseñó de forma desacoplada y robusta, cumpliendo los requisitos no funcionales **RNF08 (trazabilidad y diagnóstico)** y **RNF02 (seguridad, aislamiento y no exposición de secretos)**:
 
 ```
                       +-------------------+
-                      | Navegador / Postman|
+                      | Navegador / Cliente|
                       +---------+---------+
                                 |  (X-Correlation-Id)
                                 v
@@ -31,92 +31,78 @@ La observabilidad de la Mesa de Servicios Universitarios se diseñó de forma pr
                       | - Micrometer OTel |
                       +----+---------+----+
                            |         |
-          OTLP HTTP (4318) |         | Scrape cada 5s (/actuator/prometheus)
-                           v         v
+     OTLP Interno (4318)   |         | Scrape cada 5s (/actuator/prometheus)
+     (Red Docker privada)  v         v
                      +-----+---+ +---+--------+
-                     | Jaeger  | | Prometheus | <--- alertas.yml
+                     | Jaeger  | | Prometheus | <--- alertas.yml (umbrales justificados)
                      | (16686) | +---+--------+
                      +---------+     |
-                                     | Datasource Proxy
-                                     v
-                               +-----+------+
-                               |  Grafana   | (3000)
-                               | Dashboard  |
-                               +------------+
+                          |          | Datasource Proxy
+                          +----+-----+
+                               v
+                         +-----+------+
+                         |  Grafana   | (3000)
+                         | Dashboard  | (Contraseña externalizada)
+                         +------------+
 ```
 
-### Componentes y Configuración Clave:
+### Medidas de Seguridad y Calidad Aplicadas (Atención a la Revisión por Pares):
 
-1. **Spring Boot Actuator & Micrometer Prometheus (D1):**
-   - Endpoints expuestos: `/actuator/health`, `/actuator/info` y `/actuator/prometheus`.
-   - `SeguridadConfig`: acceso permitido a estos endpoints y exención CSRF en `/actuator/**` para scraping continuo sin rechazos 401/403.
-   - Histogramas de percentiles habilitados para peticiones HTTP (`percentiles-histogram.http.server.requests: true`), permitiendo calcular p50, p90 y p95.
-   - Métricas de negocio:
-     - `msu_solicitudes_vencidas` (Gauge): consulta en tiempo real solicitudes pendientes vencidas.
-     - `msu_solicitudes_creadas_total` (Counter): se incrementa en cada nueva solicitud registrada.
+1. **Aislamiento de Endpoints de Simulación (RNF02):**
+   - El controlador `DiagnosticoObservabilidadControlador` está anotado con `@ConditionalOnProperty(name = "msu.simulacion.habilitada", havingValue = "true")`.
+   - Por defecto está **desactivado (`false`)** en producción y en el código base, respondiendo 404 a cualquier petición no autorizada.
+   - Solo se habilita de forma controlada en el entorno de pruebas/simulación mediante variable de entorno (`SIMULACION_HABILITADA=true`).
+   - Las operaciones que mutan estado son estrictamente `POST` (nunca `GET`).
+   - Se validan límites estrictos en parámetros: latencia entre 100 y 5000 ms (evitando saturación de hilos) y casos vencidos entre 0 y 100.
 
-2. **Logs Estructurados en JSON (D2):**
-   - Implementado con `logstash-logback-encoder` a través de `logback-spring.xml`.
-   - `FiltroCorrelacion`: extrae o autogenera `X-Correlation-Id`, inyectándolo en el `MDC` bajo la clave `idCorrelacion` y garantizando su limpieza en el bloque `finally`.
-   - Los campos emitidos por cada línea de log incluyen: `timestamp`, `nivel`, `logger`, `mensaje`, `idCorrelacion`, `traceId`, `spanId` y `hilo`.
-   - Política de secretos: nunca se imprimen contraseñas, hashes, claves JWT ni tokens CSRF.
+2. **Hardening de Contenedores y Red en Docker Compose (D6):**
+   - Todas las interfaces administrativas de Prometheus, Jaeger y Grafana están vinculadas exclusivamente a `127.0.0.1` (bucle local), impidiendo accesos no deseados desde redes externas o públicas.
+   - Los puertos de recepción OTLP (4317 y 4318) **no se publican al host**, permaneciendo aislados en la red interna de Docker para uso exclusivo del contenedor `backend`.
+   - La contraseña de Grafana está externalizada mediante `${GRAFANA_ADMIN_PASSWORD:-AdminObservabilidad2026!}`.
 
-3. **Trazabilidad Distribuida (D3):**
-   - Dependencias: `micrometer-tracing-bridge-otel` y `opentelemetry-exporter-otlp`.
-   - Propagación automática de contexto de traza (`traceId` y `spanId`) hacia el `MDC` y exportación OTLP HTTP hacia `http://jaeger:4318/v1/traces`.
+3. **Separación de Métricas Operativas y Simulación (D1, D4):**
+   - `msu_solicitudes_vencidas`: métrica real calculada desde la base de datos.
+   - En caso de fallo de acceso a datos, **devuelve `Double.NaN`**, lo que indica formalmente a Prometheus un fallo de medición y evita falsos ceros.
+   - `msu_solicitudes_vencidas_simuladas`: métrica independiente y aislada para pruebas de inyección, garantizando que los datos operativos reales nunca se contaminen.
 
-4. **Reglas de Alerta en Prometheus (D4):**
-   - Ubicación: `observabilidad/prometheus/alertas.yml`.
-   - Alerta 1: `TasaErroresHttp5xxAlta` cuando `rate(http_server_requests_seconds_count{status=~"5.."}[1m]) > 0`.
-   - Alerta 2: `LatenciaP95HttpAlta` cuando `histogram_quantile(0.95, ...) > 1.0` segundo.
-   - Alerta 3: `SolicitudesVencidasDetectadas` cuando `msu_solicitudes_vencidas > 0`.
-
-5. **Provisioning Automático de Grafana (D6 y D7):**
-   - Cero configuración manual al arrancar el contenedor: `datasource.yml` conecta a Prometheus y `msu-dashboard.json` crea el panel universitario de inmediato en el puerto 3000 con credenciales `admin / admin`.
+4. **Tratamiento de Secretos y Enmascaramiento en Logs (D2, RNF02):**
+   - En `logback-spring.xml` se configuró `MaskingJsonGeneratorDecorator` de Logstash para enmascarar automáticamente campos sensibles (`password`, `contrasena`, `token`, `secreto`, `jwt`, `cookie`).
+   - El servicio de métricas no registra trazas de excepciones internas sensibles.
+   - Se añadió la prueba automatizada `errorNoExponeSecretosNiTokens()` en `ObservabilidadTest`.
 
 ---
 
-## 2. Guía del Simulacro de Incidente (RNF08)
+## 2. Guía del Simulacro de Incidente (RNF08) · Ciclo Completo de 6 Fases
 
-Para la sustentación universitaria y verificación del Paquete D, se implementó `DiagnosticoObservabilidadControlador` (`/api/v1/diagnostico`), el cual permite reproducir fielmente un incidente sin alterar los datos productivos ni la lógica de negocio.
+Para la sustentación universitaria se diseñó un ciclo cerrado y reproducible:
+**Inyección → Detección → Correlación → Trazabilidad → Diagnóstico → Mitigación y Recuperación**.
 
-### Paso 1: Provocar el Incidente (Inyección de Error 500 y Latencia)
+### Fase 1: Inyección Controlada de Fallo
+En una terminal secundaria, provocar una excepción interna no controlada (HTTP 500) enviando el identificador de correlación:
 
-En una terminal, simular una petición cliente enviando un encabezado de correlación explícito:
-
-```bash
-# Simular un error interno 500:
-curl -i -X GET http://localhost:8080/api/v1/diagnostico/simular-error-500 \
-     -H "X-Correlation-Id: incidente-demo-univ-001"
+```powershell
+curl.exe -i -X POST http://localhost:8080/api/v1/diagnostico/simular-error-500 `
+     -H "X-Correlation-Id: demo-sustentacion-001"
 ```
 
-**Respuesta HTTP:**
+**Respuesta recibida por el cliente:**
 ```http
 HTTP/1.1 500 Internal Server Error
-X-Correlation-Id: incidente-demo-univ-001
+X-Correlation-Id: demo-sustentacion-001
 Content-Type: application/json
+
+{"codigo":"ERROR_INTERNO","mensaje":"Ocurrió un error inesperado. Intente nuevamente.","errores":[],"id_correlacion":"demo-sustentacion-001"}
+```
+*Nótese que el cliente recibe el `id_correlacion` pero ningún detalle confidencial del servidor.*
+
+Para simular una degradación sostenida y activar la regla de alerta de tasa de errores (> 0.05 req/s):
+```powershell
+1..5 | ForEach-Object { curl.exe -s -X POST http://localhost:8080/api/v1/diagnostico/simular-error-500 -H "X-Correlation-Id: lote-error-$_" }
 ```
 
-Para generar volumen y activar la regla de alerta de tasa de errores en Prometheus:
-```bash
-# Ejecutar varias peticiones rápidas
-for i in {1..10}; do curl -s -X GET http://localhost:8080/api/v1/diagnostico/simular-error-500 -H "X-Correlation-Id: lote-error-$i"; done
-```
+### Fase 2: Rastrear en los Logs JSON mediante `idCorrelacion`
+Consultar los logs del backend en Docker o consola (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/04-logs-json-correlacion.png`):
 
-Para provocar latencia alta (> 1.5s):
-```bash
-curl -i -X GET "http://localhost:8080/api/v1/diagnostico/simular-latencia?milisegundos=2000" \
-     -H "X-Correlation-Id: incidente-latencia-002"
-```
-
-### Paso 2: Rastrear en los Logs JSON mediante `idCorrelacion`
-
-Consultar los logs del backend en Docker o consola:
-```bash
-docker compose logs backend --tail=50
-```
-
-Se observa la salida en formato JSON estructurado (ver captura `docs/evidencias/fase-iii-iv-gabriel/04-logs-json-correlacion.png`):
 ```json
 {
   "timestamp": "2026-11-12T23:13:55.235Z",
@@ -131,81 +117,54 @@ Se observa la salida en formato JSON estructurado (ver captura `docs/evidencias/
 }
 ```
 
-**Diagnóstico rápido:** Con el `idCorrelacion` reportado por el usuario o cliente, el equipo técnico localiza exactamente el hilo, timestamp y el `traceId` correspondiente.
+### Fase 3: Localización y Trazabilidad en Jaeger
+1. Abrir Jaeger en [http://localhost:16686](http://localhost:16686) (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/03-jaeger-trazas.png`).
+2. Pegar el `traceId` copiado del log (`8eb4f0970adf5fdac909ee6e22f7cf28`) en el buscador superior.
+3. Se despliega la cascada de spans donde se identifica el método exacto y el código `http.status_code=500`.
 
-### Paso 3: Ubicar la Traza en Jaeger
+### Fase 4: Detección y Alerta en Prometheus y Grafana
+1. En Prometheus ([http://localhost:9090/alerts](http://localhost:9090/alerts)):
+   - `TasaErroresHttp5xxAlta` pasa a estado **FIRING** (rojo) (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/01-prometheus-alertas-firing.png`).
+2. En Grafana ([http://localhost:3000](http://localhost:3000)):
+   - El panel "2. Errores HTTP 5xx" refleja el pico de fallas en rojo (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/02-grafana-dashboard.png`).
 
-1. Abrir la interfaz web de Jaeger en [http://localhost:16686](http://localhost:16686) (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/03-jaeger-trazas.png`).
-2. En el menú de búsqueda (Search):
-   - Service: `msu-backend`
-   - Operation: `all` o `GET /api/v1/diagnostico/simular-latencia` o `GET /api/v1/diagnostico/simular-error-500`
-   - O bien, pegar directamente el `traceId` copiado del log (`8eb4f0970adf5fdac909ee6e22f7cf28`) en el buscador superior derecho.
-3. Se visualiza la cascada del span:
-   - Duración total (ej. `2.02 s` para la latencia visible en el scatter plot superior).
-   - En caso de error, el span aparece marcado con el código HTTP (`http.status_code=500`).
+### Fase 5: Diagnóstico de Causa Raíz
+El equipo de ingeniería determina que la falla corresponde a una excepción no controlada en el controlador de peticiones provocada por degradación transitoria de un servicio dependiente.
 
-### Paso 4: Comprobar el Disparo de Alertas en Prometheus
-
-1. Ingresar a [http://localhost:9090/alerts](http://localhost:9090/alerts) (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/01-prometheus-alertas-firing.png`).
-2. Se observan las reglas configuradas en `observabilidad/prometheus/alertas.yml`:
-   - `TasaErroresHttp5xxAlta`: pasa a estado **Firing** tras registrar los errores 500.
-   - `SolicitudesVencidasDetectadas`: pasa a estado **Firing** con el valor de casos vencidos detectados.
-
-### Paso 5: Supervisión en el Dashboard de Grafana
-
-1. Ingresar a [http://localhost:3000](http://localhost:3000) (usuario: `admin`, contraseña: `admin`).
-2. Abrir el menú **Dashboards** > **Mesa de Servicios Universitarios** > **Mesa de Servicios Universitarios - Observabilidad** (ver evidencia `docs/evidencias/fase-iii-iv-gabriel/02-grafana-dashboard.png`).
-3. Se aprecian los paneles actualizándose en tiempo real cada 5 segundos:
-   - Panel 1: Throughput general con desglose por endpoint.
-   - Panel 2: Tasa de errores 5xx.
-   - Panel 3: Latencia p95.
-   - Panel 4: Casos Vencidos marcando el número detectado en color rojo.
-   - Panel 5: Total de Solicitudes Creadas acumuladas.
+### Fase 6: Mitigación, Corrección y Recuperación
+1. Se aplica la corrección y se restablece el estado del sistema mediante la acción de recuperación:
+   ```powershell
+   curl.exe -i -X POST http://localhost:8080/api/v1/diagnostico/simular-recuperacion
+   ```
+2. **Validación de vuelta a la normalidad:**
+   - La métrica de simulación se restablece a 0.
+   - En el siguiente intervalo de evaluación (15s), la alerta en Prometheus se resuelve automáticamente y vuelve a estado verde (**INACTIVE**).
+   - En Grafana, la tasa de errores cae a 0 req/s y los paneles de supervisión retornan a verde.
 
 ---
 
-## 3. Instrucciones de Ejecución y Pruebas
+## 3. Instrucciones de Verificación Automatizada
 
-### Ejecución de Pruebas Unitarias del Backend (JUnit 5 + H2)
+### Pruebas Unitarias del Backend (JUnit 5 + H2)
 
 ```powershell
-# En Windows con PowerShell dentro de backend/:
 cd backend
 .\mvnw.cmd test -Dtest=ObservabilidadTest
 ```
+*Ejecuta 6 pruebas de integración que validan Actuator, Prometheus scraping, correlación, enmascaramiento de secretos y validación de límites en simulación.*
 
-Para correr todas las pruebas del proyecto (asegurando no regresiones):
-```powershell
-.\mvnw.cmd test
-```
+### Levantamiento del Stack Completo
 
-### Levantamiento del Sistema Completo con Observabilidad
-
-Desde la raíz del repositorio:
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --build
 ```
 
-### URLs de los Servicios
-
-| Servicio | URL | Credenciales |
-|---|---|---|
-| Aplicación Web (Frontend) | http://localhost:8081 | Ver cuentas demo |
-| API REST MSU (Swagger UI) | http://localhost:8080/swagger-ui.html | - |
-| Prometheus UI | http://localhost:9090 | - |
-| Jaeger UI (Trazas) | http://localhost:16686 | - |
-| Grafana (Dashboards) | http://localhost:3000 | `admin` / `admin` |
-| Scraping Actuator Prometheus | http://localhost:8080/actuator/prometheus | Público |
-
 ---
 
-## 4. Registro de Uso de IA (Gabriel)
+## 4. Reparto y Entregables del Paquete D7
 
-| Campo | Valor |
-|---|---|
-| Integrante | Gabriel (Paquete D - Observabilidad y Telemetría) |
-| Herramienta(s) de IA | Asistente de Desarrollo AI (DeepMind Antigravity) |
-| Propósito del uso | Estructuración del dashboard Grafana JSON, configuración de `logstash-logback-encoder` para Spring Boot 3.5, y redacción de reglas de alerta Prometheus |
-| Validación humana realizada | - Inspección manual de `pom.xml` para compatibilidad de versiones con Spring Boot 3.5.16 y Java 17.<br>- Verificación de que `FiltroCorrelacion` limpie siempre el MDC en el bloque `finally` para evitar fugas de memoria.<br>- Validación de que ningún token JWT ni secreto aparezca en los logs JSON.<br>- Creación de pruebas unitarias en `ObservabilidadTest` para verificar el estado `UP` de Actuator y el formato de las métricas. |
-| Declaración ética | El código generado fue revisado línea por línea, comprendido y probado según los lineamientos académicos de la UNMSM. |
+El entregable **D7** oficial del reparto de Fases III y IV comprende la preparación integral para la sustentación y la consolidación ética del uso de herramientas de IA:
 
+1. **Guion de Demostración:** Documentado con cronograma y pautas de sustentación en [docs/presentacion/guion-sustentacion-observabilidad.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/presentacion/guion-sustentacion-observabilidad.md).
+2. **Estructura de Diapositivas:** Elaborada en [docs/presentacion/diapositivas-fase-iv-gabriel.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/presentacion/diapositivas-fase-iv-gabriel.md).
+3. **Registro Consolidado de IA:** Completado rigurosamente según los 6 criterios de la rúbrica institucional en [docs/registro-uso-ia.md](file:///c:/Users/USER/Downloads/mesa2/mesa-servicio-universitario/docs/registro-uso-ia.md).

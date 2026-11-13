@@ -2,16 +2,17 @@
 # Levantar en conjunto con el docker-compose base:
 #   docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --build
 #
-# Servicios expuestos:
-#   - Prometheus UI:  http://localhost:9090
-#   - Jaeger UI:      http://localhost:16686
-#   - Grafana UI:     http://localhost:3000 (admin / admin)
+# Seguridad (RNF02):
+#   - Puertos restringidos a la interfaz de bucle local (127.0.0.1) para evitar exposición en redes públicas.
+#   - Receptores OTLP (4317/4318) permanecen en la red interna de Docker sin exposición al host.
+#   - Contraseña administrativa de Grafana configurable por variable de entorno (GRAFANA_ADMIN_PASSWORD).
 
 services:
-  # Extiende el backend para inyectar la URL del colector de trazas Jaeger
+  # Extiende el backend para inyectar la URL interna del colector de trazas y habilitar simulación controlada
   backend:
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+      SIMULACION_HABILITADA: ${SIMULACION_HABILITADA:-true}
     depends_on:
       jaeger:
         condition: service_started
@@ -22,17 +23,16 @@ services:
     restart: unless-stopped
     environment:
       - COLLECTOR_OTLP_ENABLED=true
+    # Solo expone la interfaz web en localhost; los puertos OTLP 4317/4318 quedan solo en la red interna
     ports:
-      - "16686:16686" # Interfaz Web de Jaeger
-      - "4317:4317"   # Receptor OTLP gRPC
-      - "4318:4318"   # Receptor OTLP HTTP
+      - "127.0.0.1:16686:16686"
 
   prometheus:
     image: prom/prometheus:v2.54.1
     container_name: msu-prometheus
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./observabilidad/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./observabilidad/prometheus/alertas.yml:/etc/prometheus/alertas.yml:ro
@@ -49,10 +49,10 @@ services:
     container_name: msu-grafana
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-AdminObservabilidad2026!}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - ./observabilidad/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
@@ -65,4 +65,3 @@ services:
 volumes:
   prometheus-datos:
   grafana-datos:
-

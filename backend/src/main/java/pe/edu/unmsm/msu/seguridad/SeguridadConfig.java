@@ -33,6 +33,9 @@ import pe.edu.unmsm.msu.identidad.repositorio.UsuarioRepositorio;
 @Configuration
 public class SeguridadConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${msu.simulacion.habilitada:false}")
+    private boolean simulacionHabilitada;
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,10 +51,14 @@ public class SeguridadConfig {
                                         RevocacionSesionRepositorio revocaciones, TokenJwt tokens,
                                         RevocadorSesion revocador) throws Exception {
         http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new ManejadorCsrfSpa())
-                        .ignoringRequestMatchers("/actuator/**", "/api/v1/diagnostico/**"))
+                .csrf(csrf -> {
+                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                            .csrfTokenRequestHandler(new ManejadorCsrfSpa())
+                            .ignoringRequestMatchers("/actuator/**");
+                    if (simulacionHabilitada) {
+                        csrf.ignoringRequestMatchers("/api/v1/diagnostico/**");
+                    }
+                })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .securityContext(c -> c.securityContextRepository(new RequestAttributeSecurityContextRepository()))
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -65,17 +72,20 @@ public class SeguridadConfig {
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(RespuestasSeguridad.sinSesion(json))
                         .accessDeniedHandler(RespuestasSeguridad.accesoDenegado(json)))
-                .authorizeHttpRequests(a -> a
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/csrf", "/api/v1/auth/registro").permitAll()
-                        .requestMatchers("/api/v1/openapi/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
-                        .requestMatchers("/api/v1/diagnostico/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")
-                        .requestMatchers("/api/v1/indicadores", "/api/v1/reportes/**").hasRole("SUPERVISOR")
-                        .requestMatchers("/api/v1/**").authenticated()
-                        .anyRequest().denyAll());
+                .authorizeHttpRequests(a -> {
+                    a.requestMatchers("/api/v1/auth/login", "/api/v1/auth/csrf", "/api/v1/auth/registro").permitAll()
+                            .requestMatchers("/api/v1/openapi/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                            .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
+                            .requestMatchers("/error").permitAll();
+                    if (simulacionHabilitada) {
+                        a.requestMatchers("/api/v1/diagnostico/**").permitAll();
+                    }
+                    a.requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
+                            .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")
+                            .requestMatchers("/api/v1/indicadores", "/api/v1/reportes/**").hasRole("SUPERVISOR")
+                            .requestMatchers("/api/v1/**").authenticated()
+                            .anyRequest().denyAll();
+                });
         return http.build();
     }
 }

@@ -61,6 +61,9 @@ msu:
     password: ${DEMO_PASSWORD:Demo12345!}
     # MR07: solicitudes de ejemplo para la bandeja de supervisión, solo si la base no tiene ninguna.
     solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:true}}
+  simulacion:
+    # D5: Endpoints de simulación de incidentes RNF08. Desactivado por defecto (seguridad).
+    habilitada: ${SIMULACION_HABILITADA:false}
 
 # Observabilidad (Paquete D: Actuator, Micrometer, Prometheus, OpenTelemetry y Jaeger)
 management:
