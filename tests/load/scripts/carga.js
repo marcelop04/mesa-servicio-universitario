@@ -6,7 +6,7 @@
  * - Escrituras (tipo:escritura): p95 < 2000 ms (2 s)
  * - Tasa de fallos: < 1 %
  *
- * Ejecución: k6 run --summary-export=tests/load/resultados/resumen-carga.json tests/load/scripts/carga.js
+ * Ejecución: k6 run tests/load/scripts/carga.js
  */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
@@ -158,4 +158,15 @@ export default function (data) {
 
   // Pausa entre 300 ms y 800 ms para simular ritmo humano de navegación
   sleep(0.3 + Math.random() * 0.5);
+}
+
+/**
+ * Hook de resumen k6: garantiza la exportación de métricas sanitizadas
+ * sin incluir sesiones, tokens CSRF ni credenciales de usuario (RNF01).
+ */
+export function handleSummary(data) {
+  delete data.setup_data;
+  return {
+    'tests/load/resultados/resumen-carga.json': JSON.stringify(data, null, 2),
+  };
 }
