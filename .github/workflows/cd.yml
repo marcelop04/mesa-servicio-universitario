@@ -28,6 +28,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      actions: read
     outputs:
       backend: ${{ steps.referencias.outputs.backend }}
       frontend: ${{ steps.referencias.outputs.frontend }}
@@ -41,6 +42,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: test "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" = "$SOURCE_SHA"
+      - name: Exigir CI y seguridad del mismo SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: python3 despliegue/scripts/comprobar-ci.py --sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY"
       - name: Nombres de imágenes
         id: nombres
         env:

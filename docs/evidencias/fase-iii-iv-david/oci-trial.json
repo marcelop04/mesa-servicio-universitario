@@ -14,5 +14,5 @@
   "precio_cpu_ram_estimado_usd_hora": 0.046,
   "precio_cpu_ram_estimado_usd_720_horas": 33.12,
   "nota_precio": "Tarifa pública E5 de CPU y RAM; almacenamiento/tráfico dependen de sus cupos. El uso elegible consume el crédito de prueba.",
-  "estado_aplicacion": "MySQL/backend/frontend saludables, certificado emitido; smoke HTTPS con login aprobado. Corrección del detector SPA en entrega CI en verificación."
+  "estado_aplicacion": "Desplegada desde GHCR por digests tras CI aprobado; HTTPS, sesión, responsive y recuperación en VM verificados. Ver entrega.json, https.json y recuperacion.json."
 }

@@ -81,7 +81,7 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 - `prototipo/`: prototipo de la fase I con json-server.
 - `docs/`: informe, diagramas, diseño y avance por integrante (`fase-ii-*.md`).
 
-## Despliegue gratuito y entrega continua (paquete B · David)
+## Despliegue y CI/CD (paquete B · David)
 
 - [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
   y alternativa Always Free, HTTPS con Caddy,
@@ -93,6 +93,8 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 
 El stack de nube requiere configurar la cuenta OCI y GitHub; consultar la bitácora
 para el estado de la URL pública, primer CD y verificaciones realizadas.
+
+Demostración del curso: <https://msu-157-137-206-147.sslip.io> (servidor temporal Free Trial).
 
 ## Problemas comunes
 

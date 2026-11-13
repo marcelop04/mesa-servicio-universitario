@@ -127,21 +127,50 @@ Generar el entorno **en una carpeta privada existente**, con Python 3.10+:
 ```bash
 python despliegue/scripts/crear-entorno.py \
   --host msu-IP-CON-GUIONES.sslip.io --email TU_CORREO \
-  --perfil prod --demo --salida /ruta/privada/produccion.env
+  --perfil prod --salida /ruta/privada/produccion.env
 ```
 
-`--demo` es útil para la entrega académica: crea las seis cuentas ficticias y sus
-solicitudes. La contraseña inicial es **aleatoria**, queda en `DEMO_PASSWORD` y debe
-comunicarse por un canal privado al equipo. Sin `--demo` no se crean esas cuentas.
-En una base vacía, inicializar primero las cuentas y la política con la demo para
-disponer de administrador; después cambiar las contraseñas desde el perfil y poner
-`DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`. Cambiar solo `DEMO_PASSWORD` no
-actualiza las cuentas que ya existen.
+**Prod exige `DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`, cookies seguras y
+`SEGURIDAD_DESPLIEGUE=true`.** El generador rechaza `--perfil prod --demo`; el transporte
+valida la configuración antes de copiarla al servidor y el backend también rechaza
+las opciones incompatibles. No se reutiliza el antiguo archivo de demostración como prod.
+
+La siembra solo se habilita expresamente para un entorno aislado de prueba:
+
+```bash
+python despliegue/scripts/crear-entorno.py \
+  --host prueba.example.org --email TU_CORREO --perfil prueba --demo \
+  --salida /ruta/privada/prueba.env
+```
+
+La migración de la VM existente conservó sus claves de DB/JWT y sus datos, cambiando
+solo las opciones de siembra/despliegue. Desactivar la siembra no borra usuarios o
+solicitudes previamente almacenados. La contraseña de las cuentas de evaluación
+existentes se comunica por el archivo local privado de acceso; no se regenera al arrancar.
+
+### Primera administración en una instalación prod vacía
+
+Con prod sin demo, las migraciones crean roles/catálogos, no cuentas. Registrar desde
+la web la cuenta institucional elegida por el responsable. Un operador con acceso
+SSH/DB la promueve una sola vez en la consola MySQL del contenedor:
+
+```sql
+UPDATE usuario
+SET rol_id = (SELECT id FROM rol WHERE codigo = 'ADMINISTRADOR'),
+    version_autorizacion = version_autorizacion + 1
+WHERE correo = 'correo-elegido@institucion.edu';
+```
+
+Usar el correo efectivamente registrado y comprobar que se actualizó una sola fila.
+Cerrar e iniciar sesión de nuevo. Desde P12 publicar la política inicial (por ejemplo,
+Crítica 4/24 h, Alta 8/48 h, Media 24/120 h, Baja 48/240 h). Después administrar usuarios
+desde P11. El hash lo genera el registro normal; no insertar contraseñas en texto plano.
 
 | Variable | Significado |
 |---|---|
 | `COMPOSE_PROJECT_NAME` | `msu-prod` o `msu-prueba`; determina los volúmenes independientes |
 | `SPRING_PROFILES_ACTIVE` | `prod` o `prueba`; nunca `dev` en el stack de nube |
+| `SEGURIDAD_DESPLIEGUE` | `true` en prod; `false` en prueba con siembra autorizada |
 | `APP_HOST` | Nombre DNS, sin `https://`, ruta ni puerto |
 | `ACME_EMAIL` | Correo de contacto para los certificados |
 | `DB_USER`, `DB_PASSWORD` | Usuario y clave de la base `mesa_servicios` |
@@ -185,8 +214,11 @@ gh api --method PUT repos/marcelop04/mesa-servicio-universitario/branches/main/p
   --input despliegue/github/proteccion-main.json
 ```
 
-La protección exige PR, una aprobación, CI actualizado, historial lineal y los cuatro
-checks cuyos nombres están en el JSON. También impide force-push y borrar `main`.
+El JSON es una propuesta de configuración mínima. La configuración **observada** por
+la API de reglas efectivas de main bloquea borrado/force-push y exige PR con una
+aprobación, con bypass configurado para el usuario actual. No declara checks de estado
+obligatorios. Ver `docs/evidencias/fase-iii-iv-david/proteccion.json`; no se atribuyen
+a la rama checks que la API no muestra. El propietario puede añadir los cuatro checks.
 El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
@@ -202,6 +234,8 @@ El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 
 1. `CI` debe terminar con éxito **completo** para un push a `main` del mismo repositorio público.
    Incluye MySQL real y pérdida/restauración de datos/archivos, además de las suites existentes.
+   Antes de publicar, se verifica el último resultado CI del mismo SHA/push y se espera
+   también CodeQL si su workflow ya está integrado. Un fallo de seguridad impide entregar.
 2. CD verifica que el SHA aprobado sigue siendo la punta de `main` y publica dos imágenes
    multi-arquitectura (`linux/amd64`, `linux/arm64`) en GHCR, con etiqueta `sha-COMMIT`.
 3. Despliega por **digest**, no por `latest`. Un evento de PR no puede activar este CD.
@@ -217,21 +251,15 @@ privados inicialmente; el token temporal permite descargarlos. Para descarga an�
 el propietario puede poner ambos paquetes como públicos en Packages. La etiqueta de
 origen de las imágenes las vincula al repositorio para gestionar sus accesos desde GitHub.
 
-### Entrega académica inicial desde PR
+### Historial de la entrega académica inicial desde PR
 
-Para comprobar la nube antes de integrar `main`, CI incluye un job de demostración
-habilitado expresamente con variables de repositorio `DEMO_ENABLED=true` y
-`DEMO_BRANCH=feat/david-despliegue`. Solo admite PR del mismo repositorio y esa rama,
-y depende del éxito de los cuatro jobs de pruebas/configuración. Publica imágenes
-amd64 en GHCR y entrega los digests del mismo commit de merge probado por CI.
-Comprueba además que el PR sigue abierto y que su cabeza no cambió antes de entregar.
-
-El job usa `DEMO_ENV` (archivo de entorno privado), `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`
-y las variables de host/usuario. `entregar-ci.sh` comparte el transporte SSH con CD.
-La demo y la entrega posterior de `main` actualizan la misma instancia académica y
-usan exclusión mutua; las pruebas MySQL de CI mantienen sus volúmenes independientes.
-El workflow CD de `main` conserva su evento y el environment `production`.
-Desactivar `DEMO_ENABLED` después de la integración; `CD_ENABLED` controla la entrega de main.
+La primera comprobación cloud se ejecutó desde el PR #4 autorizado, con cuatro checks
+previos y digests de GHCR (ver `entrega.json`). Después de integrarse el PR, se retiró
+ese job de bootstrap y se eliminaron `DEMO_ENV` y sus variables de activación. La ruta
+definitiva es `CI main → gate del mismo SHA → GHCR → environment production → SSH`.
+Los builds de Maven/Node se hacen en `$BUILDPLATFORM`: JAR y assets son portables y así
+se evita el bloqueo observado al compilar el frontend ARM bajo QEMU. Los runtimes finales
+siguen siendo multi-arquitectura. `CD_ENABLED` se habilita después de revisar prod.
 
 En el primer despliegue, Caddy obtiene el certificado automáticamente y redirige HTTP a
 HTTPS. Sus certificados persisten en volúmenes. Si DNS/80/443 o la autoridad ACME fallan,
@@ -356,10 +384,18 @@ fault domains y todas devolvieron falta de capacidad. Se conserva el estado Terr
 local para reintentar el mismo plan; `CD_ENABLED=false` hasta disponer del servidor,
 sus Secrets completos y HTTPS verificado.
 
-Después se autorizó el uso de la prueba y se creó la E5 en Bogotá. DNS previsto:
-`https://msu-157-137-206-147.sslip.io`. La verificación HTTPS y la ejecución de entrega
-se registran en la bitácora al terminar. La huella SSH se obtuvo del historial de
+Después se autorizó el uso de la prueba y se creó la E5 en Bogotá. Dirección verificada:
+`https://msu-157-137-206-147.sslip.io`. La URL, TLS, cookies, login/perfil/logout y entrega
+automática ya se verificaron; ver `https.json` y `entrega.json` en las evidencias.
+El ensayo de pérdida/restauración de la VM y la copia externa están en `recuperacion.json`.
+La huella SSH se obtuvo del historial de
 consola por la API OCI autenticada y se fijó en `SSH_KNOWN_HOSTS`.
+
+Acceso de usuarios: abrir la URL y usar Registro o las cuentas ficticias por rol del
+README. En la nube sus contraseñas son aleatorias; `DEMO_PASSWORD` se conserva en el
+archivo privado del responsable y en GitHub Secrets. El responsable dispone además
+de un archivo local privado de acceso, separado del `.env`, para comunicar solo las
+credenciales de demostración al equipo. Las contraseñas no se incluyen en el manual.
 
 ## 10. Cierre del curso y conservación de evidencias
 

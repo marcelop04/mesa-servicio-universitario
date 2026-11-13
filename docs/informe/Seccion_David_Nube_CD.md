@@ -2,10 +2,10 @@
 
 ## Diseño implementado
 
-Se preparó una arquitectura de despliegue reproducible en Oracle Cloud Infrastructure
-Always Free: una VM Ubuntu ARM ejecuta MySQL 8, Spring Boot, React/Nginx y Caddy mediante
-Docker Compose. El dimensionamiento propuesto (2 OCPU, 12 GB RAM, disco de 50 GB) queda
-dentro del cupo publicado de Always Free cuando está disponible en la cuenta. Caddy
+Se desplegó una arquitectura reproducible en Oracle Cloud Infrastructure Free Trial:
+una VM Ubuntu x86 E5 de 1 OCPU, 8 GB RAM y disco de 50 GB ejecuta MySQL 8, Spring Boot,
+React/Nginx y Caddy mediante Docker Compose. El responsable autorizó consumir créditos
+temporales para la evaluación tras no encontrar capacidad A1 Always Free. Caddy
 gestiona certificados HTTPS y mantiene la SPA y API bajo el mismo origen, conservando
 la sesión JWT/CSRF. Solo el proxy publica los puertos web.
 
@@ -14,21 +14,28 @@ para JUnit) y variables externas. Los secretos de producción se generan aleator
 y se entregan con GitHub Secrets; Terraform no los incorpora. Los volúmenes separan
 MySQL, evidencias y certificados del ciclo de vida de los contenedores.
 
+URL verificada: <https://msu-157-137-206-147.sslip.io>.
+
 ## RNF10 · Integración y despliegue continuos
 
 El CI comprueba backend, frontend, imágenes, configuración e infraestructura y ejecuta
 un ensayo de recuperación sobre MySQL real en un proyecto efímero. CD solo se activa
 después de un CI completo exitoso sobre un push de `main` del mismo repositorio público.
 Publica imágenes amd64/arm64 en GHCR y despliega por digest mediante SSH con host verificado.
-La salud interna y un smoke HTTPS externo deben aprobarse antes de registrar la entrega
-como verificada. La protección de `main` preparada exige PR, aprobación y checks vigentes.
+La salud interna y un smoke HTTPS deben aprobarse antes de registrar la entrega como
+verificada. Se ejecutó además el bootstrap académico habilitado para el PR propio de
+la rama autorizada: tras cuatro checks exitosos publicó imágenes amd64 en GHCR y las
+entregó por digest a la VM. La protección existente de main exige revisión; incorporar
+los checks y configurar el environment corresponde al propietario. La ruta CD main
+queda habilitada para cuando se integre el PR.
 
 ## RNF11 · Copia y recuperación
 
-La estrategia implementada pausa el backend para obtener un punto consistente entre
+La estrategia implementada y probada pausa el backend para obtener un punto consistente entre
 base de datos y evidencias. Cada copia conserva dump SQL, tar con permisos, referencias
 de imagen y sumas SHA-256. Un timer permite copia diaria; cada despliegue existente
-genera además una copia previa. Se requiere conservar una copia fuera de la VM.
+genera además una copia previa. Se descargó una instantánea de la aplicación pública
+a una carpeta privada del equipo del responsable y se verificaron sus cuatro SHA-256.
 
 El ensayo automatizado altera una fila y un archivo, verifica que una copia corrupta
 no se acepte, restaura y compara SQL, hashes, permisos de escritura y salud. Una reversión
@@ -37,17 +44,19 @@ de imagen no revierte migraciones: para cambios incompatibles se utiliza la rest
 ## Validación y límites de las evidencias actuales
 
 Se aprobaron localmente las 102 pruebas JUnit existentes, una prueba adicional del perfil
-de producción detrás de proxy, seis pruebas de herramientas, validación de Compose/Caddy,
+de producción detrás de proxy, ocho pruebas de herramientas, validación de Compose/Caddy,
 Terraform y análisis estático de scripts/workflows. Se compiló el frontend y se recorrieron
 32 vistas locales de los cuatro roles a 360/1366 px sin desbordes ni errores 5xx.
-Posteriormente se conectaron OCI y GitHub, se publicó el PR #4 y se inició el ensayo
-RNF11 con MySQL real en CI. Terraform preparó la red en Bogotá, pero la creación de la
-VM devolvió `Out of host capacity`, también confirmado por consultas de configuraciones
-menores en los tres fault domains. La URL y el primer CD quedan bloqueados por capacidad
-del proveedor. La cuenta de David tiene WRITE; los ajustes de environment/protección
-requieren al administrador del repositorio. Las evidencias sanitizadas están en la bitácora.
+Después del intento A1 sin capacidad se creó la E5 de prueba y se completó la entrega
+CI/GHCR del [run 43322815086](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086).
+El smoke HTTPS con login, perfil y logout está aprobado, así como 32 capturas de la
+URL pública a ambos tamaños. RNF11 también se aprobó en un proyecto aislado de la VM,
+verificando SQL, archivos, hashes, permisos y rechazo de copia corrupta. El timer de
+respaldo diario está activo. Se documentó y corrigió un defecto del verificador HTML,
+que asumía `root` en vez del identificador real `raiz`, mediante pruebas de regresión.
 
 El protocolo de usuarios prevé cinco participantes reales, SUS y revisión responsive a
-360/1366 px. Los instrumentos y la automatización están preparados; las sesiones y
-sus resultados permanecen pendientes. Completar esta sección con URL, enlaces CI/CD,
-recuperación medida, resultados de responsive/SUS y defectos corregidos antes de la entrega.
+360/1366 px. La revisión responsive sobre HTTPS ya está registrada. Las cinco sesiones
+y sus puntuaciones SUS permanecen pendientes de participación real; incorporar esos
+resultados antes del cierre. También quedan la revisión/integración del PR y los
+ajustes administrativos de GitHub. Ver `docs/fase-iii-iv-david.md` y sus evidencias.

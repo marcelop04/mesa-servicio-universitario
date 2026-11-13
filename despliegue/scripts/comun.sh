@@ -28,12 +28,24 @@ activo() {
 validar_configuracion() {
     # El JSON con secretos solo circula por la tubería, nunca se guarda ni se imprime.
     dc config --format json | python3 -c '
-import json, re, sys
+import json, os, re, sys
 c = json.load(sys.stdin)
 e = c["services"]["backend"]["environment"]
-if e["SPRING_PROFILES_ACTIVE"] not in ("prod", "prueba"):
+perfil = e["SPRING_PROFILES_ACTIVE"]
+if perfil not in ("prod", "prueba"):
     sys.exit("El stack de nube requiere el perfil prod o prueba.")
-for k in ("DB_PASSWORD", "JWT_SECRET", "DEMO_PASSWORD"):
+esperado = os.environ.get("MSU_PERFIL_ESPERADO")
+if esperado and perfil != esperado:
+    sys.exit("El destino de esta entrega exige el perfil " + esperado + ".")
+demo = str(e.get("DATOS_DEMO", "false")).lower() == "true"
+solicitudes_demo = str(e.get("DATOS_DEMO_SOLICITUDES", "false")).lower() == "true"
+protegido = perfil == "prod" or str(e.get("SEGURIDAD_DESPLIEGUE", "false")).lower() == "true"
+if protegido and (demo or solicitudes_demo):
+    sys.exit("En prod/despliegue se exige DATOS_DEMO=false y DATOS_DEMO_SOLICITUDES=false.")
+if str(e.get("COOKIE_SECURE", "false")).lower() != "true":
+    sys.exit("El stack de nube exige COOKIE_SECURE=true.")
+claves = ["DB_PASSWORD", "JWT_SECRET"] + (["DEMO_PASSWORD"] if demo else [])
+for k in claves:
     v = e[k]
     if len(v) < 24 or "GENERAR" in v or "solo-desarrollo" in v or "Demo12345" in v:
         sys.exit("Falta una clave aleatoria válida en " + k)

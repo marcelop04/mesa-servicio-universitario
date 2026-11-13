@@ -15,10 +15,16 @@ def puntuacion(respuestas):
     return sum(v - 1 if i % 2 == 0 else 5 - v for i, v in enumerate(respuestas)) * 2.5
 
 
-def calcular(archivo):
+def calcular(archivo, simulacion=False):
+    filas = list(csv.DictReader(archivo))
+    marcadas = [f.get("origen", "").strip().upper() == "SIMULADO" for f in filas]
+    if any(marcadas) and not simulacion:
+        raise ValueError("Datos SIMULADOS: no son evidencia de usuarios reales; use --simulacion para probar el cálculo.")
+    if simulacion and (not filas or not all(marcadas)):
+        raise ValueError("Una simulación requiere todas las filas identificadas con origen=SIMULADO.")
     participantes = []
     ids = set()
-    for fila in csv.DictReader(archivo):
+    for fila in filas:
         participante = fila.get("participante", "")
         if not re.fullmatch(r"P\d{2,3}", participante) or participante in ids:
             raise ValueError("Cada participante debe tener un identificador P01, P02… único.")
@@ -35,19 +41,23 @@ def calcular(archivo):
     if not participantes:
         raise ValueError("No hay respuestas: realizar las sesiones con personas antes de calcular SUS.")
     return {
-        "participantes": len(participantes), "media_sus": mean(p["sus"] for p in participantes),
-        "resultados": participantes, "meta_muestra_cumplida": len(participantes) >= 5,
-        "nota": "SUS usa una escala de 0 a 100; no es un porcentaje. La meta de muestra es al menos 5 personas.",
+        "participantes": 0 if simulacion else len(participantes),
+        "registros_simulados": len(participantes) if simulacion else 0,
+        "media_sus": mean(p["sus"] for p in participantes),
+        "resultados": participantes, "meta_muestra_cumplida": len(participantes) >= 5 and not simulacion,
+        "tipo": "SIMULACION_NO_ACREDITA_B5" if simulacion else "RESPUESTAS_REGISTRADAS",
+        "nota": "Datos simulados, no son resultados de participantes reales ni cierran B5." if simulacion else "SUS usa escala 0–100, no porcentaje. El facilitador acredita la participación real y la muestra mínima de 5 personas.",
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("csv", type=Path)
+    parser.add_argument("--simulacion", action="store_true")
     args = parser.parse_args()
     try:
         with args.csv.open(encoding="utf-8-sig", newline="") as archivo:
-            print(json.dumps(calcular(archivo), ensure_ascii=False, indent=2))
+            print(json.dumps(calcular(archivo, simulacion=args.simulacion), ensure_ascii=False, indent=2))
     except (KeyError, ValueError) as error:
         parser.exit(1, f"Datos SUS inválidos: {error}\n")
 

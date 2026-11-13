@@ -14,9 +14,12 @@ def crear(host, email, perfil="prod", demo=False):
         raise ValueError("El correo ACME no es válido.")
     if perfil not in ("prod", "prueba"):
         raise ValueError("El perfil debe ser prod o prueba.")
+    if perfil == "prod" and demo:
+        raise ValueError("prod no admite cuentas ni solicitudes demo. Use --perfil prueba --demo para datos ficticios.")
     valores = {
         "COMPOSE_PROJECT_NAME": f"msu-{perfil}",
         "SPRING_PROFILES_ACTIVE": perfil,
+        "SEGURIDAD_DESPLIEGUE": str(perfil == "prod").lower(),
         "APP_HOST": host,
         "ACME_EMAIL": email,
         "DB_USER": "msu",
@@ -39,7 +42,10 @@ def main():
     parser.add_argument("--demo", action="store_true", help="Habilitar cuentas/datos ficticios para la entrega académica.")
     parser.add_argument("--salida", type=Path, required=True)
     args = parser.parse_args()
-    contenido = crear(args.host, args.email, args.perfil, args.demo)
+    try:
+        contenido = crear(args.host, args.email, args.perfil, args.demo)
+    except ValueError as error:
+        parser.error(str(error))
     if not args.salida.parent.is_dir():
         parser.error("El directorio de salida debe existir.")
     descriptor = os.open(args.salida, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

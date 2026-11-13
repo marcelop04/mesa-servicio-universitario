@@ -17,6 +17,8 @@ spring:
       maximum-pool-size: 10
 
 msu:
+  seguridad:
+    despliegue: true
   jwt:
     cookie-segura: true
   datos-demo:
