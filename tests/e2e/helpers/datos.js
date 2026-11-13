@@ -46,7 +46,9 @@ export async function autenticarApi(correo, password = CLAVE_DEMO) {
 export async function prepararSolicitud(estadoDeseado = 'REGISTRADA', opciones = {}) {
   const solSesion = await autenticarApi('solicitante@msu.test');
   const supSesion = await autenticarApi('supervisor@msu.test');
-  const tecSesion = await autenticarApi('tecnico.soporte@msu.test');
+  const tecCorreo = opciones.tecnico_correo || 'tecnico.soporte@msu.test';
+  const tecId = opciones.tecnico_id || 2;
+  const tecSesion = await autenticarApi(tecCorreo);
 
   const stamp = Date.now();
   const res = await fetch(`${API_URL}/solicitudes`, {
@@ -78,11 +80,11 @@ export async function prepararSolicitud(estadoDeseado = 'REGISTRADA', opciones =
   solicitud = await evRes.json();
   if (estadoDeseado === 'EN_EVALUACION') return solicitud;
 
-  // 2. Asignación -> ASIGNADA (técnico Tomás Soporte id: 2)
+  // 2. Asignación -> ASIGNADA
   const asRes = await fetch(`${API_URL}/solicitudes/${solicitud.id}/asignaciones`, {
     method: 'POST',
     headers: supSesion.headers,
-    body: JSON.stringify({ tecnico_id: 2, version: solicitud.version }),
+    body: JSON.stringify({ tecnico_id: tecId, version: solicitud.version }),
   });
   if (!asRes.ok) throw new Error(`Error en asignación: ${asRes.status}`);
   solicitud = await asRes.json();
@@ -121,4 +123,45 @@ export async function prepararSolicitud(estadoDeseado = 'REGISTRADA', opciones =
   solicitud = await ciRes.json();
   return solicitud;
 }
+
+/**
+ * Obtiene de forma trazable una solicitud con alerta de plazo activa (vencida o al 80%)
+ * garantizando que los escenarios E2E (@HU15) verifiquen los datos sobre esa misma solicitud.
+ */
+export async function obtenerCasoConAlerta() {
+  const supSesion = await autenticarApi('supervisor@msu.test');
+  const notifRes = await fetch(`${API_URL}/notificaciones?tamano=50`, { headers: supSesion.headers });
+  if (notifRes.ok) {
+    const data = await notifRes.json();
+    const aviso = (data.items || []).find((n) => n.tipo === 'VENCIMIENTO' || n.tipo === 'ALERTA_PLAZO');
+    if (aviso) {
+      return {
+        id: aviso.solicitud_id,
+        codigo: aviso.solicitud_codigo,
+        tipo: aviso.tipo,
+        texto: aviso.texto,
+        nivelEsperado: aviso.tipo === 'VENCIMIENTO' ? 'Vencida' : 'Plazo al 80 %',
+      };
+    }
+  }
+
+  // Fallback: buscar caso pendiente antiguo con nivel de plazo calculado
+  const solRes = await fetch(`${API_URL}/solicitudes?orden=antiguedad&tamano=20`, { headers: supSesion.headers });
+  if (solRes.ok) {
+    const data = await solRes.json();
+    const caso = (data.items || []).find((s) => s.nivel_plazo === 'VENCIDA' || s.nivel_plazo === 'ALERTA');
+    if (caso) {
+      return {
+        id: caso.id,
+        codigo: caso.codigo,
+        tipo: caso.nivel_plazo === 'VENCIDA' ? 'VENCIMIENTO' : 'ALERTA_PLAZO',
+        texto: `La solicitud ${caso.codigo} superó el plazo`,
+        nivelEsperado: caso.nivel_plazo === 'VENCIDA' ? 'Vencida' : 'Plazo al 80 %',
+      };
+    }
+  }
+
+  throw new Error('No se encontró un caso con alerta de plazo en la base de datos');
+}
+
 

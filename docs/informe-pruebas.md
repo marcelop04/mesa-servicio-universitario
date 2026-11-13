@@ -77,8 +77,8 @@ Se agregó el job `api-tests` en `.github/workflows/ci.yml` de forma aislada y n
 **Evidencia de ejecución real:**
 ```
 Total Requests: 59 | Total Assertions: 173 | Failed: 0
-Execution Time: 6.3s
-Ruta de reporte: tests/api/reportes/junit-api.xml
+Execution Time: 6.1s
+Ruta de reporte: tests/api/reportes/junit-report.xml
 ```
 
 ---
@@ -101,22 +101,22 @@ Se migró y expandió el recorrido funcional hacia una suite BDD en `tests/e2e/s
    - `@HU07`: Repriorización con justificación obligatoria (mínimo 10 caracteres).
    - `@HU08`: Asignación a técnico con balance de carga de trabajo.
    - `@HU09`: **Cancelación motivada de solicitud con diálogo modal de confirmación (`role="dialog"` / `.dialogo`) y motivo obligatorio**.
-   - `@HU10`: Inicio formal de atención técnica por parte del especialista asignado.
-   - `@HU11`: Registro de solución técnica detallada (validador de 20 a 2,000 caracteres).
+   - `@HU10`: Inicio formal de atención técnica; prepara caso específico con técnico y categoría correspondientes, paginando en bandeja hasta ubicar el código correlativo exacto.
+   - `@HU11`: Registro de solución técnica detallada (validador de 20 a 2,000 caracteres); prepara caso en estado En atención y pagina en bandeja hasta ubicar el código exacto.
 4. **Épica 4: Conformidad y Cierre**
    - `@HU12`: Aceptación de la solución y transición a estado `CERRADA`.
    - `@HU13`: Encuesta de satisfacción con calificación por estrellas (1 a 5) y bloqueo de duplicados.
    - `@HU14`: **Reapertura de solicitud ante persistencia de falla con justificación obligatoria**.
 5. **Épica 5: Monitoreo, Alertas y Reportes**
-   - `@HU15`: **Detección visual de alertas de plazos (solicitudes vencidas y en umbral del 80% SLA)**.
-   - `@HU16`: Centro de notificaciones con conteo de no leídas y marcado individual.
+   - `@HU15`: **Detección visual trazable de alertas de plazos (solicitudes vencidas y en umbral del 80% SLA)**; identifica caso concreto (`MSU-2026-0006`) con alerta temprana activa y comprueba su visualización en supervisión, centro de notificaciones y vista de detalle.
+   - `@HU16`: Centro de notificaciones con preparación de avisos no leídos; comprueba marcado individual, desaparición del indicador 'No leído', y posterior marcado masivo con inhabilitación del botón.
    - `@HU17`: Dashboard gerencial con tarjetas de conteo y tiempos medios de atención.
    - `@HU18`: Distribución de solicitudes por categoría de servicio.
    - `@HU19`: **Descarga e inspección real del archivo CSV (`solicitudes-YYYY-MM-DD.csv`), validando cabeceras, delimitador `;` y filas de datos mediante stream**.
 6. **Épica 6: Administración del Sistema**
    - `@HU20`: Alta y administración de técnicos de soporte.
    - `@HU21`: Desactivación y reactivación de técnicos asegurando que no tengan casos pendientes.
-   - `@HU22`: Configuración y versionado de políticas y matrices de SLA.
+   - `@HU22`: **Versionado y consulta de políticas de plazos**; crea una nueva versión modificando los plazos de resolución (+24h en prioridad Baja), confirma en diálogo modal y valida que la nueva versión quede publicada y rotulada como vigente.
    - `@HU23`: Consulta de auditoría administrativa con enmascaramiento de datos sensibles.
 
 ### 4.2. Erradicación de Falsos Positivos y Determinismo
@@ -129,12 +129,12 @@ Cada uno de los 24 escenarios fue ejecutado en dos proyectos configurados:
 En cada vista móvil se verificó la aserción de no desborde:
 $$\text{scrollWidth} \le \text{innerWidth}$$
 
-**Evidencia de ejecución real:**
+**Evidencia de ejecución real (Reporte XML publicado en repositorio):**
 ```
 Running 48 tests using 1 worker
   24 passed in desktop-1366
   24 passed in mobile-360
-Total: 48 passed (35.9s)
+Total: 48 passed (36.4s)
 Ruta de reporte: tests/e2e/reportes/junit-e2e.xml
 ```
 
@@ -163,45 +163,49 @@ Se sembraron **2,000 solicitudes históricas** en MySQL mediante inserción SQL 
   - **p95 = 274.94 ms** (Umbral RNF06 < 2,000 ms: **SUPERADO**).
   - Promedio: 57.40 ms | Mediana: 16.40 ms | Máximo: 741.52 ms.
 
-### 5.3. Escenario de Estrés Escalonado y Punto de Quiebre
+### 5.3. Escenario de Estrés Escalonado y Evaluación de Límite Operativo
 - **Perfil de carga:** Rampa escalonada: 20 VU (10s) → 50 VU (15s) → 100 VU (15s) → 200 VU (20s) → 400 VU (25s) → Cooldown 20 VU (15s). Duración total: 110 segundos.
 - **Peticiones HTTP totales:** 12,685 solicitudes completadas (~114.8 req/s).
-- **Tasa de error (`http_req_failed`):** **0.00 %** (Cero fallos HTTP).
+- **Tasa de error (`http_req_failed`):** **0.00 %** (Cero fallos HTTP; no hubo colapso de procesos ni caídas 500/503).
 - **Métricas de Latencia (`http_req_duration`):**
-  - Mediana: 730.61 ms | Promedio: 1,153.22 ms.
+  - Mínimo: 1.28 ms | Mediana: 730.61 ms | Promedio: 1,153.22 ms.
   - p90: 2,913.91 ms (2.91 s).
-  - **p95: 3,503.25 ms (3.50 s)**.
-  - **Pico máximo: 8,418.30 ms (8.41 s)**.
+  - **p95: 3,503.25 ms (3.50 s)** (Supera ampliamente el SLA de RNF06 < 1.0 s).
+  - **Pico máximo individual: 8,418.30 ms (8.42 s)**.
 
-#### Análisis Técnico del Cuello de Botella (HikariCP)
-1. **Configuración por Defecto:** Spring Boot 3.5 configura HikariCP con `maximum-pool-size: 10`, mientras que Tomcat embebido admite hasta 200 hilos concurrentes.
-2. **Mecanismo de Saturación:** Al escalar a 200-400 VU, los 10 hilos que obtienen conexión atienden peticiones activas, mientras que los 190+ hilos restantes quedan bloqueados en `HikariPool.getConnection()`. Esto incrementa la latencia acumulada en cola hasta alcanzar el pico de **8.41 s**, cumpliendo el criterio de quiebre (**latencia > 5.0 s**).
-3. **Resiliencia y Capacidad de Recuperación:** Durante la fase de enfriamiento (cooldown a 20 VU), la cola de conexiones se vació en menos de 3 segundos, estabilizándose de inmediato en latencias sub-50 ms sin necesidad de reinicio ni presencia de fugas en la JVM o MySQL.
+#### Definición del Punto de Quiebre Operativo
+El criterio de quiebre operativo no requiere una caída catastrófica del servidor (la tasa de fallos HTTP se mantuvo en 0.00 %, lo que evidencia la robustez de los procesos Java/Tomcat y la estabilidad de memoria de la JVM), sino que se define técnicamente como el **incumplimiento severo y sostenido del acuerdo de nivel de servicio (RNF06: p95 < 1,000 ms)**. Este quiebre comienza a manifestarse a partir de los 150-200 VU concurrentes y alcanza su punto crítico en la etapa de 400 VU, donde el percentil 95 global asciende a 3,503 ms (3.50 s, más de 3.5 veces el SLA admisible) y se registran tiempos de respuesta individuales máximos de hasta 8,418 ms (8.42 s).
+
+#### Hipótesis Técnica de Cuello de Botella y Comportamiento de Recuperación
+1. **Hipótesis Técnica Fundamentada (HikariCP):** Spring Boot 3.5 configura por defecto el pool HikariCP con `maximum-pool-size: 10`, en contraste con el servidor web embebido de Tomcat que atiende hasta `server.tomcat.threads.max: 200` hilos. La ausencia total de errores HTTP combinada con el crecimiento lineal y pronunciado de la latencia apunta a que la mayoría de hilos concurrentes quedan bloqueados esperando conexiones en `HikariPool.getConnection()`.
+2. **Limitación de la Medición de Cliente (k6):** Dado que los resúmenes agregados de k6 capturan exclusivamente la perspectiva externa del cliente HTTP (tiempos de viaje y códigos de respuesta) y no disponen de telemetría interna del sistema operativo ni de la JVM (uso de CPU, IOPS en MySQL o monitoreo activo de hilos del pool), esta explicación se formula formalmente como una **hipótesis técnica de arquitectura pendiente de validación empírica**. Dicha comprobación se completará cuando Gabriel (Paquete D) integre Spring Boot Actuator y exporte métricas de Micrometer (`hikaricp.connections.pending`, `jvm.threads.live`).
+3. **Comportamiento durante la Fase de Enfriamiento:** En la etapa 6 (cooldown a 20 VU), se observó una estabilización progresiva a medida que la cola de peticiones encoladas se evacuó, recuperando la latencia de línea base sin requerir reinicio de contenedores ni registrar fugas de conexiones.
 
 ### 5.4. Sanitización de Resultados (RNF01)
-Ambos scripts de k6 (`carga.js` y `estres.js`) implementan la función nativa `handleSummary(data)` que elimina el nodo `setup_data` (`delete data.setup_data;`). Esto garantiza que los archivos `resumen-carga.json` y `resumen-estres.json` contengan únicamente métricas cuantitativas sin filtrar credenciales, tokens JWT ni cookies de sesión.
+Ambos scripts de k6 (`carga.js` y `estres.js`) implementan la función nativa `handleSummary(data)` que elimina el nodo `setup_data` (`delete data.setup_data;`). Esto garantiza de forma permanente que los archivos `resumen-carga.json` y `resumen-estres.json` contengan únicamente métricas cuantitativas sin filtrar credenciales, tokens JWT ni cookies de sesión.
 
 ### 5.5. Procedimiento para Ejecución en Staging / Producción (David - B1)
-Para evaluar el despliegue gestionado por David, ejecutar:
+La línea base local queda plenamente certificada en este informe. Conforme al reparto de responsabilidades del equipo (*"La medición final contra el despliegue de David la haré yo"*), la ejecución remota sobre la infraestructura en la nube gestionada por David está programada para Alex empleando las variables ya parametrizadas en los runners:
+
 ```bash
-# 1. Pruebas de API contra despliegue remoto
+# 1. Pruebas de API contra despliegue remoto de David
 cd tests/api
-BASE_URL=https://<dominio-david> npm test
+BASE_URL=https://<dominio-o-ip-david> npm test
 
-# 2. Pruebas E2E contra frontend desplegado
+# 2. Pruebas E2E contra frontend desplegado de David
 cd tests/e2e
-BASE_URL=https://<dominio-david> npm test
+BASE_URL=https://<dominio-o-ip-david> npm test
 
-# 3. Medición final de carga (coordinada con David)
+# 3. Medición final de carga coordinada (David B1)
 cd tests/load
-BASE_URL=https://<dominio-david> k6 run tests/load/scripts/carga.js
+BASE_URL=https://<dominio-o-ip-david> k6 run tests/load/scripts/carga.js
 ```
 
 ---
 
 ## 6. Pruebas de Seguridad (SAST y DAST)
 > **Responsable del Paquete C:** Marcelo  
-> *Estado:* Plantilla estructurada para integración de resultados de seguridad.
+> *Estado:* Plantilla estructurada para integración de resultados de seguridad conforme a las directivas del Paquete C.
 
 ### 6.1. Análisis Estático de Código (SAST)
 - **TODO [Marcelo]:** Adjuntar reporte de análisis estático con SonarQube / Trivy.
@@ -217,7 +221,7 @@ BASE_URL=https://<dominio-david> k6 run tests/load/scripts/carga.js
 
 ## 7. Pruebas de Usabilidad con Usuarios Finales (SUS)
 > **Responsable del Paquete B:** David  
-> *Estado:* Plantilla estructurada para registro de la prueba de usuarios.
+> *Estado:* Protocolo definido por David en `docs/pruebas/usuarios/Protocolo_SUS.md`, script de cálculo en `docs/pruebas/usuarios/calcular-sus.py` y archivo de recolección en `docs/pruebas/usuarios/respuestas-sus.csv`.
 
 ### 7.1. Ficha Metodológica
 - **Instrumento:** System Usability Scale (SUS) de Brooke (10 ítems psicométricos).
@@ -229,7 +233,7 @@ BASE_URL=https://<dominio-david> k6 run tests/load/scripts/carga.js
   4. Calificación mediante encuesta de satisfacción (`HU13`).
 
 ### 7.2. Resultados Obtenidos
-- **Puntaje Promedio SUS:** [TODO: David - Calcular media de los 5 participantes (Meta ≥ 70/100)].
+- **Puntaje Promedio SUS:** [TODO: David - Ejecutar `python docs/pruebas/usuarios/calcular-sus.py` tras finalizar las 5 sesiones (Meta ≥ 70/100)].
 - **Percepción de Usabilidad:** [TODO: Insertar nivel de adjetivación según Bangor (Bueno / Excelente)].
 - **Observaciones y mejoras ergonómicas:** [TODO: Listar dificultades detectadas durante la prueba de usuarios].
 

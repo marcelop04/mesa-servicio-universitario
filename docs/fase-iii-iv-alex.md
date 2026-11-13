@@ -46,11 +46,11 @@
      - Consultas (80 %): **p95 = 362.62 ms** (límite < 1,000 ms).
      - Escrituras (20 %): **p95 = 274.94 ms** (límite < 2,000 ms).
      - Tasa de error: **0.00 %** (límite < 1.0 %).
-   - **Punto de Quiebre Técnico Demostrado (Estrés hasta 400 VU):**
-     - 12,685 peticiones procesadas a ~115 req/s con **0.00 % de errores HTTP**.
-     - Al alcanzar 400 VU, la latencia p95 subió a 3.50 s y se registró un **pico máximo de 8.41 s (> 5.0 s)**, alcanzando el criterio de quiebre.
-     - **Causa Raíz:** Contención en la cola del pool HikariCP de Spring Boot (`maximum-pool-size: 10` frente a 200 hilos concurrentes en Tomcat).
-     - **Recuperación Inmediata:** En la etapa de cooldown a 20 VU, el sistema normalizó sus tiempos de respuesta a sub-50 ms en menos de 3 segundos sin caídas ni pérdidas de memoria.
+   - **Límite Operativo y Punto de Quiebre del SLA (Estrés hasta 400 VU):**
+     - 12,685 peticiones procesadas a ~115 req/s con **0.00 % de errores HTTP** (sin caídas ni fallos 500).
+     - El quiebre operativo se manifiesta como el incumplimiento severo y sostenido del SLA (RNF06: p95 < 1.0 s) a partir de 150-200 VU, alcanzando en 400 VU un p95 de 3.50 s y un pico máximo de 8.42 s.
+     - **Hipótesis Técnica:** Contención en la cola de conexiones del pool HikariCP (`maximum-pool-size: 10` por defecto en Spring Boot frente a 200 hilos de Tomcat y 400 clientes concurrentes), sujeta a validación empírica con Actuator (Gabriel).
+     - **Recuperación:** En la etapa de enfriamiento (cooldown a 20 VU), el sistema se estabilizó de forma progresiva retornando a la línea base sin requerir reinicio de contenedores.
 
 ---
 

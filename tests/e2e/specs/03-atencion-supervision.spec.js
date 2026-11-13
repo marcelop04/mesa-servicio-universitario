@@ -2,6 +2,28 @@ import { test, expect } from '@playwright/test';
 import { login, USUARIOS, expectSinDesbordeHorizontal } from '../helpers/auth.js';
 import { prepararSolicitud } from '../helpers/datos.js';
 
+async function abrirSolicitudEnAtencion(page, codigo) {
+  for (let i = 0; i < 5; i++) {
+    const fila = page.locator('.tabla tbody tr').filter({ hasText: codigo });
+    const boton = fila.locator('.enlace-accion');
+    if (await boton.count() > 0 && await boton.isVisible()) {
+      await boton.click();
+      return;
+    }
+    const botonSiguiente = page.getByRole('button', { name: 'Siguiente' });
+    if (await botonSiguiente.isVisible() && !await botonSiguiente.isDisabled()) {
+      await botonSiguiente.click();
+      await page.waitForLoadState('networkidle');
+    } else {
+      break;
+    }
+  }
+  const fila = page.locator('.tabla tbody tr').filter({ hasText: codigo });
+  const botonAtender = fila.locator('.enlace-accion');
+  await expect(botonAtender).toBeVisible({ timeout: 10000 });
+  await botonAtender.click();
+}
+
 test.describe('Épica 3: Supervisión y Atención Técnica', () => {
 
   test('@HU07 Evaluación y priorización de solicitudes por el Supervisor', async ({ page }) => {
@@ -109,17 +131,17 @@ test.describe('Épica 3: Supervisión y Atención Técnica', () => {
   });
 
   test('@HU10 Inicio de atención técnica por el Técnico asignado', async ({ page }) => {
+    const solicitud = await prepararSolicitud('ASIGNADA');
+
     await test.step('Dado que el técnico ingresa a su bandeja de atención P08', async () => {
       await login(page, USUARIOS.tecnico);
       await page.goto('/atencion');
       await expect(page.locator('section[aria-label="Atención técnica"]')).toBeVisible();
     });
 
-    await test.step('Cuando filtra solicitudes asignadas y presiona Iniciar atención', async () => {
+    await test.step('Cuando filtra solicitudes asignadas y selecciona la solicitud preparada', async () => {
       await page.locator('#atencion-estado').selectOption('ASIGNADA');
-      const botonAtender = page.locator('.enlace-accion').first();
-      await expect(botonAtender).toBeVisible({ timeout: 10000 });
-      await botonAtender.click();
+      await abrirSolicitudEnAtencion(page, solicitud.codigo);
 
       await expect(page.locator('#titulo-atencion')).toBeVisible({ timeout: 10000 });
       const botonIniciar = page.getByRole('button', { name: 'Iniciar atención' });
@@ -134,6 +156,8 @@ test.describe('Épica 3: Supervisión y Atención Técnica', () => {
   });
 
   test('@HU11 Registro de solución técnica por el Técnico', async ({ page }) => {
+    const solicitud = await prepararSolicitud('EN_ATENCION');
+
     await test.step('Dado que el técnico atiende una solicitud en estado En atención', async () => {
       await login(page, USUARIOS.tecnico);
       await page.goto('/atencion');
@@ -142,9 +166,7 @@ test.describe('Épica 3: Supervisión y Atención Técnica', () => {
 
     await test.step('Cuando describe la solución aplicada con al menos 20 caracteres y registra', async () => {
       await page.locator('#atencion-estado').selectOption('EN_ATENCION');
-      const botonAtender = page.locator('.enlace-accion').first();
-      await expect(botonAtender).toBeVisible({ timeout: 10000 });
-      await botonAtender.click();
+      await abrirSolicitudEnAtencion(page, solicitud.codigo);
 
       await expect(page.locator('#titulo-atencion')).toBeVisible({ timeout: 10000 });
       const campoSolucion = page.locator('#solucion');

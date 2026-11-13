@@ -84,33 +84,31 @@ k6 run tests/load/scripts/estres.js
 - **Latencia de escrituras (`tipo:escritura`):**
   - **p95 = 274.94 ms** (Umbral RNF06 < 2,000 ms: **SUPERADO**).
 
-### 4.2. Escenario de Estrés Escalonado y Punto de Quiebre (20 -> 400 VU, 110 segundos)
+### 4.2. Escenario de Estrés Escalonado y Evaluación de Límite Operativo (20 -> 400 VU, 110 segundos)
 - **Rampa de carga:** 20 VU (10s) → 50 VU (15s) → 100 VU (15s) → 200 VU (20s) → 400 VU (25s) → Cooldown 20 VU (15s).
-- **Peticiones HTTP totales:** 12,685 solicitudes completadas.
-- **Tasa de error (`http_req_failed`):** **0.00 %** (Criterio de fallos < 5 % cumplido).
-- **Latencia general (`http_req_duration`):**
+- **Peticiones HTTP totales:** 12,685 solicitudes completadas (~115 req/s).
+- **Tasa de error (`http_req_failed`):** **0.00 %** (El servidor no rechaza peticiones ni arroja 500/503).
+- **Métricas de Latencia (`http_req_duration`):**
   - Mínimo: 1.28 ms | Mediana: 730.61 ms | Promedio: 1,153.22 ms.
   - p90: 2,913.91 ms (2.91 s).
-  - **p95: 3,503.25 ms (3.50 s)**.
-  - **Máximo: 8,418.30 ms (8.41 s)** (Criterio de quiebre > 5 s: **ALCANZADO en pico máximo**).
+  - **p95: 3,503.25 ms (3.50 s)** (Supera ampliamente el SLA de RNF06 < 1.0 s).
+  - **Pico máximo individual: 8,418.30 ms (8.42 s)**.
+- **Definición del Punto de Quiebre Operativo:**  
+  El quiebre operativo no requiere un colapso de procesos ni caídas del contenedor (la tasa de error fue de 0.00 % demostrando la estabilidad de Tomcat y Spring Boot). Se define con rigor técnico como el **incumplimiento severo y sostenido del acuerdo de nivel de servicio (RNF06: p95 < 1,000 ms)**. Este quiebre se inicia al cruzar los 150-200 VU concurrentes y alcanza su punto crítico en la etapa de 400 VU, donde el percentil 95 escala a 3.50 s (3.5× la meta) y transacciones individuales alcanzan hasta 8.42 s.
 
 ---
 
-## 5. Análisis Técnico del Cuello de Botella (HikariCP) y Recuperación
+## 5. Hipótesis Técnica de Cuello de Botella y Comportamiento de Recuperación
 
-1. **Configuración de Pool por Defecto:**  
-   Spring Boot 3.5 configura HikariCP como gestor de conexiones JDBC con un valor por defecto de `maximum-pool-size: 10`. Por su parte, el contenedor embebido de Tomcat acepta hasta `server.tomcat.threads.max: 200` hilos concurrentes.
-2. **Mecanismo de Contención:**  
-   Al escalar entre 200 y 400 VU concurrentes con pausas cortas (50-150 ms):
-   - Solo 10 hilos obtienen conexión inmediata a MySQL para procesar consultas.
-   - Los 190+ hilos restantes se encolan bloqueados en `HikariPool.getConnection()`.
-   - El tiempo de espera en la cola del pool incrementa la latencia percibida por el cliente, elevando el p95 a 3.5 s y provocando picos de hasta **8.41 s**.
-3. **Punto de Quiebre Demostrado:**  
-   El umbral de quiebre de latencia (**p95 > 5 s o pico > 5 s**) se manifiesta plenamente a partir de los **250-300 VU concurrentes**, confirmando que el cuello de botella es la contención de conexiones en el pool y no el consumo de CPU ni el motor MySQL.
-4. **Capacidad de Recuperación:**  
-   En la etapa 6 (cooldown a 20 VU), la cola de HikariCP se vació en menos de 3 segundos, estabilizándose inmediatamente la latencia por debajo de 50 ms sin requerir reinicio del contenedor backend ni generar fugas de conexiones en MySQL.
-5. **Recomendación para Producción:**  
-   Para despliegues que atiendan a más de 100 usuarios simultáneos, ajustar en `application.yml`:
+1. **Hipótesis Técnica Fundamentada (HikariCP):**  
+   Spring Boot 3.5 configura HikariCP por defecto con un `maximum-pool-size: 10`, mientras que el servidor web embebido de Tomcat admite hasta `server.tomcat.threads.max: 200` hilos concurrentes.
+   Bajo sobrecarga de 200 a 400 usuarios concurrentes, la ausencia total de errores HTTP (0.00 %) junto con un crecimiento pronunciado y lineal de la latencia apunta fuertemente a que los hilos quedan retenidos en espera de conexión en `HikariPool.getConnection()`.
+2. **Limitación de la Medición de Cliente (k6):**  
+   Dado que los resúmenes agregados de k6 reflejan únicamente la perspectiva del cliente HTTP externo (latencia de viaje redondo y códigos de respuesta) y no capturan la telemetría interna del sistema operativo ni de la JVM (uso porcentual de CPU, IOPS en disco de MySQL ni estadísticas internas del pool), esta explicación se presenta formalmente como una **hipótesis técnica de arquitectura pendiente de validación empírica**. La comprobación definitiva se coordinará con Gabriel (Paquete D) una vez que habilite Spring Boot Actuator y exporte métricas de Micrometer (`hikaricp.connections.pending`, `hikaricp.connections.active`, `jvm.threads.live`).
+3. **Comportamiento durante la Fase de Cooldown:**  
+   Durante la etapa 6 de enfriamiento (reducción de carga a 20 VU sostenidos), el sistema exhibió una estabilización progresiva a medida que la cola de peticiones retenidas se procesó, retornando a los niveles normales de latencia de línea base sin necesidad de reiniciar contenedores ni evidenciar bloqueos permanentes.
+4. **Recomendación Preventiva para Producción (David - B1):**  
+   Para entornos de producción con concurrencia esperada superior a 100 usuarios, ajustar preventivamente en `application.yml` o variables de entorno:
    ```yaml
    spring:
      datasource:

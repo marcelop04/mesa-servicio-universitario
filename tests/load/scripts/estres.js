@@ -1,13 +1,20 @@
 /**
- * Escenario de Estrés Escalonado y Punto de Quiebre - k6
- * Sube la carga por etapas (20 -> 50 -> 100 -> 200 -> 400 VU) y evalúa
- * la contención del pool de conexiones HikariCP y la recuperación final.
+ * Escenario de Estrés Escalonado y Evaluación de Límite Operativo - k6
+ * Sube la carga por etapas (20 -> 50 -> 100 -> 200 -> 400 VU) para evaluar
+ * el comportamiento del sistema bajo sobrecarga y el punto de quiebre del SLA.
  *
- * Criterios de quiebre evaluados:
- * - Tasa de error > 5 % (http_req_failed > 0.05)
- * - Latencia p95 > 5000 ms (5 s)
+ * Criterio de quiebre operativo:
+ * - Incumplimiento sostenido del SLA institucional (RNF06: p95 < 1,000 ms en lecturas).
+ *   Bajo sobrecarga extrema (200-400 VU), la latencia p95 escala a 3.50 s (con picos
+ *   individuales de hasta 8.42 s), superando ampliamente el SLA aunque el servidor
+ *   no sufra caída de procesos (0.00 % de errores HTTP).
  *
- * Ejecución: k6 run tests/load/scripts/estres.js
+ * Umbrales de seguridad configurados en k6:
+ * - Tasa de error < 5 % (http_req_failed < 0.05) - Límite de resiliencia del servicio
+ * - Latencia p95 tolerable < 5,000 ms - Umbral de degradación crítica admisible antes de colapso
+ *
+ * Ejecución local: k6 run tests/load/scripts/estres.js
+ * Ejecución parametrizada (David B1): $env:BASE_URL="..."; k6 run tests/load/scripts/estres.js
  */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
