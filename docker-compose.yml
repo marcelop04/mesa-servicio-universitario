@@ -1,21 +1,21 @@
 # Levanta todo el sistema con un solo comando:  docker compose up --build
 #   Aplicación: http://localhost:8081   ·   Swagger: http://localhost:8080/swagger-ui.html
-# Las credenciales son solo para desarrollo local (RNF02: en despliegue se pasan por variables de entorno).
+# Desarrollo local. Preparar .env con scripts/preparar-entorno.ps1 antes del primer arranque.
 services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-raiz_local}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Configure MYSQL_ROOT_PASSWORD en .env}
       MYSQL_DATABASE: mesa_servicios
       MYSQL_USER: ${DB_USER:-msu}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-msu_local}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD en .env}
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - mysql-datos:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-raiz_local}"]
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysqladmin ping -h localhost -u root --silent"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -29,23 +29,29 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
       DB_URL: jdbc:mysql://mysql:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
       DB_USER: ${DB_USER:-msu}
-      DB_PASSWORD: ${DB_PASSWORD:-msu_local}
+      DB_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD en .env}
       DATOS_DEMO: ${DATOS_DEMO:-true}
-      DEMO_PASSWORD: ${DEMO_PASSWORD:-Demo12345!}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
       DATOS_DEMO_SOLICITUDES: ${DATOS_DEMO_SOLICITUDES:-true}
       ARCHIVOS_DIR: /app/archivos
-      JWT_SECRET: ${JWT_SECRET:-solo-desarrollo-cambie-este-secreto-de-32-bytes}
+      JWT_SECRET: ${JWT_SECRET:?Configure JWT_SECRET en .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SEGURIDAD_DESPLIEGUE: ${SEGURIDAD_DESPLIEGUE:-false}
+      LOGIN_MAX_FALLOS: ${LOGIN_MAX_FALLOS:-5}
+      LOGIN_MAX_FALLOS_IP: ${LOGIN_MAX_FALLOS_IP:-50}
+      LOGIN_VENTANA: ${LOGIN_VENTANA:-PT15M}
+      LOGIN_PROXIES_CONFIABLES: ${LOGIN_PROXIES_CONFIABLES:-}
     volumes:
       - evidencias:/app/archivos
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
   frontend:
     build: ./frontend
     depends_on:
       - backend
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
 
 volumes:
   mysql-datos:

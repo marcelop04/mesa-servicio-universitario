@@ -19,6 +19,7 @@ const MENSAJES = {
   409: 'Otro usuario modificó estos datos o la operación entra en conflicto. Recargue y revise el cambio.',
   413: 'El archivo supera el tamaño máximo permitido.',
   415: 'El tipo de archivo no está admitido.',
+  429: 'Demasiados intentos. Espere antes de volver a iniciar sesión.',
   500: 'Ocurrió un error inesperado. Intente nuevamente.',
 };
 

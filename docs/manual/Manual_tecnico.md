@@ -1,5 +1,9 @@
 # Manual técnico · Nube y CI/CD (David, paquete B)
 
+> Nota de integración C (12/11/2026): los perfiles de B se conservan, pero ya no hay claves
+> predeterminadas en `dev` y `prod` rechaza las siembras demo. Revisar la configuración privada
+> con David antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
+
 ## 1. Arquitectura y costo
 
 ```text
@@ -68,15 +72,17 @@ Si se prueba el stack completo en la misma VM, hacerlo en una ventana acordada: 
 Caddy no pueden ocupar simultáneamente los mismos puertos 80/443. El costo previsto
 corresponde a **una** VM de nube; desarrollo y las pruebas automatizadas corren localmente/en CI.
 
-Para desarrollar, copiar `.env.example` como `.env` en la raíz y ejecutar:
+Para desarrollar con una base nueva, generar `.env` privado con
+`powershell -ExecutionPolicy Bypass -File scripts/preparar-entorno.ps1` y ejecutar:
 
 ```bash
 docker compose up --build
 ```
 
 App: `http://localhost:8081`, API: `http://localhost:8080/swagger-ui.html`.
-Sin Docker: seguir el README raíz. El perfil `dev` conserva las cuentas de demostración
-ya documentadas. Los perfiles de nube exigen las credenciales por entorno y fuerzan
+Sin Docker: seguir el README raíz. Si la base ya existe, conservar sus claves y configurar
+el entorno sin borrar volúmenes. `dev` requiere DB_PASSWORD/JWT_SECRET y contraseña demo explícitas.
+Los perfiles de nube exigen las credenciales por entorno y fuerzan
 la cookie de sesión `Secure`.
 
 ## 3. Crear la VM del curso
@@ -127,16 +133,15 @@ Generar el entorno **en una carpeta privada existente**, con Python 3.10+:
 ```bash
 python despliegue/scripts/crear-entorno.py \
   --host msu-IP-CON-GUIONES.sslip.io --email TU_CORREO \
-  --perfil prod --demo --salida /ruta/privada/produccion.env
+  --perfil prod --salida /ruta/privada/produccion.env
 ```
 
-`--demo` es útil para la entrega académica: crea las seis cuentas ficticias y sus
-solicitudes. La contraseña inicial es **aleatoria**, queda en `DEMO_PASSWORD` y debe
-comunicarse por un canal privado al equipo. Sin `--demo` no se crean esas cuentas.
-En una base vacía, inicializar primero las cuentas y la política con la demo para
-disponer de administrador; después cambiar las contraseñas desde el perfil y poner
-`DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`. Cambiar solo `DEMO_PASSWORD` no
-actualiza las cuentas que ya existen.
+`--perfil prueba --demo` sirve para una demostración aislada con cuentas ficticias y contraseña
+aleatoria, comunicada por canal privado. **No usar `--demo` con prod:** el guard de seguridad
+rechaza ambas siembras. En una base prod nueva, la provisión segura de administrador/política
+debe acordarse con los responsables A/B antes de arrancar; C no implementa ese bootstrap.
+En bases existentes, desactivar la siembra no elimina ni rota cuentas. Cambiar solo `DEMO_PASSWORD`
+no actualiza sus contraseñas; la rotación se coordina sin borrar datos.
 
 | Variable | Significado |
 |---|---|

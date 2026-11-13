@@ -1,15 +1,15 @@
-# Desarrollo: permite arrancar como antes con MySQL local o Docker Compose.
+# Desarrollo: ubicación/usuario locales, pero nunca claves reutilizables por defecto (C1).
 spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/mesa_servicios?serverTimezone=UTC&characterEncoding=utf8}
     username: ${DB_USER:msu}
-    password: ${DB_PASSWORD:msu_local}
+    password: ${DB_PASSWORD}
 
 msu:
   jwt:
-    secreto: ${JWT_SECRET:solo-desarrollo-cambie-este-secreto-de-32-bytes}
+    secreto: ${JWT_SECRET}
     cookie-segura: false
   datos-demo:
     habilitado: ${DATOS_DEMO:true}
-    password: ${DEMO_PASSWORD:Demo12345!}
+    password: ${DEMO_PASSWORD:}
     solicitudes: ${DATOS_DEMO_SOLICITUDES:${DATOS_DEMO:true}}

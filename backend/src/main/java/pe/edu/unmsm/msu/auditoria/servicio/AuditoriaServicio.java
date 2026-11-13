@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class AuditoriaServicio {
         Map<String, Object> limpio = new LinkedHashMap<>();
         metadatos.forEach((clave, valor) -> {
             if (clave != null && !SENSIBLE.matcher(clave).matches()) {
-                limpio.put(clave, valor instanceof Map<?, ?> m ? limpiarAnidado(m) : valor);
+                limpio.put(clave, limpiarValor(valor));
             }
         });
         return limpio.isEmpty() ? null : limpio;
@@ -102,6 +103,20 @@ public class AuditoriaServicio {
         m.forEach((k, v) -> copia.put(String.valueOf(k), v));
         Map<String, Object> limpio = limpiar(copia);
         return limpio == null ? Map.of() : limpio;
+    }
+
+    /** También elimina secretos dentro de listas de cambios, no solamente mapas anidados. */
+    private static Object limpiarValor(Object valor) {
+        if (valor instanceof Map<?, ?> mapa) {
+            return limpiarAnidado(mapa);
+        }
+        if (valor instanceof Collection<?> lista) {
+            return lista.stream().map(AuditoriaServicio::limpiarValor).toList();
+        }
+        if (valor instanceof Object[] arreglo) {
+            return java.util.Arrays.stream(arreglo).map(AuditoriaServicio::limpiarValor).toList();
+        }
+        return valor;
     }
 
     private static String vacioANulo(String valor) {

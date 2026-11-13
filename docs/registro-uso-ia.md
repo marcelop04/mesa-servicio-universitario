@@ -109,8 +109,6 @@ Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-ema
 | Modificaciones tras revisar | Se conservaron healthcheck, ensayos B y registros IA; prod no permite semillas demo; pruebas comprueban causas del guard y cabeceras únicas; se distingue CA local de HTTPS público |
 | Límites | Sin migración mayor ni supresiones; sin ZAP no autorizado, sin corrección de A4, sin implementar D/E, sin rotar cuentas/Secrets ni atribuir firmas o validaciones humanas |
 | Responsable | Marcelo: revisar código, asserts, pendientes y resultados antes del cierre |
-
-
 ## Registros del paquete D · Observabilidad y Telemetría (Gabriel)
 
 ### IA-D-01 · Configuración de métricas y tracing con Spring Boot 3.5 y OpenTelemetry
