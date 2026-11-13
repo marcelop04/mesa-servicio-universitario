@@ -1,5 +1,9 @@
 # Manual técnico · Nube y CI/CD (David, paquete B)
 
+> Nota de integración C (12/11/2026): los perfiles de B se conservan, pero ya no hay claves
+> predeterminadas en `dev` y `prod` rechaza las siembras demo. Revisar la configuración privada
+> con David antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
+
 ## 1. Arquitectura y costo
 
 ```text
@@ -68,15 +72,17 @@ Si se prueba el stack completo en la misma VM, hacerlo en una ventana acordada: 
 Caddy no pueden ocupar simultáneamente los mismos puertos 80/443. El costo previsto
 corresponde a **una** VM de nube; desarrollo y las pruebas automatizadas corren localmente/en CI.
 
-Para desarrollar, copiar `.env.example` como `.env` en la raíz y ejecutar:
+Para desarrollar con una base nueva, generar `.env` privado con
+`powershell -ExecutionPolicy Bypass -File scripts/preparar-entorno.ps1` y ejecutar:
 
 ```bash
 docker compose up --build
 ```
 
 App: `http://localhost:8081`, API: `http://localhost:8080/swagger-ui.html`.
-Sin Docker: seguir el README raíz. El perfil `dev` conserva las cuentas de demostración
-ya documentadas. Los perfiles de nube exigen las credenciales por entorno y fuerzan
+Sin Docker: seguir el README raíz. Si la base ya existe, conservar sus claves y configurar
+el entorno sin borrar volúmenes. `dev` requiere DB_PASSWORD/JWT_SECRET y contraseña demo explícitas.
+Los perfiles de nube exigen las credenciales por entorno y fuerzan
 la cookie de sesión `Secure`.
 
 ## 3. Crear la VM del curso
@@ -165,6 +171,9 @@ Usar el correo efectivamente registrado y comprobar que se actualizó una sola f
 Cerrar e iniciar sesión de nuevo. Desde P12 publicar la política inicial (por ejemplo,
 Crítica 4/24 h, Alta 8/48 h, Media 24/120 h, Baja 48/240 h). Después administrar usuarios
 desde P11. El hash lo genera el registro normal; no insertar contraseñas en texto plano.
+Este procedimiento de provisión corresponde a B; el paquete C aporta el guard.
+Cambiar `DEMO_PASSWORD` no rota contraseñas ya almacenadas: cualquier rotación se
+coordina mediante el perfil/administración y conserva los datos.
 
 | Variable | Significado |
 |---|---|

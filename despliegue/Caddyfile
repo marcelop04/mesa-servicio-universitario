@@ -9,14 +9,23 @@
 		max_size 6MB
 	}
 	header {
-		Strict-Transport-Security "max-age=31536000"
-		X-Content-Type-Options nosniff
-		Referrer-Policy strict-origin-when-cross-origin
+		# C1: aplicar también al HTML, API y errores; > reemplaza cabeceras del upstream.
+		>Strict-Transport-Security "max-age=31536000"
+		>Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'"
+		>X-Content-Type-Options nosniff
+		>X-Frame-Options DENY
+		>Referrer-Policy no-referrer
+		>Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		>Cache-Control no-store
 		-Server
 	}
 	@api path /api/* /swagger-ui /swagger-ui/* /swagger-ui.html
 	handle @api {
-		reverse_proxy backend:8080
+		reverse_proxy backend:8080 {
+			# No aceptar una IP o protocolo inventados por el cliente de Internet.
+			header_up -Forwarded
+			header_up X-Real-IP {remote_host}
+		}
 	}
 	handle {
 		reverse_proxy frontend:80

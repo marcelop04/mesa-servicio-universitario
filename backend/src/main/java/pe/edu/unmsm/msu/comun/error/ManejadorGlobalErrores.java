@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,7 +49,8 @@ public class ManejadorGlobalErrores {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<ApiError> integridad(DataIntegrityViolationException ex, HttpServletRequest req) {
-        log.warn("Violación de integridad: {}", ex.getMostSpecificCause().getMessage());
+        // El texto del motor SQL puede contener correos, valores insertados o hashes.
+        log.warn("Conflicto de integridad; correlacion={}", FiltroCorrelacion.idDe(req));
         return responder(HttpStatus.CONFLICT, "CONFLICTO_INTEGRIDAD",
                 "La operación entra en conflicto con datos existentes.", List.of(), req);
     }
@@ -88,9 +91,22 @@ public class ManejadorGlobalErrores {
                 "El método no está disponible para este recurso.", List.of(), req);
     }
 
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    ResponseEntity<ApiError> tipoContenido(HttpMediaTypeNotSupportedException ex, HttpServletRequest req) {
+        return responder(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "TIPO_NO_ADMITIDO",
+                "El tipo de contenido no está admitido para esta operación.", List.of(), req);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    ResponseEntity<ApiError> parametroAusente(MissingServletRequestParameterException ex, HttpServletRequest req) {
+        return responder(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Falta un parámetro obligatorio.", List.of(), req);
+    }
+
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> inesperado(Exception ex, HttpServletRequest req) {
-        log.error("Error no controlado", ex);
+        // No volcar mensajes/cadenas de causas que podrían incluir cuerpos, SQL o credenciales.
+        // Gabriel puede ampliar el diagnóstico estructurado manteniendo esta regla de privacidad.
+        log.error("Error no controlado; tipo={}; correlacion={}", ex.getClass().getSimpleName(), FiltroCorrelacion.idDe(req));
         return responder(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR_INTERNO",
                 "Ocurrió un error inesperado. Intente nuevamente.", List.of(), req);
     }

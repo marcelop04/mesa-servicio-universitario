@@ -4,31 +4,31 @@ Spring Boot 3.5 · Java 17+ · MySQL 8 · Flyway · Spring Security · OpenAPI.
 
 ## Ejecutar en local
 
-1. Base de datos MySQL 8 (cualquiera de las dos opciones):
-   ```bash
-   # Opción A: Docker
-   docker run -d --name msu-mysql -p 3306:3306 \
-     -e MYSQL_ROOT_PASSWORD=raiz_local -e MYSQL_DATABASE=mesa_servicios \
-     -e MYSQL_USER=msu -e MYSQL_PASSWORD=msu_local mysql:8.0
-   # Opción B: MySQL instalado: crear la base mesa_servicios y el usuario msu/msu_local
-   ```
-2. Arrancar la API (crea las tablas con Flyway y carga los datos de prueba):
+1. Preparar `.env` y MySQL siguiendo el [README principal](../README.md) y la
+   [guía de seguridad](../docs/seguridad/GUIA_MARCELO.md). Desde la raíz se puede usar
+   `docker compose up -d mysql`; en ese caso el backend fuera de Docker usa `DB_URL` con puerto **3307**.
+2. Exportar las variables al proceso (en PowerShell, desde la raíz: `. .\scripts\cargar-entorno.ps1`).
+   Arrancar la API (Flyway crea las tablas; las cuentas ficticias requieren `DATOS_DEMO=true`):
    ```bash
    ./mvnw spring-boot:run        # Windows: mvnw.cmd spring-boot:run
    ```
 3. Swagger: <http://localhost:8080/swagger-ui.html> · contrato: <http://localhost:8080/api/v1/openapi>
 
-Variables de entorno (valores por defecto solo para desarrollo):
+Variables de entorno (los secretos no tienen valores por defecto):
 
 | Variable | Uso | Por defecto |
 |---|---|---|
 | `DB_URL` | URL JDBC | `jdbc:mysql://localhost:3306/mesa_servicios?...` |
-| `DB_USER` / `DB_PASSWORD` | Credenciales de MySQL | `msu` / `msu_local` |
-| `DATOS_DEMO` | Crea cuentas de prueba y la política v1 | `true` |
-| `DEMO_PASSWORD` | Contraseña de las cuentas de prueba | `Demo12345!` |
-| `COOKIE_SECURE` | Cookie de sesión solo por HTTPS | `false` |
-| `JWT_SECRET` | Clave HS256 de los tokens (32 bytes o más) | solo desarrollo |
+| `DB_USER` / `DB_PASSWORD` | Credenciales de MySQL | `msu` / obligatoria |
+| `DATOS_DEMO` | Crea cuentas de prueba y la política v1 | `false` (Compose local: `true`) |
+| `DEMO_PASSWORD` | Contraseña de las cuentas ficticias nuevas | obligatoria si hay demo |
+| `COOKIE_SECURE` | Ambas cookies solo por HTTPS | `false` en local; `true` desplegado |
+| `JWT_SECRET` | Clave HS256 de los tokens (32 bytes o más) | obligatoria |
 | `JWT_DURACION` | Vigencia del token | `PT2H` |
+| `SEGURIDAD_DESPLIEGUE` | Exige cookies seguras y prohíbe siembra demo | `false`; activar en la nube |
+| `LOGIN_MAX_FALLOS` / `LOGIN_MAX_FALLOS_IP` | Fallos por cuenta+IP / IP | `5` / `50` |
+| `LOGIN_VENTANA` | Ventana de fallos y duración del bloqueo | `PT15M` |
+| `LOGIN_PROXIES_CONFIABLES` | CIDR de proxies que sobrescriben X-Real-IP | vacío |
 
 Con Docker: `docker compose up --build` desde la raíz del repositorio (ver README principal).
 
@@ -108,4 +108,5 @@ solo cambia su nombre visible; crear, eliminar o desactivar responde 409.
   o contraseña).
 - `POST /api/v1/auth/logout` guarda el `jti` en `revocacion_sesion` hasta que expire y borra la cookie.
 - CSRF: cookie `XSRF-TOKEN` legible + cabecera `X-XSRF-TOKEN` en cada escritura (el frontend ya la envía).
-- `JWT_SECRET` (32 bytes o más) firma los tokens; el valor por defecto solo sirve para desarrollo.
+- `JWT_SECRET` (32 bytes o más) firma los tokens; no existe un valor por defecto.
+- Tras cinco fallos por cuenta+IP se rechaza el login con 429 y `Retry-After`; contadores locales a una instancia.

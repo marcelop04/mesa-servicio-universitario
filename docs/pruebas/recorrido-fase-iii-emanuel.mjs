@@ -5,6 +5,8 @@ import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
 
 const BASE = process.env.BASE ?? 'http://localhost:8081';
+const PASSWORD = process.env.DEMO_PASSWORD;
+if (!PASSWORD) throw new Error('Configure DEMO_PASSWORD en el entorno; no se usa una contraseña por defecto.');
 const SALIDA = process.argv[2] ?? '../evidencias/fase-iii-emanuel';
 mkdirSync(SALIDA, { recursive: true });
 const navegador = await chromium.launch({ channel: process.env.NAVEGADOR ?? 'msedge', headless: true });
@@ -16,7 +18,7 @@ async function sesion(correo, ancho = 1366, alto = 900) {
   p.setDefaultTimeout(15000);
   await p.goto(`${BASE}/login`);
   await p.getByLabel('Correo institucional').fill(correo);
-  await p.getByLabel('Contraseña', { exact: true }).fill('Demo12345!');
+  await p.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await p.getByRole('button', { name: 'Iniciar sesión' }).click();
   await p.waitForURL((u) => !u.pathname.startsWith('/login'));
   return { contexto, p };
@@ -125,7 +127,7 @@ await adm.p.getByLabel('Acción').selectOption('POLITICA_PUBLICAR');
 await adm.p.getByRole('row', { name: /Publicación de política/ }).first().waitFor();
 await captura(adm.p, '09-P12-auditoria-filtro', 'HU23: filtro por acción; el detalle muestra la versión y la matriz publicada');
 const texto = await adm.p.locator('.tabla').textContent();
-if (/Demo12345|\$2[ab]\$|MSU_SESION/.test(texto)) throw new Error('HU23 BDD 2: la auditoría no debe mostrar secretos');
+if (texto.includes(PASSWORD) || /\$2[ab]\$|MSU_SESION/.test(texto)) throw new Error('HU23 BDD 2: la auditoría no debe mostrar secretos');
 
 // 5. Vista móvil (RNF05).
 const movil = await sesion('admin@msu.test', 360, 780);

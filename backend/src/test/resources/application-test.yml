@@ -6,7 +6,17 @@ spring:
 
 msu:
   jwt:
-    secreto: solo-pruebas-clave-ficticia-de-mas-de-32-bytes
+    # Clave ficticia exclusiva de H2/pruebas. Nunca se usa en la configuración de ejecución.
+    secreto: clave-ficticia-solo-para-pruebas-automatizadas-32-bytes
+    cookie-segura: false
+  seguridad:
+    despliegue: false
+    login:
+      # El contexto compartido de pruebas inicia muchas sesiones; se prueban límites bajos por separado.
+      max-fallos-ip: 10000
+      max-fallos: 5
+      ventana: PT15M
+      proxies-confiables: ''
   tareas:
     # Las pruebas ejecutan el cierre automático con un instante controlado.
     habilitadas: false

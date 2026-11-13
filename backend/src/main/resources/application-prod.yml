@@ -18,6 +18,7 @@ spring:
 
 msu:
   seguridad:
+    # C1: producción no admite siembra demo, ni siquiera por un .env antiguo.
     despliegue: true
   jwt:
     cookie-segura: true

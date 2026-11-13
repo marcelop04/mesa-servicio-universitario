@@ -44,6 +44,12 @@ mv -- "$nueva" "$MSU_RELEASE_FILE"
 cambio=1
 validar_configuracion
 dc pull mysql backend frontend caddy archivos
+commit="$(basename -- "$(dirname -- "$DIRECTORIO")")"
+[[ $commit =~ ^[a-f0-9]{40}$ ]] || { echo 'La entrega debe estar en su directorio SHA.' >&2; exit 1; }
+for imagen in "$@"; do
+    revision="$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$imagen")"
+    [[ $revision == "$commit" ]] || { echo 'La revisión de la imagen no coincide con el SHA probado.' >&2; exit 1; }
+done
 dc up -d --wait --wait-timeout 300 mysql backend frontend caddy
 url="https://$(host_publico)"
 python3 "$DIRECTORIO/scripts/verificar-https.py" --url "$url" --reintentos 18
@@ -51,6 +57,6 @@ ln -sfn -- "$(dirname -- "$DIRECTORIO")" /opt/msu/actual
 sudo install -m 0644 "$DIRECTORIO/systemd/msu-backup.service" "$DIRECTORIO/systemd/msu-backup.timer" /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now msu-backup.timer
-printf 'fecha_utc=%s\nurl=%s\nbackend=%s\nfrontend=%s\n' \
-    "$(date -u +%FT%TZ)" "$url" "$1" "$2" > /opt/msu/shared/ultimo-despliegue.txt
+printf 'fecha_utc=%s\ncommit=%s\nurl=%s\nbackend=%s\nfrontend=%s\n' \
+    "$(date -u +%FT%TZ)" "$commit" "$url" "$1" "$2" > /opt/msu/shared/ultimo-despliegue.txt
 echo "Despliegue HTTPS verificado: $url"

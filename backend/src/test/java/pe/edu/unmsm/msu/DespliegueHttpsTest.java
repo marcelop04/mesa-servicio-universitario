@@ -63,6 +63,9 @@ class DespliegueHttpsTest {
         String cabeceraCsrf = csrf.headers().allValues("set-cookie").stream()
                 .filter(c -> c.startsWith("XSRF-TOKEN=")).findFirst().orElseThrow();
         assertThat(cabeceraCsrf).containsIgnoringCase("secure");
+        assertThat(cabeceraCsrf).containsIgnoringCase("SameSite=Lax").doesNotContain("HttpOnly");
+        assertThat(csrf.headers().firstValue("content-security-policy")).hasValueSatisfying(
+                valor -> assertThat(valor).contains("frame-ancestors 'none'").doesNotContain("'unsafe-eval'"));
         assertThat(csrf.headers().firstValue("strict-transport-security")).isPresent();
         String token = HttpCookie.parse(cabeceraCsrf).get(0).getValue();
 
@@ -83,6 +86,17 @@ class DespliegueHttpsTest {
                 .header("Cookie", "MSU_SESION=" + jwt).GET().build(), HttpResponse.BodyHandlers.ofString());
         assertThat(perfil.statusCode()).isEqualTo(200);
         assertThat(perfil.body()).contains("fixture.https@msu.test");
+    }
+
+    @Test
+    void errorSinSesionDetrasDeProxyMantieneCabecerasSinExponerDatos() throws Exception {
+        HttpResponse<String> respuesta = cliente.send(peticion("/api/v1/me").GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertThat(respuesta.statusCode()).isEqualTo(401);
+        assertThat(respuesta.headers().firstValue("strict-transport-security")).hasValue("max-age=31536000");
+        assertThat(respuesta.headers().firstValue("x-frame-options")).hasValue("DENY");
+        assertThat(respuesta.headers().firstValue("referrer-policy")).hasValue("no-referrer");
+        assertThat(respuesta.body()).contains("SIN_SESION").doesNotContain("password", "stackTrace");
     }
 
     private HttpRequest.Builder peticion(String ruta) {

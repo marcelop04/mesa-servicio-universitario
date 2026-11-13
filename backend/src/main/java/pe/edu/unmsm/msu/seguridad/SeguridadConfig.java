@@ -1,6 +1,7 @@
 package pe.edu.unmsm.msu.seguridad;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import pe.edu.unmsm.msu.identidad.repositorio.RevocacionSesionRepositorio;
 import pe.edu.unmsm.msu.identidad.repositorio.UsuarioRepositorio;
 
@@ -46,11 +49,24 @@ public class SeguridadConfig {
     @Bean
     SecurityFilterChain cadenaSeguridad(HttpSecurity http, ObjectMapper json, UsuarioRepositorio usuarios,
                                         RevocacionSesionRepositorio revocaciones, TokenJwt tokens,
-                                        RevocadorSesion revocador) throws Exception {
+                                        RevocadorSesion revocador,
+                                        @Value("${msu.jwt.cookie-segura:false}") boolean cookieSegura) throws Exception {
+        CookieCsrfTokenRepository csrfCookies = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfCookies.setCookieCustomizer(c -> c.secure(cookieSegura).sameSite("Lax").path("/"));
         http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfCookies)
                         .csrfTokenRequestHandler(new ManejadorCsrfSpa()))
+                .headers(h -> h
+                        .contentSecurityPolicy(c -> c.policyDirectives("default-src 'none'; script-src 'self'; "
+                                + "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; "
+                                + "connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; "
+                                + "object-src 'none'"))
+                        .httpStrictTransportSecurity(s -> s.includeSubDomains(false).maxAgeInSeconds(31536000))
+                        .frameOptions(f -> f.deny())
+                        .referrerPolicy(r -> r.policy(ReferrerPolicy.NO_REFERRER))
+                        .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy",
+                                "camera=(), microphone=(), geolocation=()")))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .securityContext(c -> c.securityContextRepository(new RequestAttributeSecurityContextRepository()))
                 .httpBasic(AbstractHttpConfigurer::disable)
