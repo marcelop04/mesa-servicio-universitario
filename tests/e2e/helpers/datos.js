@@ -121,3 +121,4 @@ export async function prepararSolicitud(estadoDeseado = 'REGISTRADA', opciones =
   solicitud = await ciRes.json();
   return solicitud;
 }
+
