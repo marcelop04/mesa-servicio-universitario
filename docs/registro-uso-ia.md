@@ -100,6 +100,20 @@ Las verificaciones y resultados de participantes deben provenir de ejecuciones/p
 No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
 Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.
 
+## IA-B-08 · Revisión del paquete B y preparación de sesiones reales
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026, America/Lima |
+| Responsable | David; revisión humana de la entrega y ejecución de las sesiones pendientes |
+| Herramienta | Codex, asistente de programación de OpenAI |
+| Prompt / alcance | Revisar repositorio y reparto actualizado, completar B, retirar el guion individual y las respuestas de ejemplo, integrar la sección técnica y preparar el cuestionario para cinco personas |
+| Resultado generado | Cuestionario web/escrito, protocolo de sesiones y cálculo sin modo de simulación; actualización del informe, manual, referencias y plantilla de checks |
+| ¿Se utilizó? | Incorporado al PR de actualización del paquete B; aceptación del equipo pendiente |
+| Validación realizada | Pruebas Python y frontend, compilación, revisión del formulario y consulta real de HTTPS/GitHub; resultados detallados en la bitácora B y los checks del PR |
+| Modificaciones | Se registra ancho real y fecha de Lima; se exige confirmación de uso; se rechazan otras procedencias, duplicados y aplicaciones distintas. Capturas históricas conservadas por decisión del responsable |
+| Límites | No se atribuyen respuestas a participantes, aprobación humana ni checks de main aplicados. Las cinco sesiones y la configuración administrativa siguen pendientes |
+
 ## IA-C-06 · Integración de seguridad sobre main con B
 
 | Campo | Valor |

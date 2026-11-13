@@ -45,16 +45,10 @@ class EntornoTest(unittest.TestCase):
 
 
 class SusTest(unittest.TestCase):
-    def test_simulacion_identificada_no_cierra_la_muestra_real(self):
-        ruta = RAIZ / "docs/pruebas/usuarios/ejemplo-SIMULADO.csv"
-        with ruta.open(encoding="utf-8") as archivo:
-            with self.assertRaisesRegex(ValueError, "SIMULADOS"):
-                sus.calcular(archivo)
-        with ruta.open(encoding="utf-8") as archivo:
-            resultado = sus.calcular(archivo, simulacion=True)
-        self.assertEqual(resultado["participantes"], 0)
-        self.assertEqual(resultado["registros_simulados"], 5)
-        self.assertFalse(resultado["meta_muestra_cumplida"])
+    def test_rechaza_registros_sin_procedencia_de_la_sesion(self):
+        for origen in ("SIMULADO", "", "PRUEBA"):
+            with self.subTest(origen=origen), self.assertRaisesRegex(ValueError, "RESPUESTA_USUARIO"):
+                sus.calcular(io.StringIO(f"origen\n{origen or ' '}\n"))
 
     def test_extremos_y_punto_neutro(self):
         self.assertEqual(sus.puntuacion([5, 1] * 5), 100)
@@ -72,8 +66,8 @@ class SusTest(unittest.TestCase):
                 sus.calcular(archivo)
 
     def test_csv_real_exige_https_y_detecta_muestra_y_duplicados(self):
-        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + "\n"
-        fila = "P01,2026-11-12,Solicitante,360,https://msu.example.org," + ",".join(["3"] * 10) + "\n"
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen\n"
+        fila = "P01,2026-11-12,Solicitante,390,https://msu.example.org," + ",".join(["3"] * 10) + ",RESPUESTA_USUARIO\n"
         resultado = sus.calcular(io.StringIO(cabecera + fila))
         self.assertEqual(resultado["media_sus"], 50)
         self.assertFalse(resultado["meta_muestra_cumplida"])
@@ -81,6 +75,11 @@ class SusTest(unittest.TestCase):
             sus.calcular(io.StringIO(cabecera + fila + fila))
         with self.assertRaises(ValueError):
             sus.calcular(io.StringIO((cabecera + fila).replace("https://", "http://")))
+        with self.assertRaisesRegex(ValueError, "misma aplicación"):
+            sus.calcular(io.StringIO(cabecera + fila + fila.replace("P01", "P02").replace("msu.example.org", "otro.example.org")))
+        cinco = cabecera + "".join(fila.replace("P01", f"P{i:02}") for i in range(1, 6))
+        self.assertEqual(sus.calcular(io.StringIO(cinco))["participantes"], 5)
+        self.assertTrue(sus.calcular(io.StringIO(cinco))["meta_muestra_cumplida"])
 
 
 class VerificacionHttpsTest(unittest.TestCase):

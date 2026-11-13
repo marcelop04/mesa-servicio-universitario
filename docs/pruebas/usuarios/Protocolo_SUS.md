@@ -1,102 +1,90 @@
-# B5 · Pruebas de usuario y responsive de la aplicación desplegada
+# B5 · Pruebas de usuario y responsive
 
-Responsable: David. Muestra prevista: **5 personas reales**, idealmente 3 solicitantes,
-1 persona que pruebe supervisión y 1 que pruebe atención técnica/administración.
-Estado: protocolo e instrumentos preparados; sesiones y puntuaciones pendientes.
+Responsable: David. Muestra prevista: **5 personas reales** representativas de los
+usuarios del sistema. Pueden ser cinco solicitantes; probar otros roles es complementario.
+Estado: cuestionario e instrumentos preparados; sesiones y puntuaciones pendientes.
 
-Aplicación para las sesiones: <https://msu-157-137-206-147.sslip.io>.
-Cuestionario: <https://msu-157-137-206-147.sslip.io/sus/> (al integrar la actualización).
-La comprobación automatizada de cuatro roles a 360/1366 px ya produjo 32 capturas sin
-fallos en `docs/evidencias/fase-iii-iv-david/responsive/`; las sesiones con personas
-se registran separadamente en la tabla y el CSV.
+- Aplicación: <https://msu-157-137-206-147.sslip.io>.
+- Cuestionario web: <https://msu-157-137-206-147.sslip.io/sus/>.
+- [Mensaje para enviar y cuestionario escrito](Cuestionario_SUS.md).
 
-## Preparación
+SUS evalúa la usabilidad del sistema completo. La encuesta de satisfacción HU13,
+con nota de 1 a 5 tras cerrar un caso, no sustituye este cuestionario de diez ítems.
 
-1. Confirmar la URL **HTTPS pública** y el commit/digest con el smoke del manual técnico.
-2. Usar únicamente datos ficticios y cuentas de demostración. Dar la contraseña por un
-   canal privado; no incluirla en capturas ni en el CSV. Acordar la ventana con el equipo.
-3. Identificar participantes como P01…P05, sin registrar nombres/correos personales.
-4. Hacer al menos dos sesiones a **360 × 780** y dos a **1366 × 900**. La quinta puede
-   alternar tamaños. Preferir al menos un teléfono real; DevTools complementa la revisión.
-5. Explicar que se evalúa el sistema, permitir detener la sesión y solicitar permiso si
-   se capturan imágenes de pantalla. Duración prevista: 15–20 minutos por persona.
+## Preparación de las sesiones
 
-## Tareas observadas (sin explicar dónde pulsar)
+1. Comprobar el origen HTTPS con el smoke del manual técnico. Registrar SHA/digests
+   de la entrega activa, fecha y navegador. Reunir las cinco respuestas de una misma
+   versión; si se actualiza durante las sesiones, documentarlo y separar los resultados.
+2. Asignar P01…P05, sin publicar nombres, correos ni contraseñas. Facilitar una cuenta
+   de prueba por sesión mediante un canal privado. Emplear solo datos ficticios en los casos.
+3. Acordar la ventana con el equipo para evitar k6, ZAP, despliegues o respaldos durante
+   las tareas. Explicar que se evalúa el sistema y permitir detener la actividad.
+4. Prever 15–20 minutos por persona. Si se capturan pantallas, pedir permiso y excluir
+   cualquier dato personal. Preferir una combinación de teléfonos y computadoras reales.
+5. Registrar el ancho real observado. La revisión técnica adicional se ejecuta exactamente
+   a 360 × 780 y 1366 × 900; no se cambia el ancho de una persona a 360/1366 por conveniencia.
+
+## Tareas observadas
+
+No explicar dónde pulsar ni sugerir respuestas. Registrar **sin ayuda / con ayuda /
+no completada**, duración, errores y comentarios. A cada solicitante le corresponden
+las primeras tres filas; los pasos de personal son opcionales según la sesión.
 
 | Rol | Tarea | Éxito observable |
 |---|---|---|
-| Solicitante | Entrar, registrar un problema de proyector y localizarlo en sus solicitudes | Encuentra código, prioridad y vencimiento |
-| Solicitante | Abrir detalle, comentar y adjuntar una imagen ficticia | Comentario y evidencia visibles tras recargar |
-| Supervisor | Encontrar el caso, evaluarlo y asignarlo a un técnico del área | Identifica estado/asignación y confirma la acción |
-| Técnico | Iniciar atención y registrar solución comprensible | El caso pasa a Resuelta |
-| Solicitante | Confirmar la solución y contestar la encuesta de satisfacción | Caso cerrado y calificación registrada una vez |
-| Administrador | Localizar políticas e historial de auditoría | Entiende qué versión está vigente y qué cambio se registró |
-| Todos | Consultar su perfil, identificar notificaciones cuando corresponda y salir | Navega sin ayuda y cierra la sesión |
+| Solicitante | Entrar, registrar un proyector que no enciende y encontrar la solicitud | Localiza código, estado, prioridad y vencimiento |
+| Solicitante | Abrir detalle, comentar y adjuntar una imagen ficticia | Comentario y evidencia permanecen al recargar |
+| Solicitante | Consultar perfil/notificaciones y salir | Navega y cierra la sesión sin ayuda |
+| Supervisor | Evaluar y asignar el caso a un técnico del área | Confirma estado y asignación |
+| Técnico | Iniciar atención y registrar la solución | El caso pasa a Resuelta |
+| Solicitante | Confirmar una solución preparada por el facilitador y calificar su atención | El caso queda cerrado y admite una sola encuesta HU13 |
+| Administrador | Localizar políticas y auditoría | Identifica la versión vigente y el cambio registrado |
 
-El facilitador puede cambiar de cuenta para completar el ciclo entre tareas. Cada
-participante realiza tareas de su rol; no atribuirle pasos ejecutados por el facilitador.
-Registrar duración, éxito/sin ayuda/con ayuda/fallo, errores y comentarios textuales.
+El facilitador puede preparar el estado del caso con otra cuenta. Esos pasos no se
+atribuyen al participante. No es necesario esperar el ciclo de atención para responder SUS.
 
-| Persona | Fecha | Rol | Tamaño | Tareas realizadas / duración | Hallazgos y ayuda | Estado |
-|---|---|---|---|---|---|---|
-| P01 | Pendiente | Por asignar | 360 | Pendiente | Pendiente | No realizada |
-| P02 | Pendiente | Por asignar | 1366 | Pendiente | Pendiente | No realizada |
-| P03 | Pendiente | Por asignar | 360 | Pendiente | Pendiente | No realizada |
-| P04 | Pendiente | Por asignar | 1366 | Pendiente | Pendiente | No realizada |
-| P05 | Pendiente | Por asignar | Por asignar | Pendiente | Pendiente | No realizada |
+| Persona | Fecha Lima | Rol | Dispositivo/navegador y ancho real | Tareas, resultado y duración | Ayuda y hallazgos | SHA/digests | Estado |
+|---|---|---|---|---|---|---|---|
+| P01 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
+| P02 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
+| P03 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
+| P04 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
+| P05 | Pendiente | Por asignar | Pendiente | Pendiente | Pendiente | Pendiente | No realizada |
 
-## Cuestionario SUS
+## Recolección y cálculo
 
-El formulario usa solo seudónimos P01–P05 y descarga un CSV individual. Cada persona
-entrega su archivo al facilitador, que comprueba la sesión y reúne los cinco archivos.
-Se conserva el ancho previsto y también el viewport realmente observado. Para combinar:
+Tras probar la aplicación, cada persona responde los diez ítems del cuestionario,
+confirma que realizó las tareas y descarga `SUS-P01.csv` (o su identificador).
+El formulario no envía respuestas a un servidor; cada participante entrega su CSV.
+Usar el mismo dispositivo/navegador de las tareas para registrar el ancho observado.
+
+Combinar los archivos en una carpeta privada existente, sin sobrescribir originales:
 
 ```bash
 python docs/pruebas/usuarios/combinar-sus.py SUS-P01.csv SUS-P02.csv SUS-P03.csv SUS-P04.csv SUS-P05.csv --salida respuestas-recogidas.csv
 python docs/pruebas/usuarios/calcular-sus.py respuestas-recogidas.csv
 ```
 
-`ejemplo-SIMULADO.csv` contiene datos sintéticos para demostrar la herramienta, no
-participantes ni resultados reales. El cálculo normal los rechaza. Solo se procesa
-con `--simulacion`, devuelve cero participantes reales y no marca B5 como cerrado:
+El formato tiene `participante`, fecha ISO de Lima, rol, `ancho` real en píxeles,
+URL HTTPS, `q1`…`q10` entre 1 y 5, observaciones, `origen=RESPUESTA_USUARIO`,
+`viewport_real` y `fecha_utc`. Si se usa la versión escrita, el facilitador transcribe
+las respuestas y los datos de su ficha de sesión sin completar campos por suposición.
 
-```bash
-python docs/pruebas/usuarios/calcular-sus.py docs/pruebas/usuarios/ejemplo-SIMULADO.csv --simulacion
-```
+`respuestas-sus.csv` conserva solo la cabecera hasta recibir los resultados reales.
+El cálculo rechaza CSV vacíos, duplicados, respuestas incompletas, otros orígenes de
+datos y la combinación de distintas aplicaciones HTTPS. No tiene modo de simulación.
+Las pruebas unitarias de la fórmula son verificaciones técnicas y no se registran
+como participantes ni como resultados de usabilidad.
 
-Después de las tareas y sin sugerir respuestas: **1 totalmente en desacuerdo, 2 en
-desacuerdo, 3 neutral, 4 de acuerdo, 5 totalmente de acuerdo**. Contestar los diez ítems.
-
-1. Creo que me gustaría utilizar este sistema con frecuencia.
-2. Encontré el sistema innecesariamente complejo.
-3. Pensé que el sistema era fácil de usar.
-4. Creo que necesitaría ayuda de una persona con conocimientos técnicos para utilizarlo.
-5. Encontré que las distintas funciones del sistema estaban bien integradas.
-6. Pensé que había demasiadas inconsistencias en el sistema.
-7. Imagino que la mayoría de las personas aprenderían a utilizarlo rápidamente.
-8. Encontré el sistema muy complicado de utilizar.
-9. Me sentí muy seguro/a utilizando el sistema.
-10. Necesité aprender muchas cosas antes de poder utilizar el sistema.
-
-Preguntas abiertas: ¿Qué fue lo más difícil? ¿Qué cambiarías primero? ¿Entendiste los
-estados y los plazos? ¿Pudiste completar la tarea en la pantalla pequeña?
-
-Guardar respuestas reales en `respuestas-sus.csv`: fecha ISO `AAAA-MM-DD`, rol, ancho
-360/1366, URL HTTPS y q1…q10 entre 1 y 5. Hay una cabecera vacía, sin respuestas simuladas.
-El resultado SUS se calcula como `2,5 × [Σítems impares(respuesta − 1) + Σítems pares(5 − respuesta)]`.
-La escala va de 0 a 100; **no es un porcentaje de éxito**. Informar media y tamaño de
-muestra; 68 es solo una referencia habitual, no evidencia de aceptación por sí misma.
-
-```bash
-python docs/pruebas/usuarios/calcular-sus.py docs/pruebas/usuarios/respuestas-sus.csv
-```
-
-El programa rechaza respuestas incompletas, repetidas o con URL no HTTPS. No genera
-una media para una plantilla vacía y señala si todavía no se alcanzan cinco personas.
+SUS = `2,5 × [Σítems impares(respuesta − 1) + Σítems pares(5 − respuesta)]`.
+Informar puntuaciones por seudónimo, media y tamaño de muestra. La escala es 0–100;
+no es un porcentaje de éxito. El reparto no fija una nota mínima de aprobación.
+Un CSV con cinco filas no prueba por sí solo que participaron cinco personas.
 
 ## Revisión responsive reproducible
 
-Desde `docs/pruebas`, con Node 22+ y contraseña de demo en `MSU_TEST_PASSWORD`:
+Desde `docs/pruebas`, con Node 22+ y credenciales de evaluación en variables privadas:
 
 ```bash
 npm ci
@@ -104,28 +92,39 @@ npx playwright install chromium
 BASE=https://TU_HOST MSU_TEST_PASSWORD="$CLAVE_DEMO" npm run responsive
 ```
 
-En Windows puede usarse Edge ya instalado, con `NAVEGADOR=msedge`. Los correos ficticios
-vienen de la demo; si se usan otras cuentas, definir `MSU_EMAIL_SOLICITANTE`,
-`MSU_EMAIL_SUPERVISOR`, `MSU_EMAIL_TECNICO` y `MSU_EMAIL_ADMIN`. La clave común se usa
-solo para las cuentas ficticias creadas por `--demo`.
+En PowerShell, con Edge instalado:
 
-El script consulta pantallas de los cuatro roles, obtiene capturas a 360 y 1366 px,
-detecta desborde horizontal y errores 5xx y escribe `resultado.json` con URL/fecha/tamaño.
-No crea ni modifica solicitudes o políticas. Revisar las capturas visualmente:
+```powershell
+$env:BASE = 'https://msu-157-137-206-147.sslip.io'
+$env:NAVEGADOR = 'msedge'
+# Cargar MSU_TEST_PASSWORD por un canal privado, sin pegarla en el historial.
+npm.cmd run responsive
+```
 
-- Menús, encabezados, formularios y botones accesibles sin quedar tapados.
-- Texto legible; errores y confirmaciones visibles sin depender solo del color.
-- Tablas con desplazamiento propio cuando haga falta, sin ensanchar la página.
-- Detalle, evidencias, tabs de políticas/auditoría y sesión correctos al recargar.
-- Registrar navegador/dispositivo, fallo, prioridad, corrección y repetición de la prueba.
+Las cuentas por rol son las de evaluación existentes. Para otras cuentas, configurar
+`MSU_EMAIL_SOLICITANTE`, `MSU_EMAIL_SUPERVISOR`, `MSU_EMAIL_TECNICO` y `MSU_EMAIL_ADMIN`.
+No habilitar siembra demo en prod: desactivarla no elimina las cuentas previamente creadas.
 
-`PERMITIR_HTTP_LOCAL=true` admite una revisión previa en localhost, y el informe la
-marca como **local**. Esa ejecución no sustituye la revisión sobre la URL desplegada.
-Las capturas y el resultado de nube se guardan en `docs/evidencias/fase-iii-iv-david/`.
+El script revisa las pantallas de los cuatro roles y `/sus/` a 360/1366 px, comprueba
+los diez grupos de preguntas y 50 opciones sin responderlos, captura las vistas y
+detecta desbordes/5xx. El informe distingue localhost de la aplicación desplegada.
+Revisar visualmente menús, botones, errores, tablas, detalle y pestañas administrativas.
+Registrar fallos, corrección y repetición. Las capturas automatizadas no sustituyen
+las sesiones con personas.
 
-## Cierre de B5
+Las tandas `responsive-local/`, `responsive/` y `responsive-main/` se conservan como
+historial en `docs/evidencias/fase-iii-iv-david/`. La última entrega documentada tiene
+32 capturas de roles y dos adicionales de SUS, sin desbordes/5xx. Una nueva entrega
+debe generar su propia evidencia; no sobrescribir las anteriores para cambiarles la versión.
 
-Adjuntar URL/commit, cinco sesiones reales, CSV y media SUS, revisión visual a ambos
-tamaños, defectos encontrados y decisiones de corrección. Entregar el resumen a Alex
-para el informe de pruebas y a Marcelo para el informe final. Por ahora no hay
-participantes evaluados ni una puntuación SUS obtenida.
+## Integración cuando lleguen las respuestas
+
+1. Revisar los cinco CSV y completar la tabla de sesiones con tareas, hallazgos y versión.
+2. Incorporar únicamente respuestas anónimas verificadas a `respuestas-sus.csv` y calcular SUS.
+3. Actualizar B5 en `docs/fase-iii-iv-david.md` y las secciones 4 y 7 del informe final.
+4. Entregar a Alex los resultados para `docs/informe-pruebas.md` cuando se integre el PR #5,
+   y a Marcelo la síntesis para el informe consolidado.
+5. Corregir los problemas encontrados y documentar su reprueba; Gabriel integra la
+   síntesis en la presentación del equipo.
+
+B5 sigue pendiente hasta contar con las sesiones, las respuestas y su análisis real.

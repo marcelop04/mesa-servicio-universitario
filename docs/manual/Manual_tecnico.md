@@ -1,8 +1,8 @@
-# Manual técnico · Nube y CI/CD (David, paquete B)
+# Manual técnico · Nube y CI/CD
 
 > Nota de integración C (12/11/2026): los perfiles de B se conservan, pero ya no hay claves
 > predeterminadas en `dev` y `prod` rechaza las siembras demo. Revisar la configuración privada
-> con David antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
+> antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
 
 ## 1. Arquitectura y costo
 
@@ -221,18 +221,19 @@ Requiere que el propietario/administrador del repositorio ejecute, una vez auten
 
 ```bash
 gh auth login
-gh api --method PUT repos/marcelop04/mesa-servicio-universitario/environments/production
 gh api --method POST repos/marcelop04/mesa-servicio-universitario/rulesets \
   --input despliegue/github/checks-main-ruleset.json
 ```
 
 El JSON propone un ruleset adicional de ocho checks, sin sustituir los rulesets existentes.
+`proteccion-main.json` contiene los mismos ocho checks como referencia para repositorios
+que usan protección clásica; no aplicarlo encima de reglas existentes sin revisarlas.
 La configuración **observada** por
 la API de reglas efectivas de main bloquea borrado/force-push y exige PR con una
 aprobación, con bypass configurado para el usuario actual. No declara checks de estado
 obligatorios. Ver `docs/evidencias/fase-iii-iv-david/proteccion.json`; no se atribuyen
 a la rama checks que la API no muestra. El propietario puede añadir los ocho checks de CI/CodeQL.
-El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
+El equipo trabaja en ramas y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
 Si `main` ya está protegida, el administrador debe conservar sus reglas y checks
@@ -392,6 +393,10 @@ ni contraseñas. No usar opciones que deshabiliten la verificación TLS.
 
 El [protocolo de usuarios](../pruebas/usuarios/Protocolo_SUS.md) describe las cinco
 sesiones y la revisión responsive. Sus resultados reales son requisito para cerrar B5.
+El [cuestionario listo para compartir](../pruebas/usuarios/Cuestionario_SUS.md) incluye
+el mensaje de invitación y los diez ítems. `/sus/` descarga un CSV por participante;
+no almacena respuestas en el servidor. Las herramientas de combinación y cálculo
+aceptan respuestas de sesiones registradas y no ofrecen un modo de simulación.
 
 ## 8. Diagnóstico
 
@@ -411,7 +416,7 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 
 ## 9. Evidencias y estado
 
-Consultar [la bitácora de David](../fase-iii-iv-david.md) para distinguir implementación,
+Consultar [la bitácora del paquete B](../fase-iii-iv-david.md) para distinguir implementación,
 comprobaciones locales, ejecución real de CI/CD y resultados con usuarios. Una validación
 Terraform no crea la VM; un cuestionario preparado no equivale a cinco sesiones completadas.
 

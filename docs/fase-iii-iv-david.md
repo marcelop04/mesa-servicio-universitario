@@ -15,7 +15,7 @@ Always Free se conserva como alternativa de infraestructura.
 | B4 | Copia/restauración de MySQL y evidencias | Aprobado en CI y en ensayo aislado de la VM; copia de la app descargada al equipo y cuatro SHA-256 verificados; timer diario activo | `recuperacion.json`, `backup.sh`, `restaurar.sh`, `systemd/` |
 | B5 | Cinco usuarios, SUS y responsive | Responsive main aprobado: 32 capturas de roles y dos del formulario publicado. CSV/combinación preparados; cinco sesiones reales siguen pendientes | `docs/pruebas/usuarios/`, `/sus/`, `responsive-main/{resultado,sus}.json` |
 | B6 | Manual técnico | Redactado con instalación, variables, CD, recuperación y diagnóstico | `docs/manual/Manual_tecnico.md` |
-| Todos | Sección del informe, demostración y uso de IA | Actualizados con la ejecución real de main y los pendientes humanos/administrativos | `docs/informe/Seccion_David_Nube_CD.md`, `docs/presentacion/Guion_David.md`, `docs/registro-uso-ia.md` |
+| Todos | Sección del informe, demostración y uso de IA | Sección B integrada en el informe; Gabriel consolida la presentación del equipo | `docs/informe/Informe_Final_Fases_III_IV.md`, `docs/registro-uso-ia.md` |
 
 ## Decisiones
 
@@ -114,8 +114,8 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
 - Se obtuvieron las reglas efectivas mediante `/rules/branches/main` y los rulesets:
   borrado/force-push bloqueados, PR con 1 aprobación y bypass configurado. La respuesta
   no contiene checks obligatorios; `proteccion.json` registra la configuración real.
-- No hay cinco participantes reales acreditados. P01–P05 en el ejemplo sintético no
-  se cuentan como participantes; el cálculo normal rechaza sus datos simulados.
+- No hay cinco participantes reales acreditados. El CSV de respuestas permanece vacío
+  y el cálculo solo acepta registros de sesiones con origen `RESPUESTA_USUARIO`.
 - La integración detectó una intermitencia al publicar políticas: MySQL/H2 redondeaba
   nanosegundos y podía dejar la fecha en el futuro. Se normalizó a milisegundos, acorde
   con `DATETIME(3)`, y se comprobó con reloj fijo y las pruebas de políticas.
@@ -182,5 +182,37 @@ GitHub Actions; el resultado de cada commit se consulta en los checks del PR.
   (observabilidad). Coordinar carga/escaneos para no interferir con sesiones SUS.
 - Gabriel puede añadir servicios/puertos internos en su Compose de observabilidad;
   mantener MySQL, Actuator y herramientas administrativas fuera del acceso público.
-- Entregar a Alex únicamente resultados reales de usuarios, no los datos sintéticos
-  empleados para comprobar la fórmula SUS.
+- Entregar a Alex únicamente resultados reales de usuarios, acompañados de sus fichas
+  de sesión. Las pruebas técnicas de la fórmula no son evidencia de usabilidad.
+
+## Revisión del paquete B · 13/11/2026 (Lima)
+
+- Se retiró el guion individual de presentación y se integró la sección técnica en
+  el informe final. Se conservan la bitácora, el responsable del registro IA y las
+  tres tandas de capturas como historial, según el reparto y la revisión solicitada.
+- Se eliminó el archivo de respuestas de ejemplo y el modo de simulación SUS.
+  Se conserva la verificación técnica de la fórmula y el ensayo real de respaldo RNF11.
+- Se preparó `docs/pruebas/usuarios/Cuestionario_SUS.md`, listo para compartir;
+  el formulario registra fecha de Lima y ancho real automáticamente, valida la
+  confirmación de uso y mantiene la descarga individual sin enviar respuestas al servidor.
+- El script responsive incluye ahora la verificación reproducible de `/sus/`.
+- Se retiraron la pantalla provisional sin rutas activas, su función auxiliar y
+  los metadatos de asignación del menú que ya no se consumían, con aprobación del responsable.
+- La API de GitHub confirmó permisos WRITE sin ADMIN: main exige un PR y una aprobación,
+  pero no checks obligatorios; `production` tampoco tiene restricciones adicionales.
+  El JSON aditivo de ocho checks queda listo para el propietario. No se declararon aplicados.
+- Se comprobó nuevamente el origen público: TLS, SPA, CSRF Secure, 401 JSON y OpenAPI
+  aprobados. Este smoke no inició sesión ni reemplaza las pruebas con participantes.
+- D y E siguen en los PR #6 y #5, basados en versiones anteriores de main. Su integración
+  debe conservar el gate CI/CodeQL, el guard prod y las herramientas/evidencias B actuales.
+
+Pendientes B: cinco sesiones reales con su análisis y activación administrativa de
+los checks de main. La verificación de una futura release integrada debe repetirse
+después de que sus CI y CD terminen.
+
+Validación de esta revisión: 15 pruebas de herramientas y 4 de autorización DAST
+aprobadas; 83 pruebas frontend y compilación aprobadas. El formulario se verificó
+con navegador a 360/1366 px: diez preguntas, 50 opciones, validación de campos y
+descarga CSV correctas, sin desborde ni errores JavaScript. Los registros técnicos
+se generaron en una carpeta temporal con origen de prueba local y no se incorporan
+al CSV de participantes ni se cuentan como sesiones SUS.
