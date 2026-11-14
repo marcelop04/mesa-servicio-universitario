@@ -51,11 +51,18 @@ La base recibida contiene el avance funcional de fase II, HU15–19 y el paquete
 - OpenAPI y [panorama GraphQL/gRPC/webhooks/API Gateway](../api/panorama-apis.md).
 - [Manual de usuario por rol](../manual/Manual_de_usuario.md).
 
-**Pendiente A:** revisar esta síntesis, confirmar la revisión final de API/ejemplos y adjuntar evidencia de la
-versión integrada. Los cambios C en auditoría, documentación y credenciales de recorridos requieren su revisión.
-El defecto de transacción de la tarea programada A4 se corrigió en PR #7 con
-TransactionTemplate y una regresión sin transacción previa. Está integrado en main;
-no se reimplementó desde C ni se mantiene como bloqueo ficticio del informe.
+**Revisión del responsable (Emanuel, 14/11/2026):** esta síntesis coincide con lo integrado en main.
+
+- **API y ejemplos:** `OpenApiTest` valida en cada ejecución del CI el esquema `ErrorApi`, la seguridad
+  (cookie de sesión y CSRF) y los códigos HTTP de las rutas. Pasa sobre `98bf12c`.
+- **Evidencia de la versión integrada:** capturas en `docs/evidencias/fase-iii-emanuel/` y pruebas
+  `EncuestaTest`, `PoliticasTest`, `AuditoriaTest`, `LimpiezaRevocacionesTest` y `OpenApiTest`, dentro de las
+  193 pruebas de backend y 83 de frontend que pasan en main.
+- **Cambios de C sobre archivos de A, revisados y aceptados:** sanitización de secretos también dentro de
+  listas en `AuditoriaServicio`; aviso del límite de intentos de inicio de sesión en el manual de usuario;
+  y lectura de la contraseña de demostración desde `DEMO_PASSWORD` en `recorrido-fase-iii-emanuel.mjs`.
+- **Defecto A4:** la tarea programada de limpieza eludía la transacción. Lo detectó la revisión de C y se
+  corrigió en el PR #7 con `TransactionTemplate` y una regresión sin transacción previa.
 
 ## 4. Nube, ambientes y CI/CD · Paquete B
 

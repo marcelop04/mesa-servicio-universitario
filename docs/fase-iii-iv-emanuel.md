@@ -79,12 +79,14 @@ cd frontend && npm test        # Vitest: encuesta.test.jsx y politicas-auditoria
 ```
 
 Recorrido en el navegador con capturas. Requiere `docker compose up --build` y Microsoft Edge (con Chrome, usar
-`NAVEGADOR=chrome`). Publica una versión nueva de la política en la base local de demostración.
+`NAVEGADOR=chrome`). Publica una versión nueva de la política en la base local de demostración. Desde la
+revisión de seguridad (paquete C), el script ya no trae una contraseña por defecto: hay que pasar la de las
+cuentas de demostración en `DEMO_PASSWORD`.
 
 ```bash
 cd docs/pruebas
 npm install --no-save playwright-core
-node recorrido-fase-iii-emanuel.mjs ../evidencias/fase-iii-emanuel
+DEMO_PASSWORD='<contraseña de demostración local>' node recorrido-fase-iii-emanuel.mjs ../evidencias/fase-iii-emanuel
 ```
 
 El script falla en estos casos:
@@ -93,6 +95,17 @@ El script falla en estos casos:
 - se ofrece una segunda encuesta;
 - la auditoría muestra un secreto;
 - hay desplazamiento horizontal a 360 px.
+
+## Correcciones posteriores a la entrega del paquete (12 al 14/11/2026)
+
+- **Defecto A4 (hallado por la revisión de Marcelo):** `programado()` llamaba a `limpiar()` desde la misma
+  clase, así que `@Transactional` no se aplicaba y la tarea fallaba con `TransactionRequiredException`. Las
+  pruebas no lo detectaban porque corrían dentro de una transacción. Corregido en el PR #7: `limpiar()` abre su
+  transacción con `TransactionTemplate`, y `laTareaProgramadaFuncionaSinTransaccionPrevia` cubre ese camino.
+- **Cambios de C sobre archivos de este paquete, revisados y aceptados:** sanitización de secretos dentro de
+  listas en `AuditoriaServicio`, aviso del límite de intentos en el manual de usuario y `DEMO_PASSWORD` en el
+  script del recorrido.
+- **Estado en main (`98bf12c`):** 193 pruebas de backend y 83 de frontend, 0 fallas.
 
 ## Registro de uso de IA
 
