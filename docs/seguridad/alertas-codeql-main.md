@@ -35,3 +35,19 @@ Java y JavaScript finalizaron correctamente; eso no equivale a ausencia de alert
 
 Esta revisión no evalúa el head de los PR D/E ni les atribuye resultados: ambos
 siguen fuera de main en el corte indicado.
+
+## Corrección en código · 14/11/2026 (PR #13)
+
+En lugar de descartar las alertas en GitHub, se corrigió el código del prototipo:
+
+| Alertas | Cambio |
+|---|---|
+| 1 a 4 · `js/xss` y redirección no validada (`acceso.js`) | El destino tras ingresar ya no usa el texto del parámetro `volver`. Se busca el nombre en una lista fija de páginas del prototipo, el destino se arma con ese nombre de la lista y la consulta se vuelve a codificar. Entradas como `javascript:…`, `//host/…` o una URL absoluta caen en la página de inicio del rol |
+| 5 · `js/missing-rate-limiting` (`middleware.js`) | `POST /demo/restablecer` pasa por `express-rate-limit` (120 peticiones por minuto) y responde 429 con el formato común de error al superarlo |
+
+Comprobado en local: pruebas unitarias del prototipo (33 de 33), verificación del destino con entradas
+hostiles y respuesta del endpoint con sus cabeceras `RateLimit-*`.
+
+**Pendiente de confirmar:** que el análisis de CodeQL sobre main cierre las cinco alertas después de
+integrar el PR. Si alguna sigue abierta, se revisa de nuevo; no se descarta a mano. El resto de este
+documento describe el estado anterior a la corrección.

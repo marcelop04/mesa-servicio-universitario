@@ -21,9 +21,24 @@ const boton = document.getElementById('boton-ingresar');
 const parametros = new URLSearchParams(location.search);
 const volverA = parametros.get('volver');
 
+// Páginas del prototipo a las que se puede volver tras ingresar.
+const PAGINAS_LOCALES = ['solicitudes.html', 'nueva-solicitud.html', 'detalle.html', 'notificaciones.html', 'catalogos.html'];
+
+/**
+ * Solo se vuelve a una página conocida del prototipo. El destino se arma con el nombre tomado de la lista
+ * (no con el texto recibido) y la consulta se vuelve a codificar, de modo que el parámetro `volver` nunca
+ * decide el esquema ni el sitio de la redirección.
+ */
 function destinoTrasIngreso(rol) {
-  // Solo se acepta volver a una página local del prototipo.
-  if (volverA && /^[a-z-]+\.html(\?.*)?$/.test(volverA)) return volverA;
+  if (volverA) {
+    const corte = volverA.indexOf('?');
+    const nombre = corte < 0 ? volverA : volverA.slice(0, corte);
+    const pagina = PAGINAS_LOCALES.find((p) => p === nombre);
+    if (pagina) {
+      const consulta = corte < 0 ? '' : new URLSearchParams(volverA.slice(corte + 1)).toString();
+      return consulta ? `./${pagina}?${consulta}` : `./${pagina}`;
+    }
+  }
   return INICIO_POR_ROL[rol];
 }
 

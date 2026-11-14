@@ -19,6 +19,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import {
   ESTADOS, PRIORIDADES, IMPACTOS, URGENCIAS, ESTADOS_PENDIENTES,
   calcularPrioridad, calcularLimites, recalcularPorCambioDePrioridad,
@@ -193,8 +194,22 @@ export function crearApi(router) {
     }
   };
 
+  // El restablecimiento lee y reescribe archivos: se limita su frecuencia para que no pueda saturar el disco.
+  const limiteRestablecer = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 120,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => res.status(429).json({
+      codigo: 'DEMASIADAS_PETICIONES',
+      mensaje: 'Demasiados restablecimientos seguidos. Espera un minuto e intenta nuevamente.',
+      errores: [],
+      id_correlacion: req.idCorrelacion ?? null,
+    }),
+  });
+
   // Demo: restablecer datos (copia db.seed.json → db.json y recarga la memoria).
-  rutas.post('/demo/restablecer', manejar((req, res) => {
+  rutas.post('/demo/restablecer', limiteRestablecer, manejar((req, res) => {
     restablecerArchivo(router.dbArchivo);
     db.setState(JSON.parse(readFileSync(RUTA_SEMILLA, 'utf8')));
     res.json({ mensaje: 'Datos simulados restablecidos a su estado inicial.', restablecido_en: ahora() });
