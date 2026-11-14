@@ -1,0 +1,64 @@
+{
+  "origen": "https://msu-157-137-206-147.sslip.io",
+  "revision_desplegada": "98bf12cab5bc55c07224dab6a138e1a0ec0da090",
+  "tipo": "ZAP baseline pasivo, sin autenticación",
+  "autorizacion_confirmada": true,
+  "version_zap": "2.17.0",
+  "fecha_reporte": "2026-11-14T04:53:29.171823735Z",
+  "codigo_salida": 2,
+  "resultado_tecnico": "completado_con_avisos",
+  "requiere_revision_de_hallazgos": true,
+  "grupos_por_riesgo": {
+    "0": 3,
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "reglas_distintas": 3,
+  "endpoints_informados_por_zap": 4,
+  "alertas": [
+    {
+      "regla": "10015",
+      "titulo": "Re-examine Cache-control Directives",
+      "riesgo": 0,
+      "confianza": "1",
+      "instancias": 2,
+      "rutas": [
+        "/",
+        "/sitemap.xml"
+      ]
+    },
+    {
+      "regla": "10049",
+      "titulo": "Non-Storable Content",
+      "riesgo": 0,
+      "confianza": "2",
+      "instancias": 5,
+      "rutas": [
+        "/",
+        "/assets/index-CfFaznyt.css",
+        "/assets/index-vmwxJ0FQ.js",
+        "/robots.txt",
+        "/sitemap.xml"
+      ]
+    },
+    {
+      "regla": "10109",
+      "titulo": "Modern Web Application",
+      "riesgo": 0,
+      "confianza": "2",
+      "instancias": 3,
+      "rutas": [
+        "/",
+        "/robots.txt",
+        "/sitemap.xml"
+      ]
+    }
+  ],
+  "limites": [
+    "Sin autenticación, ataques activos ni cobertura completa de la SPA/API.",
+    "El SHA proviene del registro de alcance; contrastarlo con CD, no lo mide ZAP.",
+    "Un resumen no acepta riesgos ni sustituye la revisión del reporte original."
+  ],
+  "sha256_reporte_original": "b73a57b1a4b03af6f8960f9c14f4523f9b637f76f9336de1df6c435d82ce35e4"
+}

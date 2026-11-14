@@ -36,7 +36,7 @@ La estrategia de pruebas abarcó la totalidad de la pirámide de automatización
    - *CodeQL (SAST):* 0 alertas en el código de producción backend y frontend (5 alertas históricas archivadas en prototipo legado fuera del build Docker).
    - *npm audit:* 0 vulnerabilidades en dependencias frontend.
    - *OWASP Dependency-Check (SCA):* Inicialmente 68 CVEs, reducidos a 23 CVE distintos (15 con CVSS $\ge 7.0$ en dependencias transitivas de Spring). El control **pasa en main (BUILD SUCCESS)** gracias a las excepciones documentadas por el equipo en PR #7 (`backend/dependency-check-suppressions.xml`), atadas a la versión exacta y con caducidad al 31/01/2027 sin reducir el umbral CVSS $\ge 7.0$. Los hallazgos corresponden a módulos no utilizados en la solución (WebFlux, XSLT, RSocket, FreeMarker, LDAP, etc.), como se detalla en `docs/seguridad/analisis-dependencias.md`.
-   - *DAST (OWASP ZAP):* Reportado formalmente como **pendiente de ejecución**, con plantilla y workflow listos por Marcelo, a la espera de la autorización formal de escaneo activo sobre la IP pública.
+   - *DAST (OWASP ZAP):* Marcelo ejecutó el **baseline pasivo el 13/11/2026** sobre la URL pública (release `c8d4e5c`): **0 hallazgos altos, 1 medio, 3 bajos y 3 informativos**; 63 reglas aprobadas. Las correcciones se integraron en el PR #12. **En la reprueba sobre la versión corregida (`98bf12c`, 14/11/2026 UTC) los cuatro hallazgos ya no aparecen**: 65 reglas aprobadas y solo 3 avisos informativos.
    - *Usabilidad SUS (David - PR #11):* 5 participantes reales (P01 a P05) del rol Solicitante evaluados sobre la URL desplegada, obteniendo una **media SUS de 87.0 / 100** (calificación **«Excelente»**, superando la meta de $\ge 70.0$).
 
 ### Síntesis Global de Resultados
@@ -44,9 +44,9 @@ La estrategia de pruebas abarcó la totalidad de la pirámide de automatización
 | Categoría de Prueba | Herramienta | Alcance / Muestra | Aserciones / Casos | Tasa de Éxito | Duración | Estado |
 | :--- | :--- | :--- | :--- | :---: | :---: | :---: |
 | **Pruebas Unitarias/Integración (Local)** | JUnit 5 + H2 (modo MySQL) | Lógica de negocio, SLA, entidades | 95 métodos (103 con nube) | **100.00 %** (95/95) | 18.2 s | **APROBADO** |
-| **Pruebas Unitarias/Integración (CI `main`)** | JUnit 5 + H2 (modo MySQL) | Suite consolidada con seguridad/servicios | 155 métodos | **100.00 %** (155/155) | 26.5 s | **APROBADO** |
+| **Pruebas Unitarias/Integración (CI `main`)** | JUnit 5 + H2 (modo MySQL) | Suite consolidada con seguridad/servicios (main `98bf12c`) | 193 métodos | **100.00 %** (193/193) | — | **APROBADO** |
 | **Pruebas de Componentes UI (Local)** | Vitest + React Testing Library | Formularios, filtros, persistencia | 74 tests (11 archivos) | **100.00 %** (74/74) | 4.8 s | **APROBADO** |
-| **Pruebas de Componentes UI (CI `main`)** | Vitest + React Testing Library | Suite consolidada frontend | 80 tests (12 archivos) | **100.00 %** (80/80) | 6.1 s | **APROBADO** |
+| **Pruebas de Componentes UI (CI `main`)** | Vitest + React Testing Library | Suite consolidada frontend (main `98bf12c`) | 83 tests (13 archivos) | **100.00 %** (83/83) | — | **APROBADO** |
 | **Pruebas de API (Newman en CI)** | Newman 6.2 (Postman) | 24 HUs, 4 roles, RBAC, CSRF, SLA, 409 | 65 requests / 182 asserts | **100.00 %** (182/182) | 6.5 s | **APROBADO** |
 | **Aceptación E2E (Desktop 1366px)** | Playwright Test | 24 HUs oficiales (BDD) | 24 escenarios | **100.00 %** (24/24) | 18.8 s | **APROBADO** |
 | **Aceptación E2E (Mobile 360px)** | Playwright Test | RNF05: $\text{scrollWidth} \le \text{innerWidth}$ | 24 escenarios | **100.00 %** (24/24) | 18.7 s | **APROBADO** |
@@ -277,11 +277,21 @@ Conforme a las directivas del **Paquete C (Seguridad)** desarrollado por Marcelo
 
 ### 6.2. Análisis Dinámico de Seguridad (DAST)
 
-- **Estado de Ejecución:** A la fecha de cierre de este informe, el análisis dinámico activo mediante OWASP ZAP **aún no se ejecuta**.
-- **Artefactos Preparados:** Marcelo dejó configurada la plantilla estructurada de hallazgos en `docs/seguridad/plantilla-dast.md` y el flujo automatizado `.github/workflows/dast.yml` basado en la imagen oficial `zaproxy/zap-stable`.
-- **Delimitación Técnica y Justificación:** La ejecución de pruebas dinámicas intrusivas (ataques de inyección, fuzzing y escaneo activo) contra la dirección IP pública en Oracle Cloud Infrastructure (`https://msu-157-137-206-147.sslip.io`) requiere una autorización formal previa por parte del administrador de la infraestructura y una delimitación estricta de alcance (Rules of Engagement) para evitar bloqueos del proveedor cloud o la alteración de datos durante las evaluaciones de usabilidad. Su ejecución queda calendarizada como actividad post-integración.
-- **Cabeceras de Seguridad Verificadas (Caddy + Spring Security):**
-  - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
+- **Estado de Ejecución:** Marcelo (Paquete C) ejecutó OWASP ZAP **baseline pasivo** el 13/11/2026 (Lima) contra `https://msu-157-137-206-147.sslip.io`, sobre la release `c8d4e5c`, con ZAP 2.17.0 en Docker local. Fue un escaneo sin autenticación ni ataques activos, con spider de un minuto y formularios desactivados. Registro completo en `docs/seguridad/dast-2026-11-13.md`; reporte original y resumen en `docs/seguridad/evidencias/`.
+- **Resultado:** 63 reglas aprobadas y 5 con aviso; ninguna en fallo. El reporte desglosa **7 grupos: 0 altos, 1 medio, 3 bajos y 3 informativos**.
+
+  | Regla ZAP | Riesgo | Hallazgo | Tratamiento (PR #12) |
+  | :--- | :---: | :--- | :--- |
+  | 10055 | Medio | La CSP permitía `style-src 'unsafe-inline'` | Se retiró `unsafe-inline`; Swagger usa un hash específico |
+  | 90004 | Bajo | Falta `Cross-Origin-Embedder-Policy` | Se agregó `require-corp` |
+  | 90004 | Bajo | Falta `Cross-Origin-Opener-Policy` | Se agregó `same-origin` |
+  | 90004 | Bajo | Falta `Cross-Origin-Resource-Policy` | Se agregó `same-origin` |
+  | 10015, 10049, 10109 | Informativo | Observaciones de caché (`no-store`) y de aplicación web moderna | Sin cambio: `no-store` se mantiene como protección |
+
+- **Alcance y límites declarados por el responsable:** el escaneo informó **5 rutas públicas** (raíz, `robots.txt`, `sitemap.xml` y los dos recursos JS/CSS). **No cubre el inicio de sesión, la cookie de sesión, los roles ni la API autenticada**; esos controles se verifican con las 50 pruebas negativas de `AccesosPorRolTest` y con la suite de Newman de este informe.
+- **Reprueba (14/11/2026 UTC, release `98bf12c`):** mismo baseline y mismos parámetros sobre la versión corregida ya desplegada. **65 reglas aprobadas, 3 avisos informativos y 0 fallos; las reglas 10055 y 90004 pasan.** Registro en `docs/seguridad/dast-reprueba-2026-11-14.md`. Falta la aceptación formal del responsable del Paquete C.
+- **Cabeceras de Seguridad Verificadas (Caddy + Spring Security)** sobre la release `c8d4e5c`, antes de las correcciones del PR #12:
+  - `Strict-Transport-Security: max-age=31536000`
   - `Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; ...`
   - `X-Content-Type-Options: nosniff`
   - `X-Frame-Options: DENY`

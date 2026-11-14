@@ -8,6 +8,11 @@ Esta revisión C conserva la sección B recibida y actualiza seguridad, trazabil
 el pendiente A4 ya resuelto por PR #7. Las correcciones propuestas en el nuevo PR C
 no se presentan como desplegadas. D/E siguen en PR abiertos, no integrados en este corte.
 
+**Actualización del 14/11/2026 (Lima):** los PR #5 (E), #6 (D) y #12 (C) ya están integrados en main
+`98bf12c`, con CI, CodeQL y CD aprobados. Las secciones 5.3, 6, 7 y 8 se actualizaron con esa versión.
+Siguen abiertos la aceptación de la reprueba de ZAP, la confirmación de CodeQL sobre el prototipo y las
+aprobaciones de cada integrante.
+
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
 
@@ -51,11 +56,18 @@ La base recibida contiene el avance funcional de fase II, HU15–19 y el paquete
 - OpenAPI y [panorama GraphQL/gRPC/webhooks/API Gateway](../api/panorama-apis.md).
 - [Manual de usuario por rol](../manual/Manual_de_usuario.md).
 
-**Pendiente A:** revisar esta síntesis, confirmar la revisión final de API/ejemplos y adjuntar evidencia de la
-versión integrada. Los cambios C en auditoría, documentación y credenciales de recorridos requieren su revisión.
-El defecto de transacción de la tarea programada A4 se corrigió en PR #7 con
-TransactionTemplate y una regresión sin transacción previa. Está integrado en main;
-no se reimplementó desde C ni se mantiene como bloqueo ficticio del informe.
+**Revisión del responsable (Emanuel, 14/11/2026):** esta síntesis coincide con lo integrado en main.
+
+- **API y ejemplos:** `OpenApiTest` valida en cada ejecución del CI el esquema `ErrorApi`, la seguridad
+  (cookie de sesión y CSRF) y los códigos HTTP de las rutas. Pasa sobre `98bf12c`.
+- **Evidencia de la versión integrada:** capturas en `docs/evidencias/fase-iii-emanuel/` y pruebas
+  `EncuestaTest`, `PoliticasTest`, `AuditoriaTest`, `LimpiezaRevocacionesTest` y `OpenApiTest`, dentro de las
+  193 pruebas de backend y 83 de frontend que pasan en main.
+- **Cambios de C sobre archivos de A, revisados y aceptados:** sanitización de secretos también dentro de
+  listas en `AuditoriaServicio`; aviso del límite de intentos de inicio de sesión en el manual de usuario;
+  y lectura de la contraseña de demostración desde `DEMO_PASSWORD` en `recorrido-fase-iii-emanuel.mjs`.
+- **Defecto A4:** la tarea programada de limpieza eludía la transacción. Lo detectó la revisión de C y se
+  corrigió en el PR #7 con `TransactionTemplate` y una regresión sin transacción previa.
 
 ## 4. Nube, ambientes y CI/CD · Paquete B
 
@@ -215,6 +227,10 @@ falso positivo, pendiente de confirmar; la quinta es la falta real de límite en
 del mock. Esas fuentes no forman parte de las imágenes del despliegue. No se descartaron
 alertas ni se excluyó el prototipo de SAST. [Triage](../seguridad/alertas-codeql-main.md).
 
+**Actualización del 14/11/2026:** las cinco alertas se corrigieron en el código del prototipo (PR #13):
+lista fija de páginas para la redirección tras ingresar y límite de frecuencia en el restablecimiento
+de datos. Falta confirmar que CodeQL las cierre en main después de integrar ese PR.
+
 El [CD 43523245472](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43523245472)
 publicó y entregó el mismo `c8d4e5c` después de CI/CodeQL exitosos. El gate por éxito de
 análisis no equivale a bloqueo por hallazgos ni a checks de rama obligatorios.
@@ -238,10 +254,16 @@ logo de Swagger y añade las tres cabeceras de aislamiento. Se conservan protecc
 de caché y se corrige duplicación de cabeceras en Swagger. Las pruebas backend/proxy
 y de navegador local validan estas correcciones sin atribuirles cobertura de nube.
 
-**C3 permanece parcial:** falta integrar eventualmente el PR, desplegar su SHA aprobado,
-repetir ZAP/cabeceras públicos y revisar hallazgos/riesgos con el equipo. No se afirma
-que el servidor público ya ejecute estas correcciones. El baseline tampoco prueba toda
-la SPA autenticada ni sustituye los casos RNF01.
+**C3 permanece parcial.** El PR #12 ya está integrado y el CD de `98bf12c` terminó correctamente.
+Una petición GET pública del 14/11/2026 a la raíz del sitio devuelve la CSP sin `unsafe-inline` (con el
+hash de Swagger) y las cabeceras `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy` y
+`Cross-Origin-Resource-Policy`.
+
+**Reprueba de ZAP sobre `98bf12c` (14/11/2026 UTC):** mismo baseline pasivo y mismos parámetros. Resultado:
+65 reglas aprobadas, 3 avisos informativos y ningún fallo. **Los cuatro hallazgos corregidos (CSP 10055 y
+los tres de 90004) ya no aparecen.** [Registro y evidencias](../seguridad/dast-reprueba-2026-11-14.md).
+La ejecutó Emanuel con autorización del equipo; **falta la revisión y aceptación de Marcelo** y la del
+equipo sobre los tres informativos. El baseline no prueba la SPA autenticada ni sustituye los casos RNF01.
 
 ### 5.4 Revisión y riesgos residuales
 
@@ -261,27 +283,58 @@ sesiones de usuarios ni pruebas remotas. [Validación del nuevo avance](../segur
 
 ## 6. Observabilidad · Gabriel (D)
 
-**Pendiente de integración y validación del responsable:** el [PR D #6](https://github.com/marcelop04/mesa-servicio-universitario/pull/6)
-continúa abierto en el corte consultado. No se copian como aprobados sus entregables
-ni resultados a este main. Debe aportar Actuator/Micrometer/Prometheus, logs JSON sin secretos
-con correlación, OpenTelemetry y Jaeger/Tempo, Grafana, alertas demostrables, Compose de observabilidad
-y simulacro de incidente RNF08. El filtro de correlación existente no acredita por sí solo estas tareas.
+Integrado en main con el PR #6. Detalle del responsable en
+[su avance](../fase-iii-iv-gabriel.md) y en [su sección](Seccion_Gabriel_Observabilidad.md).
 
-Adjuntar dashboards, consultas reproducibles, condiciones/umbrales de alerta y secuencia de diagnóstico
-con petición, identificación y resolución, evitando incluir datos sensibles.
+| Tarea | Entregable integrado |
+|---|---|
+| D1 · Métricas | Actuator y Micrometer con Prometheus (`/actuator/prometheus`); métrica de negocio `msu_solicitudes_vencidas` |
+| D2 · Logs | JSON con `idCorrelacion`, `traceId` y `spanId`; enmascaramiento de claves sensibles en `logback-spring.xml` |
+| D3 · Trazas | OpenTelemetry con exportación OTLP a Jaeger; muestreo configurable |
+| D4 · Alertas | Tres reglas en `observabilidad/prometheus/alertas.yml`: errores 5xx (> 0,05 req/s), latencia p95 (> 1 s) y solicitudes vencidas |
+| D5 · Simulacro RNF08 | Inyección controlada, alerta, log con correlación, traza, causa raíz y recuperación; endpoints de diagnóstico apagados por defecto y solo para administrador |
+| D6 · Compose | `docker-compose.observabilidad.yml` con Prometheus, Jaeger y Grafana ligados a `127.0.0.1` |
+| D7 · Presentación | Diapositivas, guion de sustentación y registro de IA del equipo en `docs/presentacion/` |
+
+Evidencias: cinco capturas en `docs/evidencias/fase-iii-iv-gabriel/` (alertas disparadas, tablero de
+Grafana, trazas en Jaeger, logs con correlación y recuperación) y `ObservabilidadTest` (6 pruebas) dentro
+del CI.
+
+**Alcance:** el stack de observabilidad se demostró en entorno local. No está levantado en el servidor
+público, y el proxy del despliegue no publica `/actuator` (una petición externa recibe la página de la
+aplicación, no las métricas). Llevarlo al servidor queda como trabajo futuro.
+
+**Pendiente D:** aprobación explícita de Gabriel de esta síntesis y confirmación de que las trazas siguen
+llegando a Jaeger con Kotlin 2.4.21, versión a la que se actualizó para resolver CVE-2026-53914.
 
 ## 7. Pruebas funcionales, seguridad, carga y usuario · Alex (E) y David (B)
 
 Resultados locales de seguridad y regresión disponibles en
 [resultados-locales.md](../seguridad/resultados-locales.md). No equivalen a resultados de carga o nube.
 
-**Pendiente E:** integrar y validar los aportes del [PR #5](https://github.com/marcelop04/mesa-servicio-universitario/pull/5),
-todavía abierto en el corte: colección Newman en CI; E2E BDD por historia; k6 con 2000 casos/20 VU; p95 y criterios
-RNF06, estrés hasta el límite con recursos medidos; revisión humana de pruebas asistidas por IA y
-consolidación del informe de pruebas, incluyendo seguridad aportada por C y usuario aportado por B.
+Integrado en main con el PR #5. Informe completo del responsable:
+[informe de pruebas](../informe-pruebas.md), con su [matriz de trazabilidad](../matriz-trazabilidad-hu.md)
+y la [revisión de pruebas generadas con IA](../revision-pruebas-ia.md).
 
-No rellenar percentiles, puntuaciones SUS, tasas de error o «cero vulnerabilidades» sin evidencia de la
-versión y alcance correspondientes. Registrar ambiente, herramientas, fecha, tamaño de muestra y limitaciones.
+| Prueba | Alcance | Resultado reportado por E |
+|---|---|---|
+| API (Newman en CI) | 65 peticiones y 182 aserciones; cuatro roles, 401/403/409 y CSRF | 100 % aprobado; job «Pruebas de API (Newman)» en verde en main |
+| Aceptación E2E (Playwright, local) | 24 historias en formato BDD, a 1366 px y 360 px (48 pruebas) | 48 de 48; sin desplazamiento horizontal a 360 px (RNF05) |
+| Carga local (k6, RNF06) | 20 usuarios virtuales, 2000 casos sembrados | p95 de 362 ms en consultas y 275 ms en escrituras; 0 % de error |
+| Estrés local (k6) | Rampa de 20 a 400 usuarios virtuales | 12 685 peticiones sin errores HTTP; el p95 supera 1 s desde 150–200 usuarios y llega a 3,5 s; pico de 8,4 s |
+| Verificación en la nube | Newman 13 peticiones; Playwright 2 pruebas (HU01); k6 con 10 usuarios virtuales por 30 s | Todo aprobado; p95 de 115 ms en 414 peticiones |
+
+**Límites declarados:**
+
+- El cumplimiento de RNF06 (20 usuarios virtuales y 2000 casos) está medido en local. En la nube se ejecutó
+  una versión reducida para no afectar el servidor compartido.
+- La causa del límite bajo estrés (pool HikariCP de 10 conexiones) es una hipótesis: k6 mide desde el cliente
+  y no se contrastó con las métricas de Actuator.
+- Las cifras de pruebas unitarias del informe de E corresponden a su corte. En main `98bf12c` pasan
+  193 pruebas de backend y 83 de frontend.
+
+**Pendiente E:** actualizar la sección de DAST de su informe con el baseline de ZAP ya ejecutado
+(sección 5.3) y aprobar explícitamente esta síntesis.
 
 ### 7.1 Resultados de usuario aportados por B
 
@@ -307,11 +360,12 @@ roles o una tasa de éxito. [Datos, método y alcance](../pruebas/usuarios/Resul
 | RNF11 restauración | Ensayo CI/VM y copia externa con hashes; sección 4 | Repetir si cambia el procedimiento o la release |
 | Usuario/SUS (B5) | Cinco CSV, media 87/100 y límites registrados; secciones 4 y 7.1 | Incorporar esta síntesis al informe de pruebas del equipo |
 | Manual de usuario | Documento de Emanuel enlazado arriba | Revisión de la release |
-| Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa | Verificar la futura release con D/E integrados |
-| Informe de pruebas | Aportes de seguridad disponibles | Consolidación de Alex |
+| Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa; main `98bf12c` desplegado con D/E integrados | Revisión final del manual sobre esa release |
+| Informe de pruebas | [Informe de E](../informe-pruebas.md) integrado; sección 7 | Actualizar su apartado de DAST con el baseline ejecutado |
 | C2 · SAST/SCA | CI aprobado; 23 excepciones Spring y cinco alertas del prototipo analizadas | Decisiones humanas residuales, caducidad de excepciones y reanálisis tras integrar D/E |
-| C3 · DAST | ZAP público c8d4e5c con reporte/hash y correcciones propuestas | Desplegar SHA corregido, repetir escaneo público y registrar revisión |
-| Presentación/demo y registro IA | Aportes C disponibles | Consolidación de Gabriel y aportes de todos |
+| C3 · DAST | ZAP público c8d4e5c con reporte/hash; correcciones integradas (PR #12); reprueba sobre `98bf12c` sin los cuatro hallazgos | Revisión y aceptación del responsable de C y del equipo |
+| Observabilidad RNF08 | Stack, alertas y simulacro integrados (PR #6); sección 6 | Demostración en vivo en entorno local |
+| Presentación/demo y registro IA | Presentación, guion y registro del equipo en `docs/presentacion/` (PR #6) | Revisión de cada integrante de su parte y validaciones humanas pendientes en el registro |
 
 ## 9. Uso responsable de IA y lecciones de seguridad
 
