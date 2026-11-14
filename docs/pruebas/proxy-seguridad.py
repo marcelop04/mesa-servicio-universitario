@@ -25,6 +25,9 @@ class Api(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json')
         self.send_header('Content-Security-Policy', "default-src *; script-src 'unsafe-inline'")
         self.send_header('Referrer-Policy', 'unsafe-url')
+        self.send_header('Cross-Origin-Opener-Policy', 'unsafe-none')
+        self.send_header('Cross-Origin-Embedder-Policy', 'unsafe-none')
+        self.send_header('Cross-Origin-Resource-Policy', 'cross-origin')
         self.end_headers()
         self.wfile.write(json.dumps({'real_ip': self.headers.get('X-Real-IP'),
             'forwarded': self.headers.get('Forwarded'),
@@ -45,12 +48,17 @@ def quitar(*args):
 
 def comprobar_cabeceras(respuesta):
     esperado = {'X-Frame-Options': 'DENY', 'X-Content-Type-Options': 'nosniff',
-                'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store'}
+                'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store',
+                'Cross-Origin-Opener-Policy': 'same-origin',
+                'Cross-Origin-Embedder-Policy': 'require-corp',
+                'Cross-Origin-Resource-Policy': 'same-origin'}
     for nombre, valor in esperado.items():
         assert respuesta.headers.get_all(nombre) == [valor], f'Cabecera ausente/duplicada: {nombre}'
     csp = respuesta.headers.get_all('Content-Security-Policy', [])
     assert len(csp) == 1 and "frame-ancestors 'none'" in csp[0], 'CSP ausente/duplicada'
     assert "script-src 'self';" in csp[0] and "'unsafe-eval'" not in csp[0], 'CSP de scripts insegura'
+    assert "style-src 'self' 'sha256-RL3ie0nH+Lzz2YNqQN83mnU0J1ot4QL7b99vMdIX99w=';" in csp[0], 'Falta hash de Swagger'
+    assert "'unsafe-inline'" not in csp[0], 'CSP de estilos insegura'
     assert respuesta.headers.get('Permissions-Policy'), 'Falta Permissions-Policy'
 
 
@@ -96,7 +104,7 @@ def main():
                 time.sleep(1)
         contexto = ssl.create_default_context(cafile=str(certificado))
         for esquema, puerto in [('http', puerto_http), ('https', puerto_tls)]:
-            for ruta in ['/', '/healthz', '/api/v1/auth/csrf', '/api/v1/me']:
+            for ruta in ['/', '/healthz', '/sus/', '/swagger-ui/index.html', '/api/v1/auth/csrf', '/api/v1/me']:
                 req = Request(f'{esquema}://localhost:{puerto}{ruta}', headers={
                     'X-Real-IP': '203.0.113.250', 'Forwarded': 'for=203.0.113.250;proto=http',
                     'X-Forwarded-For': '203.0.113.250', 'X-Forwarded-Proto': 'http'})

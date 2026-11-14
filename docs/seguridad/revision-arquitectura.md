@@ -3,6 +3,30 @@
 Fecha: 11/11/2026. Alcance: copia local recibida, con el paquete A ya integrado; sin historial Git.
 Revisión asistida por IA; pendiente revisión y aceptación humana de Marcelo y del equipo.
 
+## Actualización sobre main desplegado · 13/11 Lima / 14/11 UTC
+
+Base actual: `c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8`, con PR #3/#7/#8/#9/#11
+integrados. La revisión inferior conserva el historial del primer aporte.
+
+- **A4 corregido en main:** TransactionTemplate y regresión del camino programado
+  sin transacción previa; no se reimplementa la tarea de Emanuel.
+- **C2 verificado:** artifacts npm/Dependency-Check descargados y CI/CodeQL/CD exitosos
+  del mismo SHA. Se conservan 23 excepciones Java; no significa componentes sin CVE.
+  [Resultados y hashes](resultados-ci.md).
+- **Cinco alertas CodeQL del mock:** [triage por alerta](alertas-codeql-main.md), con
+  las condiciones del guard y la falta real de limitación del reset. No se excluye
+  el prototipo de SAST ni se confunde con código de las imágenes de producción.
+- **C1/C3:** HTTPS/cabeceras/CSRF Secure públicos comprobados; baseline real autorizado.
+  Se proponen CSP sin unsafe-inline y aislamiento del origen. El único hash CSS
+  corresponde al logo estático de Swagger, validado frente al asset real; no es
+  un secreto ni reemplaza validación de entradas. [Hallazgos/correcciones](dast-2026-11-13.md).
+- **C4:** nuevas denegaciones de escalamiento por rol, encuestas ajenas, lecturas
+  anónimas, logout CSRF inválido y escritura con JWT revocado; se comprueba persistencia,
+  no solo HTTP. No se cambian reglas de dominio ni contratos de A.
+- **Alcance conservado:** sin nuevos patrones artificiales, migraciones, rotación de
+  credenciales, cambios administrativos de GitHub o implementación de B/D/E.
+  La política corregida no está desplegada ni reescaneada públicamente.
+
 ## Actualización sobre main con B · 12/11/2026
 
 Se conserva el monolito por capas y se incorpora el borde Caddy ya integrado en `5e83051`.
@@ -62,7 +86,7 @@ No se agregaron Redis, microservicios, nuevos roles, migraciones ni funciones as
 |---|---|---|
 | Estado del limitador | En memoria, para una instancia. Reinicio lo limpia; IPs distribuidas pueden eludir el límite por cuenta+IP. Para réplicas usar almacenamiento o política perimetral compartida, previo acuerdo | David + Marcelo |
 | Proxy | Sin lista de confianza se usa dirección del socket: detrás de Nginx varios usuarios pueden compartir límite por IP. Acordar CIDR y normalización de IP real; no aceptar headers arbitrarios ni confiar toda Internet | David |
-| HTTPS / HSTS | El TLS puede terminar antes de Nginx; HSTS corresponde entonces al borde. No configurar preload o subdominios sin revisar alcance | David |
+| HTTPS / HSTS | Borde público comprobado; nueva política CSP/aislamiento requiere CD y reprueba. No configurar preload o subdominios sin revisar alcance | David + Marcelo |
 | Topología de frontend/API | Mantener mismo origen. Dominios separados requieren revisar CORS/SameSite/CSRF/CSP; no se aprobó esa arquitectura en esta intervención | David + Marcelo |
 | Bootstrap sin demo | `DatosIniciales` crea hoy usuarios ficticios y política inicial. Con demo desactivada una base nueva necesita una provisión segura de administrador y política; no inventar credenciales permanentes | David + Emanuel |
 | Cuentas/secretos anteriores | Desactivar siembra no borra cuentas demo, y quitar defaults no rota valores en servidores/historial. Inventariar, rotar y revocar sesiones donde corresponda, sin borrar datos | David + equipo |
@@ -71,8 +95,8 @@ No se agregaron Redis, microservicios, nuevos roles, migraciones ni funciones as
 | Logs | No registrar cuerpos, cookies, JWT, passwords, SQL crudo ni capturas de secretos. Mantener correlación y controlar retención/acceso; diagnóstico ampliado debe sanitizar excepciones | Gabriel |
 | Actuator futuro | Al integrar D, no publicar indiscriminadamente `/actuator/**`; definir exposición/autorización/red de métricas con David y repetir pruebas negativas | Gabriel + David + Marcelo |
 | Imágenes base | Los tags de Docker y Nginx 1.27 preexistentes requieren revisar soporte/actualización y procedencia con B. npm audit y Dependency-Check no escanean el sistema operativo de las imágenes | David + Marcelo |
-| Cadena CI/CD | El análisis CodeQL y su listado de alertas no bloquean automáticamente publicar imágenes. Configurar protección/checks y dependencia explícita del CD; no publicar con Dependency-Check incompleto | David |
-| Dependencias Spring | Tras los parches compatibles quedan 23 CVE distintos, 15 con CVSS ≥ 7. Parches de las ramas 6.x/3.5 citados por el proveedor son de soporte empresarial; decidir migración o revisión por CVE antes de cualquier excepción. [Evidencia](analisis-dependencias.md) | Marcelo + equipo |
+| Cadena CI/CD | CD ya exige CI/CodeQL exitosos del mismo SHA. No equivale a bloquear por hallazgos abiertos ni a checks de main obligatorios; conservar el pendiente administrativo B3 | David / propietario |
+| Dependencias Spring | PR #7 incorpora 23 excepciones exactas y caducables; CI actual aprobado. Confirmar supuestos/riesgo residual y revisar antes del 31/01/2027 o al cambiar dependencias. [Evidencia](analisis-dependencias.md) | Marcelo + equipo |
 | Limpieza programada A4 | **Corregido el 12/11/2026 (Emanuel).** `programado()` autoinvocaba `limpiar()` y eludía el proxy `@Transactional` (`TransactionRequiredException`). Ahora `limpiar()` abre la transacción con `TransactionTemplate`, igual que el cierre automático y las alertas de plazos. `LimpiezaRevocacionesTest.laTareaProgramadaFuncionaSinTransaccionPrevia` cubre ese camino sin transacción previa | Cerrado |
 | Cobertura dinámica | Baseline es pasivo/no autenticado; una SPA puede exponer poco al spider. Mantener pruebas negativas autenticadas y complementar según resultados; no llamarlo pentest completo | Marcelo + Alex |
 | Pruebas generadas por IA | Validaciones automáticas ejecutadas no equivalen a revisión humana. Revisar asserts, mutaciones y cobertura de nuevos endpoints al integrar A/D/E | Marcelo + Alex |

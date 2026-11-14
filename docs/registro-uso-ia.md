@@ -141,3 +141,17 @@ Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-ema
 | Modificaciones tras revisar | Se conservaron healthcheck, ensayos B y registros IA; prod no permite semillas demo; pruebas comprueban causas del guard y cabeceras únicas; se distingue CA local de HTTPS público |
 | Límites | Sin migración mayor ni supresiones; sin ZAP no autorizado, sin corrección de A4, sin implementar D/E, sin rotar cuentas/Secrets ni atribuir firmas o validaciones humanas |
 | Responsable | Marcelo: revisar código, asserts, pendientes y resultados antes del cierre |
+
+## IA-C-07 · Revalidación de main desplegado y primer DAST público
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026 Lima (14/11 UTC) |
+| Herramienta | OpenCode, GPT-6.1 Sol (OpenAI) |
+| Prompt / alcance | Revisar main frente al reparto/rúbrica, avanzar solo C y publicar otro PR; no inventar resultados ni completar dependencias ajenas. Se solicitó y recibió autorización específica para baseline sin autenticación/ataques activos contra el origen del equipo |
+| Resultado generado | Triage C2 actual; baseline público y análisis; correcciones de CSP/aislamiento; pruebas negativas C4 y de navegador/proxy; resumen ZAP sin datos de evidencia; revisión C5 e informe C6 actualizados |
+| ¿Se utilizó? | Incorporado a feat/marcelo-seguridad-validacion para un nuevo PR; sin merge ni despliegue |
+| Validación realizada | CI/CodeQL/CD y artifacts de c8d4e5c consultados; ZAP 2.17.0 real salida 2; 186 JUnit, 83 Vitest, build, 11 Python C y 16 Python B; proxy HTTP/HTTPS, navegador local y actionlint. Gitleaks produjo cuatro coincidencias en fixtures, revisadas sin ocultarlas. Detalle y límites en docs/seguridad/avance-main-2026-11-13.md |
+| Modificaciones tras revisar | La prueba de navegador reveló el estilo SVG de Swagger y las cabeceras duplicadas de esa ruta: se añadió solo el hash del CSS conocido y se extendió el saneamiento de headers. Se corrigieron selectores del propio fixture para menús móvil/escritorio, sin cambiar UI. No se trató un HTTP 200 como prueba suficiente de CSP |
+| Límites | No hay reprueba pública de las correcciones, login remoto nuevo ni firma humana. No se modifican excepciones Java, secretos, datos, reglas administrativas o paquetes D/E. Escaneo no autenticado de cinco endpoints, no pentest de toda la SPA |
+| Responsable | Marcelo: revisar asserts, decisiones/riesgos, resultados y su comprensión antes de aprobar; el asistente no registra esa aceptación por él |

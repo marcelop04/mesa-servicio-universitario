@@ -1,5 +1,11 @@
 # C · Resultados de validación local
 
+**Historial del primer aporte.** Para el corte actual sobre main desplegado, ver
+[avance 13/11 Lima / 14/11 UTC](avance-main-2026-11-13.md): 186 pruebas backend,
+83 frontend, 50 casos C4, 12 comprobaciones de proxy y 34 vistas de navegador local.
+A4 y el fallo histórico C2 ya se resolvieron en main; el [baseline público real](dast-2026-11-13.md)
+tiene evidencia separada y sus correcciones aún requieren CD/reprueba pública.
+
 Fecha: **11/11/2026**. Sistema: Windows, Java Temurin 17.0.21+9 y Node 22.23.5 portátiles.
 Ejecutor: asistente de programación, por autorización de Marcelo. Revisión humana pendiente.
 Alcance: copia local sin Git ni despliegue cloud. Docker Desktop fue instalado posteriormente por Marcelo,
