@@ -78,3 +78,38 @@ msu:
     password: ${DEMO_PASSWORD:}
     # MR07: solicitudes de ejemplo para la bandeja de supervisión, solo si la base no tiene ninguna.
     solicitudes: ${DATOS_DEMO_SOLICITUDES:false}
+  simulacion:
+    # D5: Endpoints de simulación de incidentes RNF08. Desactivado por defecto (seguridad).
+    habilitada: ${SIMULACION_HABILITADA:false}
+
+# Observabilidad (Paquete D: Actuator, Micrometer, Prometheus, OpenTelemetry y Jaeger)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 100ms, 500ms, 1s
+  tracing:
+    sampling:
+      probability: ${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://jaeger:4318/v1/traces}

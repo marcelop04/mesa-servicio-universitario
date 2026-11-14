@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Appender JSON estructurado con LogstashEncoder y Enmascaramiento de Secretos (D2, RNF02) -->
+    <appender name="JSON_CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <includeContext>false</includeContext>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>nivel</level>
+                <thread>hilo</thread>
+                <logger>logger</logger>
+                <message>mensaje</message>
+                <stackTrace>excepcion</stackTrace>
+            </fieldNames>
+
+            <!-- RNF02: Enmascaramiento de claves sensibles para evitar fugas de contraseñas, tokens y cookies -->
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <defaultMask>****</defaultMask>
+                <path>password</path>
+                <path>contrasena</path>
+                <path>token</path>
+                <path>secreto</path>
+                <path>jwt</path>
+                <path>authorization</path>
+                <path>cookie</path>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+
+    <!-- Appender de texto plano para desarrollo local -->
+    <appender name="TEXTO_CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%15.15t] %cyan(%-40.40logger{39}) [corr=%X{idCorrelacion:-sin-corr} trace=%X{traceId:-} span=%X{spanId:-}] : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Perfil dev usa texto formateado; default/prod/prueba/docker usa JSON estructurado -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="TEXTO_CONSOLA"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!dev">
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLA"/>
+        </root>
+    </springProfile>
+</configuration>

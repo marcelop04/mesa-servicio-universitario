@@ -84,8 +84,10 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Responsable | Marcelo; debe revisar el registro y las decisiones antes del cierre |
 ## Registros del paquete B conservados desde main
 
-Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
-Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
+**Proyecto:** Mesa de Servicios Universitarios (MSU)  
+**Curso:** Taller de Construcción de Software Web  
+**Equipo:** Emanuel, David, Marcelo, Gabriel, Alex  
+**Ciclo:** 2026-II
 
 | Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
 |---|---|---|---|---|---|---|---|

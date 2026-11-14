@@ -20,6 +20,15 @@ public interface SolicitudRepositorio extends JpaRepository<Solicitud, Long> {
     @EntityGraph(attributePaths = {"tecnico", "estado"})
     List<Solicitud> findByEstado_CodigoIn(Collection<String> estados);
 
+    /** D1, D4: Conteo optimizado en base de datos de casos pendientes vencidos para scraping de Prometheus. */
+    @Query("""
+            select count(s) from Solicitud s
+            where s.estado.codigo in :pendientes
+              and ((s.primeraAtencionEn is null and s.limiteAtencion is not null and s.limiteAtencion <= :ahora)
+                   or (s.limiteResolucion is not null and s.limiteResolucion <= :ahora))
+            """)
+    long contarVencidas(@Param("pendientes") Collection<String> pendientes, @Param("ahora") Instant ahora);
+
     /** HU17 y HU18: solicitudes registradas en el periodo [desde, hasta). */
     @EntityGraph(attributePaths = {"categoria", "area", "prioridad", "estado", "tecnico"})
     List<Solicitud> findByRegistradaEnGreaterThanEqualAndRegistradaEnLessThan(Instant desde, Instant hasta);

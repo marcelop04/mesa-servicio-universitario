@@ -53,6 +53,9 @@ public class RegistroSolicitudServicio {
     private final Notificador notificador;
     private final Clock reloj;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private pe.edu.unmsm.msu.comun.observabilidad.MetricasMsuServicio metricas;
+
     public RegistroSolicitudServicio(SolicitudRepositorio solicitudes, CategoriaRepositorio categorias,
                                      UbicacionRepositorio ubicaciones, PrioridadRepositorio prioridades,
                                      EstadoRepositorio estados, UsuarioRepositorio usuarios, PlazosServicio plazos,
@@ -119,6 +122,9 @@ public class RegistroSolicitudServicio {
                 estados.getReferenceById(Solicitud.REGISTRADA), registro);
         plazos.aplicarPoliticaVigente(s);
         s = solicitudes.saveAndFlush(s);
+        if (metricas != null) {
+            metricas.registrarSolicitudCreada();
+        }
         transiciones.registrarEvento(s, solicitante.getId(), "REGISTRAR", null,
                 PlazosServicio.Limites.de(s).comoMapa(), null);
 
