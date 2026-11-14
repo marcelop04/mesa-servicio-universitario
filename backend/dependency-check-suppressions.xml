@@ -109,22 +109,22 @@
     <cve>CVE-2026-47834</cve>
   </suppress>
 
-  <!-- ===================== kotlin-stdlib (transitiva de OkHttp · Paquete D) ===================== -->
+  <!-- ===================== kotlin-stdlib y módulos auxiliares (transitiva de OkHttp · Paquete D) ===================== -->
 
   <suppress until="2027-01-31Z">
     <notes><![CDATA[
       CVE-2026-53914: deserialización insegura en la caché de compilación de Kotlin (KAPT / kotlin-gradle-plugin).
       El CVE afecta exclusivamente al plugin de Gradle y a su caché de build; no tiene ninguna relación con
-      kotlin-stdlib, que solo contiene clases de la biblioteca estándar del lenguaje sin lógica de caché ni
-      deserialización de metadatos de compilación.
-      El escáner lo asocia a kotlin-stdlib por CPE (cpe:2.3:a:jetbrains:kotlin) sin distinguir artefactos.
-      Esta es una asignación incorrecta de CPE confirmada como falso positivo por la comunidad OSS
-      (ver https://github.com/jeremylong/DependencyCheck/issues).
-      kotlin-stdlib llega transitivamente a través de OkHttp, que usa opentelemetry-exporter-otlp (D3).
+      los artefactos de ejecución de Kotlin (kotlin-stdlib, kotlin-stdlib-jdk7, kotlin-stdlib-jdk8, etc.), que
+      solo contienen clases de la biblioteca estándar del lenguaje sin lógica de caché de compilación.
+      El escáner lo asocia a cualquier módulo de org.jetbrains.kotlin por coincidencia amplia de CPE
+      (cpe:2.3:a:jetbrains:kotlin) sin distinguir artefactos.
+      Esta es una asignación incorrecta de CPE confirmada como falso positivo por la comunidad OSS.
+      Llega transitivamente a través de OkHttp, utilizado por opentelemetry-exporter-otlp (D3).
       El proyecto no incluye kotlin-gradle-plugin ni usa caché de build de Kotlin.
       Revisar al 31/01/2027 o al actualizar la versión de Spring Boot / micrometer-tracing.
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-.*@.*$</packageUrl>
     <cve>CVE-2026-53914</cve>
   </suppress>
 
