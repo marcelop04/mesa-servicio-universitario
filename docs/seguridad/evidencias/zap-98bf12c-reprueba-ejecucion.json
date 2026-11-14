@@ -1,0 +1,37 @@
+{
+  "imagen": "ghcr.io/zaproxy/zaproxy@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af",
+  "inicio_utc": "2026-11-14T04:52:15.636227+00:00",
+  "fin_utc": "2026-11-14T04:53:37.305994+00:00",
+  "codigo_salida": 2,
+  "alcance": {
+    "origen": "https://msu-157-137-206-147.sslip.io",
+    "revision_desplegada": "98bf12cab5bc55c07224dab6a138e1a0ec0da090",
+    "tipo": "ZAP baseline pasivo, sin autenticación",
+    "autorizacion_confirmada": true,
+    "fecha_utc": "2026-11-14T04:52:15.636227+00:00",
+    "revision_herramientas": "local",
+    "run_url": ""
+  },
+  "parametros_baseline": [
+    "-m",
+    "1",
+    "-T",
+    "5",
+    "-z",
+    "-config spider.processForm=false -config spider.postForm=false -config spider.threadCount=2 -config spider.maxChildren=20"
+  ],
+  "registro_herramienta": {
+    "pass": 65,
+    "warn_reglas": 3,
+    "fail_reglas": 0,
+    "ignore": 0
+  },
+  "ejecutor": "Emanuel, en Docker local, con autorización del equipo; reprueba del baseline de C3",
+  "version_desplegada_fuente": {
+    "sha": "98bf12cab5bc55c07224dab6a138e1a0ec0da090",
+    "estado": "success",
+    "cd": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43557964974",
+    "fecha_utc": "2026-11-14T04:45:19Z",
+    "nota": "Último CD correcto de main antes del escaneo; ZAP no lee la revisión de las imágenes."
+  }
+}

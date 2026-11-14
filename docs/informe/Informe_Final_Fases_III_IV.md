@@ -10,7 +10,8 @@ no se presentan como desplegadas. D/E siguen en PR abiertos, no integrados en es
 
 **Actualización del 14/11/2026 (Lima):** los PR #5 (E), #6 (D) y #12 (C) ya están integrados en main
 `98bf12c`, con CI, CodeQL y CD aprobados. Las secciones 5.3, 6, 7 y 8 se actualizaron con esa versión.
-Siguen abiertos la reprueba de ZAP, las alertas de CodeQL del prototipo y las aprobaciones de cada integrante.
+Siguen abiertos la aceptación de la reprueba de ZAP, la confirmación de CodeQL sobre el prototipo y las
+aprobaciones de cada integrante.
 
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
@@ -256,9 +257,13 @@ y de navegador local validan estas correcciones sin atribuirles cobertura de nub
 **C3 permanece parcial.** El PR #12 ya está integrado y el CD de `98bf12c` terminó correctamente.
 Una petición GET pública del 14/11/2026 a la raíz del sitio devuelve la CSP sin `unsafe-inline` (con el
 hash de Swagger) y las cabeceras `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy` y
-`Cross-Origin-Resource-Policy`. **Falta repetir ZAP sobre esa versión** y revisar hallazgos y riesgos con
-el equipo: ver cabeceras no equivale a una reprueba. El baseline tampoco prueba toda la SPA autenticada
-ni sustituye los casos RNF01.
+`Cross-Origin-Resource-Policy`.
+
+**Reprueba de ZAP sobre `98bf12c` (14/11/2026 UTC):** mismo baseline pasivo y mismos parámetros. Resultado:
+65 reglas aprobadas, 3 avisos informativos y ningún fallo. **Los cuatro hallazgos corregidos (CSP 10055 y
+los tres de 90004) ya no aparecen.** [Registro y evidencias](../seguridad/dast-reprueba-2026-11-14.md).
+La ejecutó Emanuel con autorización del equipo; **falta la revisión y aceptación de Marcelo** y la del
+equipo sobre los tres informativos. El baseline no prueba la SPA autenticada ni sustituye los casos RNF01.
 
 ### 5.4 Revisión y riesgos residuales
 
@@ -358,7 +363,7 @@ roles o una tasa de éxito. [Datos, método y alcance](../pruebas/usuarios/Resul
 | Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa; main `98bf12c` desplegado con D/E integrados | Revisión final del manual sobre esa release |
 | Informe de pruebas | [Informe de E](../informe-pruebas.md) integrado; sección 7 | Actualizar su apartado de DAST con el baseline ejecutado |
 | C2 · SAST/SCA | CI aprobado; 23 excepciones Spring y cinco alertas del prototipo analizadas | Decisiones humanas residuales, caducidad de excepciones y reanálisis tras integrar D/E |
-| C3 · DAST | ZAP público c8d4e5c con reporte/hash; correcciones integradas (PR #12) y desplegadas con `98bf12c` | Repetir el escaneo público sobre esa versión y registrar la revisión |
+| C3 · DAST | ZAP público c8d4e5c con reporte/hash; correcciones integradas (PR #12); reprueba sobre `98bf12c` sin los cuatro hallazgos | Revisión y aceptación del responsable de C y del equipo |
 | Observabilidad RNF08 | Stack, alertas y simulacro integrados (PR #6); sección 6 | Demostración en vivo en entorno local |
 | Presentación/demo y registro IA | Presentación, guion y registro del equipo en `docs/presentacion/` (PR #6) | Revisión de cada integrante de su parte y validaciones humanas pendientes en el registro |
 

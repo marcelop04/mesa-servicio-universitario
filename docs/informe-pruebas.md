@@ -36,7 +36,7 @@ La estrategia de pruebas abarcó la totalidad de la pirámide de automatización
    - *CodeQL (SAST):* 0 alertas en el código de producción backend y frontend (5 alertas históricas archivadas en prototipo legado fuera del build Docker).
    - *npm audit:* 0 vulnerabilidades en dependencias frontend.
    - *OWASP Dependency-Check (SCA):* Inicialmente 68 CVEs, reducidos a 23 CVE distintos (15 con CVSS $\ge 7.0$ en dependencias transitivas de Spring). El control **pasa en main (BUILD SUCCESS)** gracias a las excepciones documentadas por el equipo en PR #7 (`backend/dependency-check-suppressions.xml`), atadas a la versión exacta y con caducidad al 31/01/2027 sin reducir el umbral CVSS $\ge 7.0$. Los hallazgos corresponden a módulos no utilizados en la solución (WebFlux, XSLT, RSocket, FreeMarker, LDAP, etc.), como se detalla en `docs/seguridad/analisis-dependencias.md`.
-   - *DAST (OWASP ZAP):* Marcelo ejecutó el **baseline pasivo el 13/11/2026** sobre la URL pública (release `c8d4e5c`): **0 hallazgos altos, 1 medio, 3 bajos y 3 informativos**; 63 reglas aprobadas. Las correcciones se integraron en el PR #12. **La reprueba sobre la versión corregida ya desplegada sigue pendiente.**
+   - *DAST (OWASP ZAP):* Marcelo ejecutó el **baseline pasivo el 13/11/2026** sobre la URL pública (release `c8d4e5c`): **0 hallazgos altos, 1 medio, 3 bajos y 3 informativos**; 63 reglas aprobadas. Las correcciones se integraron en el PR #12. **En la reprueba sobre la versión corregida (`98bf12c`, 14/11/2026 UTC) los cuatro hallazgos ya no aparecen**: 65 reglas aprobadas y solo 3 avisos informativos.
    - *Usabilidad SUS (David - PR #11):* 5 participantes reales (P01 a P05) del rol Solicitante evaluados sobre la URL desplegada, obteniendo una **media SUS de 87.0 / 100** (calificación **«Excelente»**, superando la meta de $\ge 70.0$).
 
 ### Síntesis Global de Resultados
@@ -289,7 +289,7 @@ Conforme a las directivas del **Paquete C (Seguridad)** desarrollado por Marcelo
   | 10015, 10049, 10109 | Informativo | Observaciones de caché (`no-store`) y de aplicación web moderna | Sin cambio: `no-store` se mantiene como protección |
 
 - **Alcance y límites declarados por el responsable:** el escaneo informó **5 rutas públicas** (raíz, `robots.txt`, `sitemap.xml` y los dos recursos JS/CSS). **No cubre el inicio de sesión, la cookie de sesión, los roles ni la API autenticada**; esos controles se verifican con las 50 pruebas negativas de `AccesosPorRolTest` y con la suite de Newman de este informe.
-- **Pendiente:** las correcciones están integradas en `main` (PR #12). **Falta repetir ZAP y la comprobación de cabeceras sobre la versión corregida ya desplegada** para confirmar que los cuatro hallazgos desaparecen. Hasta entonces el DAST se reporta como ejecutado y corregido en código, con reprueba pendiente.
+- **Reprueba (14/11/2026 UTC, release `98bf12c`):** mismo baseline y mismos parámetros sobre la versión corregida ya desplegada. **65 reglas aprobadas, 3 avisos informativos y 0 fallos; las reglas 10055 y 90004 pasan.** Registro en `docs/seguridad/dast-reprueba-2026-11-14.md`. Falta la aceptación formal del responsable del Paquete C.
 - **Cabeceras de Seguridad Verificadas (Caddy + Spring Security)** sobre la release `c8d4e5c`, antes de las correcciones del PR #12:
   - `Strict-Transport-Security: max-age=31536000`
   - `Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; ...`
