@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { api } from '../../api/cliente.js';
 import { useConsulta } from '../../api/useConsulta.js';
-import { Campo, Confirmacion, EtiquetaActivo, Icono, Mensaje } from '../../componentes/index.js';
+import { Campo, Confirmacion, EtiquetaActivo, Icono, Mensaje, useLlevarALaVista } from '../../componentes/index.js';
 import { Auditoria } from './Auditoria.jsx';
 import { Politicas } from './Politicas.jsx';
 
@@ -42,6 +42,7 @@ function FormularioOpcion({ inicial, opcion, areas, onGuardada, onCancelar }) {
   const [errores, setErrores] = useState({});
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
+  const formulario = useLlevarALaVista();
 
   const enviar = async (e) => {
     e.preventDefault();
@@ -67,7 +68,7 @@ function FormularioOpcion({ inicial, opcion, areas, onGuardada, onCancelar }) {
   };
 
   return (
-    <form className="panel" onSubmit={enviar} noValidate aria-labelledby="titulo-opcion">
+    <form ref={formulario} className="panel" onSubmit={enviar} noValidate aria-labelledby="titulo-opcion">
       <h2 id="titulo-opcion" className="panel__titulo">
         {nueva ? 'Nuevo elemento' : `Editar ${config.singular}: ${opcion.nombre}`}
       </h2>

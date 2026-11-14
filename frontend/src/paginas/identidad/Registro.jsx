@@ -70,7 +70,8 @@ export function Registro() {
           <Campo id="registro-correo" etiqueta="Correo institucional" type="email" obligatorio autoComplete="email"
             placeholder="nombre@unmsm.edu.pe" value={datos.correo} onChange={cambiar('correo')} error={errores.correo} />
           <Campo id="registro-vinculo" como="select" etiqueta="Vínculo con la universidad" obligatorio
-            value={datos.vinculo} onChange={cambiar('vinculo')} error={errores.vinculo}>
+            value={datos.vinculo} onChange={cambiar('vinculo')} error={errores.vinculo}
+            ayuda="Dato informativo: no cambia lo que la cuenta puede hacer en el sistema.">
             <option value="">Seleccione</option>
             {VINCULOS.map((v) => <option key={v.codigo} value={v.codigo}>{v.nombre}</option>)}
           </Campo>

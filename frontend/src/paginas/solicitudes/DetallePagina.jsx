@@ -4,7 +4,7 @@
  */
 import { Link, useParams } from 'react-router-dom';
 import { useSesion } from '../../sesion/SesionContext.jsx';
-import { AccionesConformidad } from '../atencion/AccionesAtencion.jsx';
+import { AccionesConformidad, AccionesTecnico } from '../atencion/AccionesAtencion.jsx';
 import { DetalleSolicitud } from './DetalleSolicitud.jsx';
 import { EncuestaSatisfaccion } from './Encuesta.jsx';
 
@@ -12,6 +12,18 @@ const VOLVER = {
   SOLICITANTE: { ruta: '/solicitudes', texto: 'Volver a mis solicitudes' },
   SUPERVISOR: { ruta: '/supervision', texto: 'Volver a la bandeja' },
   TECNICO: { ruta: '/atencion', texto: 'Volver a mis asignaciones' },
+};
+
+// El técnico llega aquí desde el aviso «Se le asignó la solicitud»: necesita las mismas acciones
+// que en su bandeja. El servidor valida que sea el técnico asignado.
+const ACCIONES = {
+  SOLICITANTE: (s, recargar) => (
+    <>
+      <AccionesConformidad solicitud={s} recargar={recargar} />
+      <EncuestaSatisfaccion solicitud={s} />
+    </>
+  ),
+  TECNICO: (s, recargar) => <AccionesTecnico solicitud={s} recargar={recargar} />,
 };
 
 export function DetallePagina() {
@@ -22,14 +34,7 @@ export function DetallePagina() {
     <section className="pagina" aria-label="Seguimiento de solicitud">
       <p><Link to={volver.ruta}>← {volver.texto}</Link></p>
       <DetalleSolicitud id={Number(id)}
-        acciones={usuario?.rol === 'SOLICITANTE'
-          ? (s, recargar) => (
-            <>
-              <AccionesConformidad solicitud={s} recargar={recargar} />
-              <EncuestaSatisfaccion solicitud={s} />
-            </>
-          )
-          : undefined} />
+        acciones={ACCIONES[usuario?.rol]} />
     </section>
   );
 }

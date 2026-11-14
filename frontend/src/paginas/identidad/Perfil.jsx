@@ -32,6 +32,7 @@ function FormularioNombre({ usuario, onGuardado }) {
     if (limpio.length < 2 || limpio.length > 100) return setError('El nombre debe tener entre 2 y 100 caracteres.');
     setEnviando(true);
     setError(null);
+    setAviso(null);
     try {
       onGuardado(await api.put('/me', { nombre: limpio }));
       setAviso('Nombre actualizado.');

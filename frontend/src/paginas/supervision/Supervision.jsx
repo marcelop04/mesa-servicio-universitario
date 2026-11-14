@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { api } from '../../api/cliente.js';
 import { useConsulta } from '../../api/useConsulta.js';
 import {
-  Campo, Confirmacion, EtiquetaEstado, EtiquetaPlazo, EtiquetaPrioridad, Mensaje, NOMBRE_ESTADO, NOMBRE_PRIORIDAD,
-  Paginacion, Tabla,
+  Campo, Cargando, Confirmacion, EtiquetaEstado, EtiquetaPlazo, EtiquetaPrioridad, Mensaje, NOMBRE_ESTADO, NOMBRE_PRIORIDAD,
+  Paginacion, Tabla, useLlevarALaVista,
 } from '../../componentes/index.js';
 import {
   IMPACTOS, URGENCIAS, calcularPrioridad, fechaLima, recalcularLimites, validarMotivo,
@@ -57,7 +57,7 @@ function PasoPrioridad({ caso, onAccion }) {
     const ok = await onAccion('evaluacion', cuerpo,
       cambia ? `Prioridad actualizada a ${NOMBRE_PRIORIDAD[prioridad]}; límites recalculados desde el registro.`
         : 'Evaluación iniciada: la solicitud pasó a En evaluación.');
-    if (ok === false) return;
+    if (ok !== true) return; // Si el servidor rechaza la acción se conserva lo escrito.
     setMotivo('');
   };
 
@@ -194,7 +194,10 @@ function DialogoCancelar({ caso, abierto, onCerrar, onAccion }) {
       { motivo: motivo.trim(), duplicado, codigo_original: duplicado ? codigo.trim() : null, version: caso.version },
       `La solicitud ${caso.codigo} quedó cancelada.`);
     setOcupado(false);
-    if (resultado?.porCampo) setErrores(resultado.porCampo);
+    // Solo los errores de campo se quedan en el diálogo; cualquier otro (conflicto, permiso, red)
+    // se muestra en el panel del caso, que el diálogo abierto taparía.
+    const deCampo = resultado === true ? {} : resultado?.porCampo ?? {};
+    if (Object.keys(deCampo).length) setErrores(deCampo);
     else onCerrar();
   };
 
@@ -220,6 +223,7 @@ function PanelCaso({ id, onCambio }) {
   const [aviso, setAviso] = useState(null);
   const [cancelar, setCancelar] = useState(false);
   const d = caso.datos;
+  const panel = useLlevarALaVista({ listo: Boolean(d), enfocar: false });
 
   /** Ejecuta una acción; devuelve el error para mostrarlo junto a los campos. */
   const accion = async (ruta, cuerpo, exito) => {
@@ -241,11 +245,11 @@ function PanelCaso({ id, onCambio }) {
     }
   };
 
-  if (!d) return caso.error ? <Mensaje tipo="error">{caso.error.message}</Mensaje> : null;
+  if (!d) return caso.error ? <Mensaje tipo="error">{caso.error.message}</Mensaje> : <Cargando texto="Cargando el caso…" />;
   const pendiente = PENDIENTES.includes(d.estado_codigo);
 
   return (
-    <section className="caso" aria-labelledby="caso-titulo">
+    <section className="caso" aria-labelledby="caso-titulo" ref={panel}>
       <header className="caso__cabecera">
         <div>
           <p className="caso__antetitulo">Caso seleccionado · {d.codigo}</p>

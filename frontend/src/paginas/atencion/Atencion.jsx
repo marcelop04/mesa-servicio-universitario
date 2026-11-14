@@ -64,7 +64,7 @@ export function Atencion() {
         )}
       </div>
       {seleccion && (
-        <DetalleSolicitud key={seleccion} id={seleccion}
+        <DetalleSolicitud key={seleccion} id={seleccion} llevarALaVista
           acciones={(s, recargar) => <AccionesTecnico solicitud={s} recargar={recargar} alCambiar={listado.recargar} />} />
       )}
     </section>

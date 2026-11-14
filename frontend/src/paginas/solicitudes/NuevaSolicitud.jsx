@@ -68,8 +68,12 @@ export function NuevaSolicitud() {
   const categorias = catalogos.datos?.categorias ?? [];
 
   const elegirArchivos = (e) => {
-    const lista = Array.from(e.target.files ?? []).slice(0, EVIDENCIAS_MAX);
-    const problema = lista.map((a, i) => validarImagen(a, i)).find(Boolean);
+    const lista = Array.from(e.target.files ?? []);
+    const problema = lista.length > EVIDENCIAS_MAX
+      ? `Selecciona como máximo ${EVIDENCIAS_MAX} imágenes.`
+      : lista.map((a, i) => validarImagen(a, i)).find(Boolean);
+    // Si la selección no es válida se vacía también el selector, para que no parezca adjuntada.
+    if (problema) e.target.value = '';
     setErrores((x) => ({ ...x, archivos: problema ?? undefined }));
     setArchivos(problema ? [] : lista);
   };
@@ -162,6 +166,7 @@ export function NuevaSolicitud() {
           Prioridad estimada: {prioridad ? <EtiquetaPrioridad codigo={prioridad} /> : <span className="texto-secundario">elige impacto y urgencia</span>}
           <span className="texto-secundario"> · El supervisor puede ajustarla con un motivo.</span>
         </p>
+        <p className="campo__ayuda">No hace falta indicar quién atenderá el caso: el supervisor asigna al responsable después del registro.</p>
         <div className={`campo${errores.archivos ? ' campo--error' : ''}`}>
           <label htmlFor="archivos" className="campo__etiqueta">Imágenes (opcional)</label>
           <input id="archivos" type="file" accept="image/jpeg,image/png" multiple onChange={elegirArchivos} />

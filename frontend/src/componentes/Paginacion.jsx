@@ -1,6 +1,14 @@
+import { useEffect } from 'react';
+
 /** Paginación con los campos del contrato: pagina (desde 1), tamaño y total. */
 export function Paginacion({ pagina, tamano, total, onCambiar, nombre = 'registros' }) {
   const paginas = Math.max(1, Math.ceil(total / tamano));
+  // Si la última página quedó vacía (se resolvió o eliminó su único elemento), vuelve a la última con datos.
+  const fueraDeRango = total > 0 && pagina > paginas;
+  useEffect(() => {
+    if (fueraDeRango) onCambiar(paginas);
+  }, [fueraDeRango, paginas, onCambiar]);
+  if (fueraDeRango) return null;
   if (total === 0) return null;
   const desde = (pagina - 1) * tamano + 1;
   const hasta = Math.min(pagina * tamano, total);

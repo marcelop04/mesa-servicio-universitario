@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { api } from '../../api/cliente.js';
 import { useConsulta } from '../../api/useConsulta.js';
 import {
-  Avatar, Campo, Confirmacion, EtiquetaActivo, EtiquetaRol, Icono, Mensaje, Paginacion, Tabla,
+  Avatar, Campo, Confirmacion, EtiquetaActivo, EtiquetaRol, Icono, Mensaje, Paginacion, Tabla, useLlevarALaVista,
 } from '../../componentes/index.js';
 import { NOMBRE_ROL } from '../../layout/navegacion.js';
 import { useSesion } from '../../sesion/SesionContext.jsx';
@@ -45,6 +45,7 @@ function FormularioCuenta({ cuenta, areas, esPropia, onGuardado, onCancelar, onC
   const [errores, setErrores] = useState({});
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
+  const formulario = useLlevarALaVista();
 
   const cambiar = (campo) => (e) => setDatos((d) => ({ ...d, [campo]: e.target.value }));
 
@@ -72,7 +73,7 @@ function FormularioCuenta({ cuenta, areas, esPropia, onGuardado, onCancelar, onC
   const roles = nueva || cuenta.rol !== 'SOLICITANTE' ? ROLES_INTERNOS : ['SOLICITANTE', ...ROLES_INTERNOS];
 
   return (
-    <form className="panel" onSubmit={enviar} noValidate aria-labelledby="titulo-formulario">
+    <form ref={formulario} className="panel" onSubmit={enviar} noValidate aria-labelledby="titulo-formulario">
       <h2 id="titulo-formulario" className="panel__titulo">
         {nueva ? 'Crear usuario interno' : `Editar a ${cuenta.nombre}`}
       </h2>

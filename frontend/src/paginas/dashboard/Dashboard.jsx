@@ -62,7 +62,8 @@ function Barras({ titulo, datos }) {
 
 export function Dashboard() {
   const [filtros, setFiltros] = useState({ desde: hoyLima(29), hasta: hoyLima(), area_id: '' });
-  const datos = useConsulta(() => api.get('/indicadores', filtros), [filtros]);
+  const rangoInvalido = Boolean(filtros.desde && filtros.hasta && filtros.hasta < filtros.desde);
+  const datos = useConsulta(() => (rangoInvalido ? Promise.resolve(null) : api.get('/indicadores', filtros)), [filtros, rangoInvalido]);
   const catalogo = useConsulta(() => api.get('/catalogos', { tipo: 'areas' }), []);
   const ind = datos.datos;
   const cambiar = (campo) => (e) => setFiltros((f) => ({ ...f, [campo]: e.target.value }));
@@ -71,16 +72,20 @@ export function Dashboard() {
     <section className="pagina" aria-label="Dashboard">
       <form className="panel filtros filtros--supervision" role="search" onSubmit={(e) => e.preventDefault()}>
         <Campo id="dash-desde" etiqueta="Registradas desde" type="date" value={filtros.desde} onChange={cambiar('desde')} />
-        <Campo id="dash-hasta" etiqueta="Hasta" type="date" value={filtros.hasta} onChange={cambiar('hasta')} />
+        <Campo id="dash-hasta" etiqueta="Hasta" type="date" value={filtros.hasta} onChange={cambiar('hasta')}
+          error={rangoInvalido ? 'La fecha final no puede ser anterior a la inicial.' : undefined} />
         <Campo id="dash-area" como="select" etiqueta="Área" value={filtros.area_id} onChange={cambiar('area_id')}>
           <option value="">Todas las áreas</option>
           {(catalogo.datos ?? []).map((a) => <option key={a.id} value={a.id}>{a.nombre}</option>)}
         </Campo>
         <div className="filtros__acciones">
-          <a className="boton boton--secundario" href={urlCsv({ desde: filtros.desde, hasta: filtros.hasta, area_id: filtros.area_id })}
-            download>
-            <Icono nombre="archivo" tamano={16} /> Exportar CSV
-          </a>
+          {/* Se exporta el mismo periodo que muestran los indicadores, también si las fechas están vacías. */}
+          {!rangoInvalido && (
+            <a className="boton boton--secundario" download
+              href={urlCsv({ desde: filtros.desde || ind?.desde, hasta: filtros.hasta || ind?.hasta, area_id: filtros.area_id })}>
+              <Icono nombre="archivo" tamano={16} /> Exportar CSV
+            </a>
+          )}
         </div>
       </form>
 
