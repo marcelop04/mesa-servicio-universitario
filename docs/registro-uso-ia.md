@@ -143,18 +143,56 @@ Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-ema
 | Modificaciones tras revisar | Se conservaron healthcheck, ensayos B y registros IA; prod no permite semillas demo; pruebas comprueban causas del guard y cabeceras únicas; se distingue CA local de HTTPS público |
 | Límites | Sin migración mayor ni supresiones; sin ZAP no autorizado, sin corrección de A4, sin implementar D/E, sin rotar cuentas/Secrets ni atribuir firmas o validaciones humanas |
 | Responsable | Marcelo: revisar código, asserts, pendientes y resultados antes del cierre |
+## Registros del paquete D · Observabilidad y Telemetría (Gabriel)
 
-## IA-E-01 · Automatización de pruebas, rendimiento y auditoría (Alex)
+### IA-D-01 · Configuración de métricas y tracing con Spring Boot 3.5 y OpenTelemetry
 
 | Campo | Valor |
 |---|---|
-| Fecha | 12/11/2026 – 13/11/2026 |
-| Responsable | Alex (Ingeniero QA / SDET); autoría, ejecución y auditoría humana completada |
-| Herramienta | Asistente de ingeniería de pruebas / Antigravity |
-| Prompt / alcance | Diseñar, auditar e implementar el Paquete E de aseguramiento de calidad (tareas E1 a E5); automatizar pruebas de API en Postman/Newman con CI, pruebas E2E de aceptación en Playwright con BDD, pruebas de rendimiento en k6, auditoría de pruebas generadas y redacción del informe consolidado |
-| Resultado generado | Colección Newman (`MSU-API.postman_collection.json`) y runner dinámico con `BASE_URL`; suite E2E Playwright determinista para 24 HUs oficiales (`specs/01` a `06`); scripts k6 de carga (20 VU) y estrés (400 VU) con `handleSummary` sanitizado; suite Newman y de carga sobre despliegue de nube en OCI; matriz de trazabilidad y auditoría de mutación (`docs/revision-pruebas-ia.md`); informe técnico consolidado v2.2 (`docs/informe-pruebas.md`) |
-| ¿Se utilizó? | Sí, incorporado en la rama `test/e5-informe-pruebas` (PR #5) y validado en ejecución local, CI remoto y sobre el despliegue en la nube de David |
-| Validación realizada | Ejecución efectiva: Newman local (65 reqs / 182 asserts) y nube (13 reqs / 27 asserts, 100% pass); Playwright local (48 tests pasados) y responsivo nube (2 tests pasados); k6 local (0% error, p95 362 ms lecturas y 274 ms escrituras) y nube (414 reqs, p95 114.97 ms); pruebas de mutación manual en lógica de plazos, soluciones y concurrencia; verificación de excepciones de dependencias (PR #7) y validación de las 5 sesiones SUS reales de David (media 87/100) |
-| Modificaciones tras revisar | Erradicación total del antipatrón `if (isVisible())` reemplazado por creación de fixtures deterministas (`helpers/datos.js`); intercepción y validación de stream en descarga CSV (`@HU19`); sanitización obligatoria de `setup_data` en k6 para prevenir fugas de JWT/CSRF; ajuste de trazabilidad a las 24 HUs oficiales de Fase I; manejo de sesiones dinámicas ante entornos con `DATOS_DEMO=false` |
-| Límites y pendientes | El análisis DAST con OWASP ZAP permanece delimitado y pendiente de autorización previa sobre la IP pública (dependencia de Marcelo); la integración definitiva a `main` requiere la aprobación formal de revisión (peer review) por parte de un compañero de equipo |
+| Fecha | 12/11/2026 |
+| Responsable | Gabriel Salazar (Paquete D) |
+| Herramienta | DeepMind Antigravity (Gemini 3.8 Flash) |
+| Prompt exacto | Configurar Actuator, Micrometer Prometheus y OpenTelemetry con exporter OTLP en Spring Boot 3.5 con histogramas percentiles |
+| Resultado generado | Bloque YAML de management, percentiles HTTP y dependencias de métricas y tracing |
+| ¿Se utilizó? | Sí |
+| Validación realizada | Verificación de endpoint `/actuator/prometheus`, Java 17, suite `ObservabilidadTest` aprobada |
+| Modificaciones manuales | Se fijó la propiedad `opentelemetry.version` (1.43.0) y se eliminaron atributos no estándar de Actuator |
 
+### IA-D-02 · Logs JSON con correlación y enmascaramiento de secretos
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 |
+| Responsable | Gabriel Salazar (Paquete D) |
+| Herramienta | DeepMind Antigravity (Gemini 3.8 Flash) |
+| Prompt exacto | Diseñar logback-spring.xml con LogstashLogbackEncoder enmascarando contraseñas y tokens en JSON con idCorrelacion y traceId |
+| Resultado generado | Encoder JSON en consola con `MaskingJsonGeneratorDecorator` y campos `idCorrelacion`, `traceId`, `spanId` |
+| ¿Se utilizó? | Sí |
+| Validación realizada | Inspección de salida en consola Docker, limpieza de MDC en bloque `finally` y prueba `errorNoExponeSecretosNiTokens` |
+| Modificaciones manuales | Se estandarizaron claves en español y perfil `dev` para texto legible en desarrollo local |
+
+### IA-D-03 · Reglas de alerta Prometheus y dashboard de Grafana
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 |
+| Responsable | Gabriel Salazar (Paquete D) |
+| Herramienta | DeepMind Antigravity (Gemini 3.8 Flash) |
+| Prompt exacto | Diseñar reglas de alerta en Prometheus (5xx, latencia p95 y vencidos) y dashboard JSON de Grafana con provisioning |
+| Resultado generado | Archivo `alertas.yml` con 3 reglas PromQL y `msu-dashboard.json` para aprovisionamiento automático |
+| ¿Se utilizó? | Sí |
+| Validación realizada | Disparo y resolución de alertas en `http://localhost:9090/alerts` y verificación de paneles en `:3000` |
+| Modificaciones manuales | Se ajustó umbral de errores 5xx a `> 0.05 req/s`, se filtró tráfico actuator en p95 y se separó métrica simulada de real |
+
+### IA-D-04 · Hardening de docker-compose y seguridad de endpoints de simulación
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 |
+| Responsable | Gabriel Salazar (Paquete D) |
+| Herramienta | DeepMind Antigravity (Gemini 3.8 Flash) |
+| Prompt exacto | Hardening de docker-compose y seguridad de endpoints de simulación de incidentes RNF08 |
+| Resultado generado | Restricción de puertos a `127.0.0.1`, OTLP interno, `@ConditionalOnProperty` y restricción a rol ADMIN |
+| ¿Se utilizó? | Sí |
+| Validación realizada | Pruebas de simulación rechazadas sin rol de administrador y verificación de puertos locales con `netstat` |
+| Modificaciones manuales | Se eliminaron mutaciones por GET, se añadieron límites estrictos de parámetros y recuperación explícita |

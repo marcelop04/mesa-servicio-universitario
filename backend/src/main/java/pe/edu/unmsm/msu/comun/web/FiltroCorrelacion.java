@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class FiltroCorrelacion extends OncePerRequestFilter {
 
     public static final String CABECERA = "X-Correlation-Id";
+    public static final String CLAVE_MDC = "idCorrelacion";
     private static final String ATRIBUTO = FiltroCorrelacion.class.getName();
     private static final Pattern VALIDO = Pattern.compile("[A-Za-z0-9-]{8,64}");
 
@@ -29,10 +30,12 @@ public class FiltroCorrelacion extends OncePerRequestFilter {
         String id = recibido != null && VALIDO.matcher(recibido).matches() ? recibido : UUID.randomUUID().toString();
         req.setAttribute(ATRIBUTO, id);
         res.setHeader(CABECERA, id);
-        MDC.put("correlacionId", id);
+        MDC.put(CLAVE_MDC, id);
+        MDC.put("correlacionId", id); // Conservar clave previa para compatibilidad
         try {
             cadena.doFilter(req, res);
         } finally {
+            MDC.remove(CLAVE_MDC);
             MDC.remove("correlacionId");
         }
     }

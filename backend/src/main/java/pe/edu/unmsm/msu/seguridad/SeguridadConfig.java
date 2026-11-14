@@ -36,6 +36,9 @@ import pe.edu.unmsm.msu.identidad.repositorio.UsuarioRepositorio;
 @Configuration
 public class SeguridadConfig {
 
+    @Value("${msu.simulacion.habilitada:false}")
+    private boolean simulacionHabilitada;
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -54,9 +57,14 @@ public class SeguridadConfig {
         CookieCsrfTokenRepository csrfCookies = CookieCsrfTokenRepository.withHttpOnlyFalse();
         csrfCookies.setCookieCustomizer(c -> c.secure(cookieSegura).sameSite("Lax").path("/"));
         http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfCookies)
-                        .csrfTokenRequestHandler(new ManejadorCsrfSpa()))
+                .csrf(csrf -> {
+                    csrf.csrfTokenRepository(csrfCookies)
+                            .csrfTokenRequestHandler(new ManejadorCsrfSpa())
+                            .ignoringRequestMatchers("/actuator/**");
+                    if (simulacionHabilitada) {
+                        csrf.ignoringRequestMatchers("/api/v1/diagnostico/**");
+                    }
+                })
                 .headers(h -> h
                         .contentSecurityPolicy(c -> c.policyDirectives("default-src 'none'; script-src 'self'; "
                                 + "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; "
@@ -80,15 +88,20 @@ public class SeguridadConfig {
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(RespuestasSeguridad.sinSesion(json))
                         .accessDeniedHandler(RespuestasSeguridad.accesoDenegado(json)))
-                .authorizeHttpRequests(a -> a
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/csrf", "/api/v1/auth/registro").permitAll()
-                        .requestMatchers("/api/v1/openapi/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")
-                        .requestMatchers("/api/v1/indicadores", "/api/v1/reportes/**").hasRole("SUPERVISOR")
-                        .requestMatchers("/api/v1/**").authenticated()
-                        .anyRequest().denyAll());
+                .authorizeHttpRequests(a -> {
+                    a.requestMatchers("/api/v1/auth/login", "/api/v1/auth/csrf", "/api/v1/auth/registro").permitAll()
+                            .requestMatchers("/api/v1/openapi/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                            .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
+                            .requestMatchers("/error").permitAll();
+                    if (simulacionHabilitada) {
+                        a.requestMatchers("/api/v1/diagnostico/**").hasRole("ADMINISTRADOR");
+                    }
+                    a.requestMatchers("/api/v1/admin/**").hasRole("ADMINISTRADOR")
+                            .requestMatchers("/api/v1/supervision/**").hasRole("SUPERVISOR")
+                            .requestMatchers("/api/v1/indicadores", "/api/v1/reportes/**").hasRole("SUPERVISOR")
+                            .requestMatchers("/api/v1/**").authenticated()
+                            .anyRequest().denyAll();
+                });
         return http.build();
     }
 }

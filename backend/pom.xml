@@ -28,6 +28,12 @@
     <tomcat.version>10.1.61</tomcat.version>
     <springdoc.version>2.10.0</springdoc.version>
     <swagger-ui.version>5.34.1</swagger-ui.version>
+    <!-- D2: logs JSON estructurados -->
+    <logstash-logback.version>8.0</logstash-logback.version>
+    <!-- D3: trazabilidad distribuida -->
+    <opentelemetry.version>1.43.0</opentelemetry.version>
+    <!-- D3: versión de Kotlin corregida para CVE-2026-53914 (corregido a partir de 2.4.20) -->
+    <kotlin.version>2.4.21</kotlin.version>
   </properties>
 
   <dependencyManagement>
@@ -38,10 +44,57 @@
         <artifactId>swagger-ui</artifactId>
         <version>${swagger-ui.version}</version>
       </dependency>
+      <!-- D3: alinear dependencias transitivas de Kotlin a 2.4.21 para resolver CVE-2026-53914 -->
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-bom</artifactId>
+        <version>${kotlin.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlin.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <!-- Observabilidad (Paquete D: Actuator, Micrometer y Prometheus) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+
+    <!-- Logs estructurados en JSON (D2) -->
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>${logstash-logback.version}</version>
+    </dependency>
+
+    <!-- Trazabilidad distribuida con OpenTelemetry (D3) -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-otel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-otlp</artifactId>
+      <version>${opentelemetry.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jetbrains.kotlin</groupId>
+          <artifactId>kotlin-stdlib-common</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>

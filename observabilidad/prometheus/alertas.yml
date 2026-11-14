@@ -1,0 +1,39 @@
+groups:
+  - name: alertas_msu
+    rules:
+      # 1) Tasa alta de errores HTTP 5xx (D4.1)
+      # Umbral: > 0.05 req/s (equivale a >= 3 errores 5xx por minuto).
+      # Justificación técnica: evita falsos positivos por fallos de red aislados y detecta degradación sostenida.
+      - alert: TasaErroresHttp5xxAlta
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) > 0.05
+        for: 5s
+        labels:
+          severity: critical
+          equipo: software
+        annotations:
+          summary: "Tasa elevada de errores HTTP 5xx en la API MSU (> 0.05 req/s)"
+          description: "La API backend está respondiendo errores 5xx de forma sostenida a los clientes universitarios."
+
+      # 2) Latencia alta en peticiones HTTP de la API (p95 > 1s) (D4.2)
+      # Filtra endpoints de actuator para evaluar exclusivamente el tráfico de negocio de la aplicación.
+      - alert: LatenciaP95HttpAlta
+        expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri!~"/actuator.*"}[1m])) by (le)) > 1.0
+        for: 5s
+        labels:
+          severity: warning
+          equipo: infraestructura
+        annotations:
+          summary: "Latencia percentil 95 superior a 1 segundo en peticiones HTTP"
+          description: "El 95 % de las peticiones procesadas por el backend tardan más de 1000 ms en responder."
+
+      # 3) Casos vencidos detectados (D4.3)
+      # Evalúa casos operativos reales (msu_solicitudes_vencidas) o simulación aislada (msu_solicitudes_vencidas_simuladas).
+      - alert: SolicitudesVencidasDetectadas
+        expr: (msu_solicitudes_vencidas > 0) or (msu_solicitudes_vencidas_simuladas > 0)
+        for: 5s
+        labels:
+          severity: warning
+          equipo: gestion-servicios
+        annotations:
+          summary: "Solicitudes con plazos de atención o resolución vencidos"
+          description: "Se han identificado solicitudes universitarias que superaron los plazos máximos establecidos."
