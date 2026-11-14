@@ -17,6 +17,7 @@ def cargar(nombre, ruta):
 entorno = cargar("crear_entorno", "despliegue/scripts/crear-entorno.py")
 sus = cargar("calcular_sus", "docs/pruebas/usuarios/calcular-sus.py")
 https = cargar("verificar_https", "despliegue/scripts/verificar-https.py")
+checks = cargar("comprobar_ci", "despliegue/scripts/comprobar-ci.py")
 
 
 class EntornoTest(unittest.TestCase):
@@ -29,6 +30,8 @@ class EntornoTest(unittest.TestCase):
         self.assertNotEqual(a["DB_PASSWORD"], a["MYSQL_ROOT_PASSWORD"])
         self.assertEqual(a["DATOS_DEMO"], "false")
         self.assertEqual(b["DATOS_DEMO"], "true")
+        self.assertEqual(a["SEGURIDAD_DESPLIEGUE"], "true")
+        self.assertEqual(b["SEGURIDAD_DESPLIEGUE"], "false")
         self.assertNotEqual(a["COMPOSE_PROJECT_NAME"], b["COMPOSE_PROJECT_NAME"])
 
     def test_no_permite_inyectar_lineas_ni_directivas_en_el_entorno(self):
@@ -36,8 +39,17 @@ class EntornoTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 entorno.crear(host, email)
 
+    def test_prod_rechaza_siembra_demo(self):
+        with self.assertRaisesRegex(ValueError, "prod no admite"):
+            entorno.crear("msu.example.org", "david@example.org", "prod", True)
+
 
 class SusTest(unittest.TestCase):
+    def test_rechaza_registros_sin_procedencia_de_la_sesion(self):
+        for origen in ("SIMULADO", "", "PRUEBA"):
+            with self.subTest(origen=origen), self.assertRaisesRegex(ValueError, "RESPUESTA_USUARIO"):
+                sus.calcular(io.StringIO(f"origen\n{origen or ' '}\n"))
+
     def test_extremos_y_punto_neutro(self):
         self.assertEqual(sus.puntuacion([5, 1] * 5), 100)
         self.assertEqual(sus.puntuacion([1, 5] * 5), 0)
@@ -48,14 +60,23 @@ class SusTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sus.puntuacion(valores)
 
-    def test_no_inventa_resultados_para_la_plantilla_vacia(self):
-        with (RAIZ / "docs/pruebas/usuarios/respuestas-sus.csv").open() as archivo:
-            with self.assertRaises(ValueError):
-                sus.calcular(archivo)
+    def test_no_inventa_resultados_para_una_cabecera_sin_respuestas(self):
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen\n"
+        with self.assertRaisesRegex(ValueError, "No hay respuestas"):
+            sus.calcular(io.StringIO(cabecera))
+
+    def test_prefiere_el_viewport_observado_al_ancho_de_referencia(self):
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen,viewport_real\n"
+        fila = "P01,2026-11-13,Solicitante,1366,https://msu.example.org," + ",".join(["3"] * 10) + ",RESPUESTA_USUARIO,1536\n"
+        resultado = sus.calcular(io.StringIO(cabecera + fila))
+        self.assertEqual(resultado["resultados"][0]["ancho"], 1536)
+        self.assertEqual(resultado["media_sus"], 50)
+        with self.assertRaisesRegex(ValueError, "ancho real"):
+            sus.calcular(io.StringIO((cabecera + fila).replace(",1536\n", ",desconocido\n")))
 
     def test_csv_real_exige_https_y_detecta_muestra_y_duplicados(self):
-        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + "\n"
-        fila = "P01,2026-11-12,Solicitante,360,https://msu.example.org," + ",".join(["3"] * 10) + "\n"
+        cabecera = "participante,fecha,rol,ancho,url," + ",".join(f"q{i}" for i in range(1, 11)) + ",origen\n"
+        fila = "P01,2026-11-12,Solicitante,390,https://msu.example.org," + ",".join(["3"] * 10) + ",RESPUESTA_USUARIO\n"
         resultado = sus.calcular(io.StringIO(cabecera + fila))
         self.assertEqual(resultado["media_sus"], 50)
         self.assertFalse(resultado["meta_muestra_cumplida"])
@@ -63,6 +84,11 @@ class SusTest(unittest.TestCase):
             sus.calcular(io.StringIO(cabecera + fila + fila))
         with self.assertRaises(ValueError):
             sus.calcular(io.StringIO((cabecera + fila).replace("https://", "http://")))
+        with self.assertRaisesRegex(ValueError, "misma aplicación"):
+            sus.calcular(io.StringIO(cabecera + fila + fila.replace("P01", "P02").replace("msu.example.org", "otro.example.org")))
+        cinco = cabecera + "".join(fila.replace("P01", f"P{i:02}") for i in range(1, 6))
+        self.assertEqual(sus.calcular(io.StringIO(cinco))["participantes"], 5)
+        self.assertTrue(sus.calcular(io.StringIO(cinco))["meta_muestra_cumplida"])
 
 
 class VerificacionHttpsTest(unittest.TestCase):
@@ -80,6 +106,36 @@ class VerificacionHttpsTest(unittest.TestCase):
             b'<div id="root"></div><script type="module" src="/assets/app.js"></script>',
         ):
             self.assertFalse(https.es_spa_html(documento))
+
+
+class ChecksEntregaTest(unittest.TestCase):
+    sha = "a" * 40
+
+    def run_ci(self, nombre="CI", estado="completed", conclusion="success", **extra):
+        return dict(name=nombre, head_sha=self.sha, event="push", status=estado,
+                    conclusion=conclusion, **extra)
+
+    def test_exige_todos_los_workflows_del_mismo_push(self):
+        resultado = checks.estado_requerido([self.run_ci(), self.run_ci("CodeQL")], self.sha, ["CI", "CodeQL"])
+        self.assertEqual(resultado["estado"], "aprobado")
+
+    def test_espera_el_analisis_que_sigue_en_curso(self):
+        resultado = checks.estado_requerido([self.run_ci(), self.run_ci("CodeQL", "in_progress", None)], self.sha, ["CI", "CodeQL"])
+        self.assertEqual(resultado["pendientes"], ["CodeQL"])
+
+    def test_rechaza_seguridad_fallida_aunque_ci_pase(self):
+        resultado = checks.estado_requerido([self.run_ci(), self.run_ci("CodeQL", conclusion="failure")], self.sha, ["CI", "CodeQL"])
+        self.assertEqual(resultado["estado"], "fallo")
+
+    def test_no_acepta_otro_sha_o_un_evento_de_pr(self):
+        for cambio in ({"head_sha": "b" * 40}, {"event": "pull_request"}):
+            ejecucion = self.run_ci()
+            ejecucion.update(cambio)
+            self.assertEqual(checks.estado_requerido([ejecucion], self.sha, ["CI"])["estado"], "pendiente")
+
+    def test_un_exito_viejo_no_oculta_la_ejecucion_nueva_fallida(self):
+        resultado = checks.estado_requerido([self.run_ci(id=1), self.run_ci(id=2, conclusion="failure")], self.sha, ["CI"])
+        self.assertEqual(resultado["estado"], "fallo")
 
 
 if __name__ == "__main__":

@@ -4,8 +4,12 @@
     "contexts": [
       "Backend (Spring Boot)",
       "Frontend (React)",
+      "npm audit (incluye desarrollo)",
+      "OWASP Dependency-Check",
       "Imágenes Docker",
-      "Configuración de despliegue"
+      "Configuración de despliegue",
+      "CodeQL (java-kotlin)",
+      "CodeQL (javascript-typescript)"
     ]
   },
   "enforce_admins": true,

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mesa de Servicios Universitarios - Suite de API (Newman CI)" tests="61" time="1.295">
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.01 - GET /auth/csrf - Obtener token CSRF inicial" id="504e6cad-da55-421a-9506-72f392102563" timestamp="2026-11-13T15:59:59.473Z" tests="4" failures="0" errors="0" time="0.018">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.018" classname="01AutenticacionYCuentaHu01Hu02Hu030101GetAuthCsrfObtenerTokenCsrfInicial"/>
+    <testcase name="Status 200 OK" time="0.018" classname="01AutenticacionYCuentaHu01Hu02Hu030101GetAuthCsrfObtenerTokenCsrfInicial"/>
+    <testcase name="Token CSRF detectado" time="0.018" classname="01AutenticacionYCuentaHu01Hu02Hu030101GetAuthCsrfObtenerTokenCsrfInicial"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.02 - HU01: POST /auth/registro - Registro exitoso solicitante" id="2d7485bf-9c79-4a96-96a5-147922505edc" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.058">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.058" classname="01AutenticacionYCuentaHu01Hu02Hu030102Hu01PostAuthRegistroRegistroExitosoSolicitante"/>
+    <testcase name="Status 201 Created" time="0.058" classname="01AutenticacionYCuentaHu01Hu02Hu030102Hu01PostAuthRegistroRegistroExitosoSolicitante"/>
+    <testcase name="Usuario registrado con rol SOLICITANTE" time="0.058" classname="01AutenticacionYCuentaHu01Hu02Hu030102Hu01PostAuthRegistroRegistroExitosoSolicitante"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.03 - HU01: POST /auth/registro - Validación 400 correo inválido" id="93a94f00-382b-4484-8ce8-d8e8a5da002c" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.005" classname="01AutenticacionYCuentaHu01Hu02Hu030103Hu01PostAuthRegistroValidacion400CorreoInvalido"/>
+    <testcase name="Status 400 Bad Request" time="0.005" classname="01AutenticacionYCuentaHu01Hu02Hu030103Hu01PostAuthRegistroValidacion400CorreoInvalido"/>
+    <testcase name="ErrorApi con código DATOS_INVALIDOS" time="0.005" classname="01AutenticacionYCuentaHu01Hu02Hu030103Hu01PostAuthRegistroValidacion400CorreoInvalido"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.04 - HU02: POST /auth/login - Credenciales inválidas 401" id="961da589-3a64-4e43-93bf-8926f8aa1194" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.059">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.059" classname="01AutenticacionYCuentaHu01Hu02Hu030104Hu02PostAuthLoginCredencialesInvalidas401"/>
+    <testcase name="Status 401 Unauthorized" time="0.059" classname="01AutenticacionYCuentaHu01Hu02Hu030104Hu02PostAuthLoginCredencialesInvalidas401"/>
+    <testcase name="ErrorApi CREDENCIALES_INVALIDAS" time="0.059" classname="01AutenticacionYCuentaHu01Hu02Hu030104Hu02PostAuthLoginCredencialesInvalidas401"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.05 - HU02: POST /auth/login - Validación 400 correo vacío" id="673cd9bd-4769-4b76-8340-82bf22cd4f53" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.003" classname="01AutenticacionYCuentaHu01Hu02Hu030105Hu02PostAuthLoginValidacion400CorreoVacio"/>
+    <testcase name="Status 400 Bad Request" time="0.003" classname="01AutenticacionYCuentaHu01Hu02Hu030105Hu02PostAuthLoginValidacion400CorreoVacio"/>
+    <testcase name="ErrorApi DATOS_INVALIDOS" time="0.003" classname="01AutenticacionYCuentaHu01Hu02Hu030105Hu02PostAuthLoginValidacion400CorreoVacio"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.06 - HU02: POST /auth/login - Login exitoso como Solicitante" id="b02e3363-6660-408f-874c-a27460f05fa7" timestamp="2026-11-13T15:59:59.473Z" tests="4" failures="0" errors="0" time="0.064">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.064" classname="01AutenticacionYCuentaHu01Hu02Hu030106Hu02PostAuthLoginLoginExitosoComoSolicitante"/>
+    <testcase name="Status 200 OK" time="0.064" classname="01AutenticacionYCuentaHu01Hu02Hu030106Hu02PostAuthLoginLoginExitosoComoSolicitante"/>
+    <testcase name="Perfil de solicitante retornado" time="0.064" classname="01AutenticacionYCuentaHu01Hu02Hu030106Hu02PostAuthLoginLoginExitosoComoSolicitante"/>
+    <testcase name="Cookie HttpOnly MSU_SESION emitida" time="0.064" classname="01AutenticacionYCuentaHu01Hu02Hu030106Hu02PostAuthLoginLoginExitosoComoSolicitante"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.07 - HU03: GET /me - Consultar perfil de la sesión" id="c3acd571-95c6-4d66-81c8-0af2ff77dd98" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030107Hu03GetMeConsultarPerfilDeLaSesion"/>
+    <testcase name="Status 200 OK" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030107Hu03GetMeConsultarPerfilDeLaSesion"/>
+    <testcase name="Correo coincide con el usuario autenticado" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030107Hu03GetMeConsultarPerfilDeLaSesion"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.08 - HU03: PUT /me - Actualizar datos de perfil" id="24ff42ed-c931-476c-b174-bf429865a016" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030108Hu03PutMeActualizarDatosDePerfil"/>
+    <testcase name="Status 200 OK" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030108Hu03PutMeActualizarDatosDePerfil"/>
+    <testcase name="Nombre actualizado" time="0.006" classname="01AutenticacionYCuentaHu01Hu02Hu030108Hu03PutMeActualizarDatosDePerfil"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.09 - HU03: PUT /me/password - Cambiar contraseña exitoso (204)" id="39a0567e-59e5-4796-8be6-9d422b2d19a8" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.148">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.148" classname="01AutenticacionYCuentaHu01Hu02Hu030109Hu03PutMePasswordCambiarContrasenaExitoso204"/>
+    <testcase name="Status 204 No Content" time="0.148" classname="01AutenticacionYCuentaHu01Hu02Hu030109Hu03PutMePasswordCambiarContrasenaExitoso204"/>
+    <testcase name="Cookie de sesión renovada tras cambio de password" time="0.148" classname="01AutenticacionYCuentaHu01Hu02Hu030109Hu03PutMePasswordCambiarContrasenaExitoso204"/>
+  </testsuite>
+  <testsuite name="01 - Autenticación y Cuenta (HU01, HU02, HU03) / 01.10 - HU03: PUT /me/password - Restaurar contraseña demo" id="766a7ad9-da4c-43f9-9452-2139a95ade2e" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.146">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.146" classname="01AutenticacionYCuentaHu01Hu02Hu030110Hu03PutMePasswordRestaurarContrasenaDemo"/>
+    <testcase name="Status 204 No Content" time="0.146" classname="01AutenticacionYCuentaHu01Hu02Hu030110Hu03PutMePasswordRestaurarContrasenaDemo"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.01 - GET /catalogos - Consultar opciones de catálogo para formulario" id="adb7932f-967b-4f28-b9d0-1c63e87db18a" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240201GetCatalogosConsultarOpcionesDeCatalogoParaFormulario"/>
+    <testcase name="Status 200 OK" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240201GetCatalogosConsultarOpcionesDeCatalogoParaFormulario"/>
+    <testcase name="Contiene categorias, ubicaciones, prioridades" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240201GetCatalogosConsultarOpcionesDeCatalogoParaFormulario"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.02 - HU04: POST /solicitudes - Validación 400 descripción menor a 20 caracteres" id="dacae05a-a133-42ce-8313-1c7a578644b0" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240202Hu04PostSolicitudesValidacion400DescripcionMenorA20Caracteres"/>
+    <testcase name="Status 400 Bad Request" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240202Hu04PostSolicitudesValidacion400DescripcionMenorA20Caracteres"/>
+    <testcase name="Error en campo descripcion" time="0.007" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240202Hu04PostSolicitudesValidacion400DescripcionMenorA20Caracteres"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.03 - HU04/HU14: POST /solicitudes - Registrar solicitud exitosamente con plazos calculados" id="b81f1ea2-fcb2-4f64-8ffd-766d1d3ee7fe" timestamp="2026-11-13T15:59:59.473Z" tests="4" failures="0" errors="0" time="0.018">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.018" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240203Hu04Hu14PostSolicitudesRegistrarSolicitudExitosamenteConPlazosCalculados"/>
+    <testcase name="Status 201 Created" time="0.018" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240203Hu04Hu14PostSolicitudesRegistrarSolicitudExitosamenteConPlazosCalculados"/>
+    <testcase name="Código MSU generado y plazos calculados" time="0.018" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240203Hu04Hu14PostSolicitudesRegistrarSolicitudExitosamenteConPlazosCalculados"/>
+    <testcase name="HU14: Límites de primera atención y resolución calculados y congelados" time="0.018" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240203Hu04Hu14PostSolicitudesRegistrarSolicitudExitosamenteConPlazosCalculados"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.04 - HU05: GET /solicitudes - Listar mis solicitudes con paginación" id="cd44d6e0-0418-4c8c-be8d-7bf81f6a9c00" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.008" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240204Hu05GetSolicitudesListarMisSolicitudesConPaginacion"/>
+    <testcase name="Status 200 OK" time="0.008" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240204Hu05GetSolicitudesListarMisSolicitudesConPaginacion"/>
+    <testcase name="Estructura paginada items, pagina, tamaño, total" time="0.008" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240204Hu05GetSolicitudesListarMisSolicitudesConPaginacion"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.05 - HU05: GET /solicitudes/{id} - Ver detalle de solicitud registrada" id="9e105249-945e-43f1-9275-7f1cca2091c3" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240205Hu05GetSolicitudesIdVerDetalleDeSolicitudRegistrada"/>
+    <testcase name="Status 200 OK" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240205Hu05GetSolicitudesIdVerDetalleDeSolicitudRegistrada"/>
+    <testcase name="Detalle coincide con la solicitud" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240205Hu05GetSolicitudesIdVerDetalleDeSolicitudRegistrada"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.06 - HU05: GET /solicitudes/{id} - 404 No encontrado ID inexistente" id="4ea73b28-4108-4a49-8f35-c8f99472dbdb" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240206Hu05GetSolicitudesId404NoEncontradoIdInexistente"/>
+    <testcase name="Status 404 Not Found" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240206Hu05GetSolicitudesId404NoEncontradoIdInexistente"/>
+    <testcase name="ErrorApi NO_ENCONTRADO" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240206Hu05GetSolicitudesId404NoEncontradoIdInexistente"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.07 - HU06: POST /solicitudes/{id}/comentarios - Agregar comentario" id="ab92277a-c24b-4089-a925-45e42babc90b" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.015">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.015" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240207Hu06PostSolicitudesIdComentariosAgregarComentario"/>
+    <testcase name="Status 201 Created" time="0.015" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240207Hu06PostSolicitudesIdComentariosAgregarComentario"/>
+    <testcase name="Comentario creado con autor y fecha" time="0.015" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240207Hu06PostSolicitudesIdComentariosAgregarComentario"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.08 - HU06: POST /solicitudes/{id}/comentarios - Validación 400 texto vacío" id="007514a0-a61d-4927-ad39-11d13228b7ae" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240208Hu06PostSolicitudesIdComentariosValidacion400TextoVacio"/>
+    <testcase name="Status 400 Bad Request" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240208Hu06PostSolicitudesIdComentariosValidacion400TextoVacio"/>
+    <testcase name="ErrorApi DATOS_INVALIDOS" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240208Hu06PostSolicitudesIdComentariosValidacion400TextoVacio"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.09 - HU06: GET /solicitudes/{id}/comentarios - Listar comentarios" id="ad28cd6c-3495-4793-9fc6-f810880dfd37" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.010" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240209Hu06GetSolicitudesIdComentariosListarComentarios"/>
+    <testcase name="Status 200 OK" time="0.010" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240209Hu06GetSolicitudesIdComentariosListarComentarios"/>
+    <testcase name="Lista contiene al menos un comentario" time="0.010" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240209Hu06GetSolicitudesIdComentariosListarComentarios"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.10 - HU06: GET /solicitudes/{id}/evidencias - Listar evidencias iniciales" id="ff1c7819-0eb5-4920-9a93-e672c2f5f229" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240210Hu06GetSolicitudesIdEvidenciasListarEvidenciasIniciales"/>
+    <testcase name="Status 200 OK" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240210Hu06GetSolicitudesIdEvidenciasListarEvidenciasIniciales"/>
+    <testcase name="Respuesta es un arreglo" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240210Hu06GetSolicitudesIdEvidenciasListarEvidenciasIniciales"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.11 - HU23: GET /solicitudes/{id}/historial - Consultar historial de eventos" id="44570853-7c0d-49f8-bf6e-07a44b9a0c6f" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240211Hu23GetSolicitudesIdHistorialConsultarHistorialDeEventos"/>
+    <testcase name="Status 200 OK" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240211Hu23GetSolicitudesIdHistorialConsultarHistorialDeEventos"/>
+    <testcase name="Historial contiene eventos con acción registrada" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240211Hu23GetSolicitudesIdHistorialConsultarHistorialDeEventos"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.12 - HU13: GET /solicitudes/{id}/encuesta - 204 No Content en caso aún no cerrado" id="21d09c45-a737-443e-9509-d565b8a08450" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240212Hu13GetSolicitudesIdEncuesta204NoContentEnCasoAunNoCerrado"/>
+    <testcase name="Status 204 No Content (sin encuesta aún)" time="0.006" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240212Hu13GetSolicitudesIdEncuesta204NoContentEnCasoAunNoCerrado"/>
+  </testsuite>
+  <testsuite name="02 - Solicitudes - Solicitante (HU04, HU05, HU06, HU23, HU24) / 02.13 - HU13: POST /solicitudes/{id}/encuesta - 409 Conflicto por caso no cerrado" id="72833822-5c22-4d6e-8f13-3fa8b9213226" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.005" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240213Hu13PostSolicitudesIdEncuesta409ConflictoPorCasoNoCerrado"/>
+    <testcase name="Status 409 Conflict (no está cerrada)" time="0.005" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240213Hu13PostSolicitudesIdEncuesta409ConflictoPorCasoNoCerrado"/>
+    <testcase name="Error ENCUESTA_NO_DISPONIBLE" time="0.005" classname="02SolicitudesSolicitanteHu04Hu05Hu06Hu23Hu240213Hu13PostSolicitudesIdEncuesta409ConflictoPorCasoNoCerrado"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.01 - Login como Supervisor" id="dde1ec83-3419-4b9c-b749-15acc53b5f2b" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.057">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.057" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190301LoginComoSupervisor"/>
+    <testcase name="Status 200 OK" time="0.057" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190301LoginComoSupervisor"/>
+    <testcase name="Sesión de SUPERVISOR" time="0.057" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190301LoginComoSupervisor"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.02 - RF10: GET /supervision/tecnicos - Carga de trabajo por técnico" id="cf841a27-dc2c-4c56-9bd1-87adcfd3d724" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.007" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190302Rf10GetSupervisionTecnicosCargaDeTrabajoPorTecnico"/>
+    <testcase name="Status 200 OK" time="0.007" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190302Rf10GetSupervisionTecnicosCargaDeTrabajoPorTecnico"/>
+    <testcase name="Lista de técnicos devuelta" time="0.007" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190302Rf10GetSupervisionTecnicosCargaDeTrabajoPorTecnico"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.03 - HU07: POST /solicitudes/{id}/evaluacion - Validación 400 motivo obligatorio al cambiar impacto" id="79478fc6-986e-4b0a-94e6-eb36e970db2c" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190303Hu07PostSolicitudesIdEvaluacionValidacion400MotivoObligatorioAlCambiarImpacto"/>
+    <testcase name="Status 400 Bad Request" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190303Hu07PostSolicitudesIdEvaluacionValidacion400MotivoObligatorioAlCambiarImpacto"/>
+    <testcase name="DATOS_INVALIDOS" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190303Hu07PostSolicitudesIdEvaluacionValidacion400MotivoObligatorioAlCambiarImpacto"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.04 - HU07: POST /solicitudes/{id}/evaluacion - Iniciar evaluación y subir impacto" id="825fe0c2-e295-4eec-887d-4c8f61ff46b5" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.017">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.017" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190304Hu07PostSolicitudesIdEvaluacionIniciarEvaluacionYSubirImpacto"/>
+    <testcase name="Status 200 OK" time="0.017" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190304Hu07PostSolicitudesIdEvaluacionIniciarEvaluacionYSubirImpacto"/>
+    <testcase name="Estado EN_EVALUACION y nueva versión" time="0.017" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190304Hu07PostSolicitudesIdEvaluacionIniciarEvaluacionYSubirImpacto"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.05 - HU24: POST /solicitudes/{id}/evaluacion - 409 Conflicto por versión desactualizada" id="822551be-4ab9-4cc4-87e0-bc285caf7a42" timestamp="2026-11-13T15:59:59.473Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190305Hu24PostSolicitudesIdEvaluacion409ConflictoPorVersionDesactualizada"/>
+    <testcase name="Status 409 Conflict" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190305Hu24PostSolicitudesIdEvaluacion409ConflictoPorVersionDesactualizada"/>
+    <testcase name="ErrorApi CONFLICTO_VERSION" time="0.006" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190305Hu24PostSolicitudesIdEvaluacion409ConflictoPorVersionDesactualizada"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.06 - HU08: POST /solicitudes/{id}/asignaciones - Asignar técnico Tomás Soporte" id="02815539-a769-4561-82e4-ae669a417c84" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.014">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.014" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190306Hu08PostSolicitudesIdAsignacionesAsignarTecnicoTomasSoporte"/>
+    <testcase name="Status 200 OK" time="0.014" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190306Hu08PostSolicitudesIdAsignacionesAsignarTecnicoTomasSoporte"/>
+    <testcase name="Estado ASIGNADA y técnico asociado" time="0.014" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190306Hu08PostSolicitudesIdAsignacionesAsignarTecnicoTomasSoporte"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.07 - HU17/HU18: GET /indicadores - Dashboard de indicadores del supervisor" id="6a7366cc-2d39-469c-8c6d-a961c2e8727e" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.010" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190307Hu17Hu18GetIndicadoresDashboardDeIndicadoresDelSupervisor"/>
+    <testcase name="Status 200 OK" time="0.010" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190307Hu17Hu18GetIndicadoresDashboardDeIndicadoresDelSupervisor"/>
+    <testcase name="Contiene conteos y tiempos" time="0.010" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190307Hu17Hu18GetIndicadoresDashboardDeIndicadoresDelSupervisor"/>
+  </testsuite>
+  <testsuite name="03 - Supervisión (HU07, HU08, HU09, HU17, HU18, HU19) / 03.08 - HU19: GET /reportes/solicitudes.csv - Exportar CSV de solicitudes" id="9ca89594-570a-419f-aae4-a5787dceea5b" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.021">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.021" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190308Hu19GetReportesSolicitudesCsvExportarCsvDeSolicitudes"/>
+    <testcase name="Status 200 OK" time="0.021" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190308Hu19GetReportesSolicitudesCsvExportarCsvDeSolicitudes"/>
+    <testcase name="Content-Type text/csv" time="0.021" classname="03SupervisionHu07Hu08Hu09Hu17Hu18Hu190308Hu19GetReportesSolicitudesCsvExportarCsvDeSolicitudes"/>
+  </testsuite>
+  <testsuite name="04 - Atención Técnica (HU10, HU11) / 04.01 - Login como Técnico Tomás Soporte" id="7af04035-af5d-45c5-be10-693b1700d7aa" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.063">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.063" classname="04AtencionTecnicaHu10Hu110401LoginComoTecnicoTomasSoporte"/>
+    <testcase name="Status 200 OK" time="0.063" classname="04AtencionTecnicaHu10Hu110401LoginComoTecnicoTomasSoporte"/>
+    <testcase name="Sesión de TECNICO" time="0.063" classname="04AtencionTecnicaHu10Hu110401LoginComoTecnicoTomasSoporte"/>
+  </testsuite>
+  <testsuite name="04 - Atención Técnica (HU10, HU11) / 04.02 - HU10: POST /solicitudes/{id}/inicio - Iniciar atención técnica" id="a31c65f2-f7f5-4cc4-aacb-381bd3f3f49d" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.014">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.014" classname="04AtencionTecnicaHu10Hu110402Hu10PostSolicitudesIdInicioIniciarAtencionTecnica"/>
+    <testcase name="Status 200 OK" time="0.014" classname="04AtencionTecnicaHu10Hu110402Hu10PostSolicitudesIdInicioIniciarAtencionTecnica"/>
+    <testcase name="Estado pasa a EN_ATENCION" time="0.014" classname="04AtencionTecnicaHu10Hu110402Hu10PostSolicitudesIdInicioIniciarAtencionTecnica"/>
+  </testsuite>
+  <testsuite name="04 - Atención Técnica (HU10, HU11) / 04.03 - HU11: POST /solicitudes/{id}/resoluciones - Validación 400 solución muy corta" id="e979b50b-6881-4487-b8fa-a421f1f1ac68" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.005" classname="04AtencionTecnicaHu10Hu110403Hu11PostSolicitudesIdResolucionesValidacion400SolucionMuyCorta"/>
+    <testcase name="Status 400 Bad Request" time="0.005" classname="04AtencionTecnicaHu10Hu110403Hu11PostSolicitudesIdResolucionesValidacion400SolucionMuyCorta"/>
+    <testcase name="DATOS_INVALIDOS por solución insuficiente" time="0.005" classname="04AtencionTecnicaHu10Hu110403Hu11PostSolicitudesIdResolucionesValidacion400SolucionMuyCorta"/>
+  </testsuite>
+  <testsuite name="04 - Atención Técnica (HU10, HU11) / 04.04 - HU11: POST /solicitudes/{id}/resoluciones - Registrar solución técnica" id="ec37eed8-77a5-4873-a24c-834049513411" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.015">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.015" classname="04AtencionTecnicaHu10Hu110404Hu11PostSolicitudesIdResolucionesRegistrarSolucionTecnica"/>
+    <testcase name="Status 200 OK" time="0.015" classname="04AtencionTecnicaHu10Hu110404Hu11PostSolicitudesIdResolucionesRegistrarSolucionTecnica"/>
+    <testcase name="Estado pasa a RESUELTA" time="0.015" classname="04AtencionTecnicaHu10Hu110404Hu11PostSolicitudesIdResolucionesRegistrarSolucionTecnica"/>
+  </testsuite>
+  <testsuite name="05 - Cierre y Encuesta (HU12, HU13) / 05.01 - Login como Solicitante" id="c0dc7b1e-d165-4388-bf96-cb4e6c6d3ade" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.057">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.057" classname="05CierreYEncuestaHu12Hu130501LoginComoSolicitante"/>
+    <testcase name="Status 200 OK" time="0.057" classname="05CierreYEncuestaHu12Hu130501LoginComoSolicitante"/>
+  </testsuite>
+  <testsuite name="05 - Cierre y Encuesta (HU12, HU13) / 05.02 - HU12: POST /solicitudes/{id}/conformidad - Confirmar solución" id="8b76008e-fb20-413c-94da-f9e9d29118d8" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.016">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.016" classname="05CierreYEncuestaHu12Hu130502Hu12PostSolicitudesIdConformidadConfirmarSolucion"/>
+    <testcase name="Status 200 OK" time="0.016" classname="05CierreYEncuestaHu12Hu130502Hu12PostSolicitudesIdConformidadConfirmarSolucion"/>
+    <testcase name="Solicitud queda CERRADA" time="0.016" classname="05CierreYEncuestaHu12Hu130502Hu12PostSolicitudesIdConformidadConfirmarSolucion"/>
+  </testsuite>
+  <testsuite name="05 - Cierre y Encuesta (HU12, HU13) / 05.03 - HU13: POST /solicitudes/{id}/encuesta - Registrar calificación 5 estrellas" id="8b6235a9-3f98-4765-b5a8-01a4a5d884ba" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.011" classname="05CierreYEncuestaHu12Hu130503Hu13PostSolicitudesIdEncuestaRegistrarCalificacion5Estrellas"/>
+    <testcase name="Status 201 Created" time="0.011" classname="05CierreYEncuestaHu12Hu130503Hu13PostSolicitudesIdEncuestaRegistrarCalificacion5Estrellas"/>
+    <testcase name="Encuesta registrada con éxito" time="0.011" classname="05CierreYEncuestaHu12Hu130503Hu13PostSolicitudesIdEncuestaRegistrarCalificacion5Estrellas"/>
+  </testsuite>
+  <testsuite name="05 - Cierre y Encuesta (HU12, HU13) / 05.04 - HU13: POST /solicitudes/{id}/encuesta - 409 Conflicto por duplicada" id="47fd06c2-92d9-41a7-a006-40ad7d40eaaa" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.007" classname="05CierreYEncuestaHu12Hu130504Hu13PostSolicitudesIdEncuesta409ConflictoPorDuplicada"/>
+    <testcase name="Status 409 Conflict" time="0.007" classname="05CierreYEncuestaHu12Hu130504Hu13PostSolicitudesIdEncuesta409ConflictoPorDuplicada"/>
+    <testcase name="ENCUESTA_DUPLICADA" time="0.007" classname="05CierreYEncuestaHu12Hu130504Hu13PostSolicitudesIdEncuesta409ConflictoPorDuplicada"/>
+  </testsuite>
+  <testsuite name="05 - Cierre y Encuesta (HU12, HU13) / 05.05 - HU13: GET /solicitudes/{id}/encuesta - Consultar encuesta registrada" id="41a8175f-fcdd-4fbe-bc3b-64aa5f4418ae" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="05CierreYEncuestaHu12Hu130505Hu13GetSolicitudesIdEncuestaConsultarEncuestaRegistrada"/>
+    <testcase name="Status 200 OK" time="0.006" classname="05CierreYEncuestaHu12Hu130505Hu13GetSolicitudesIdEncuestaConsultarEncuestaRegistrada"/>
+    <testcase name="Encuesta consultada tiene calificación 5" time="0.006" classname="05CierreYEncuestaHu12Hu130505Hu13GetSolicitudesIdEncuestaConsultarEncuestaRegistrada"/>
+  </testsuite>
+  <testsuite name="06 - Notificaciones (HU15, HU16) / 06.01 - HU16: GET /notificaciones - Listar avisos del usuario" id="36f1d651-7566-4feb-94f2-182981a96719" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.007" classname="06NotificacionesHu15Hu160601Hu16GetNotificacionesListarAvisosDelUsuario"/>
+    <testcase name="Status 200 OK" time="0.007" classname="06NotificacionesHu15Hu160601Hu16GetNotificacionesListarAvisosDelUsuario"/>
+    <testcase name="Items de notificaciones" time="0.007" classname="06NotificacionesHu15Hu160601Hu16GetNotificacionesListarAvisosDelUsuario"/>
+  </testsuite>
+  <testsuite name="06 - Notificaciones (HU15, HU16) / 06.02 - HU16: GET /notificaciones/no-leidas - Conteo de no leídas" id="840b3491-d97b-40e4-b2ae-5e3e5f892507" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.005" classname="06NotificacionesHu15Hu160602Hu16GetNotificacionesNoLeidasConteoDeNoLeidas"/>
+    <testcase name="Status 200 OK" time="0.005" classname="06NotificacionesHu15Hu160602Hu16GetNotificacionesNoLeidasConteoDeNoLeidas"/>
+    <testcase name="Propiedad total presente" time="0.005" classname="06NotificacionesHu15Hu160602Hu16GetNotificacionesNoLeidasConteoDeNoLeidas"/>
+  </testsuite>
+  <testsuite name="06 - Notificaciones (HU15, HU16) / 06.03 - HU16: PUT /notificaciones/lectura - Marcar todas como leídas" id="d27abd84-1bda-40ed-a72a-ba5e6efba997" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.019">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.019" classname="06NotificacionesHu15Hu160603Hu16PutNotificacionesLecturaMarcarTodasComoLeidas"/>
+    <testcase name="Status 200 OK" time="0.019" classname="06NotificacionesHu15Hu160603Hu16PutNotificacionesLecturaMarcarTodasComoLeidas"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.01 - Login como Administrador" id="b23e8b2e-c33d-4b11-b7f6-7668a8bdde67" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.058">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.058" classname="07AdministracionHu20Hu21Hu22Hu230701LoginComoAdministrador"/>
+    <testcase name="Status 200 OK" time="0.058" classname="07AdministracionHu20Hu21Hu22Hu230701LoginComoAdministrador"/>
+    <testcase name="Sesión de ADMINISTRADOR" time="0.058" classname="07AdministracionHu20Hu21Hu22Hu230701LoginComoAdministrador"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.02 - HU20: GET /admin/usuarios - Listar usuarios internos" id="0905422e-c07e-406e-bdb7-2533498cc2e1" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230702Hu20GetAdminUsuariosListarUsuariosInternos"/>
+    <testcase name="Status 200 OK" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230702Hu20GetAdminUsuariosListarUsuariosInternos"/>
+    <testcase name="Listado de usuarios retornado" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230702Hu20GetAdminUsuariosListarUsuariosInternos"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.03 - HU20: POST /admin/usuarios - Crear usuario técnico" id="163025d1-8bb5-4a9a-a043-c93934d322aa" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.057">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.057" classname="07AdministracionHu20Hu21Hu22Hu230703Hu20PostAdminUsuariosCrearUsuarioTecnico"/>
+    <testcase name="Status 201 Created" time="0.057" classname="07AdministracionHu20Hu21Hu22Hu230703Hu20PostAdminUsuariosCrearUsuarioTecnico"/>
+    <testcase name="Usuario creado" time="0.057" classname="07AdministracionHu20Hu21Hu22Hu230703Hu20PostAdminUsuariosCrearUsuarioTecnico"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.04 - HU20: PUT /admin/usuarios/{id} - Modificar usuario interno" id="dce2da3d-5796-4af8-b8d1-69a52be12ecc" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.013">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.013" classname="07AdministracionHu20Hu21Hu22Hu230704Hu20PutAdminUsuariosIdModificarUsuarioInterno"/>
+    <testcase name="Status 200 OK" time="0.013" classname="07AdministracionHu20Hu21Hu22Hu230704Hu20PutAdminUsuariosIdModificarUsuarioInterno"/>
+    <testcase name="Nombre actualizado" time="0.013" classname="07AdministracionHu20Hu21Hu22Hu230704Hu20PutAdminUsuariosIdModificarUsuarioInterno"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.05 - HU21: GET /admin/catalogos/{tipo} - Listar áreas" id="26151cb7-b4cc-46c8-9930-dd04027ccbf5" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.005" classname="07AdministracionHu20Hu21Hu22Hu230705Hu21GetAdminCatalogosTipoListarAreas"/>
+    <testcase name="Status 200 OK" time="0.005" classname="07AdministracionHu20Hu21Hu22Hu230705Hu21GetAdminCatalogosTipoListarAreas"/>
+    <testcase name="Catálogo de áreas retornado" time="0.005" classname="07AdministracionHu20Hu21Hu22Hu230705Hu21GetAdminCatalogosTipoListarAreas"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.06 - HU21: POST /admin/catalogos/{tipo} - Crear categoría nueva" id="2a34809d-41d7-4e75-a7e4-e9d68531c3f2" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.012">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230706Hu21PostAdminCatalogosTipoCrearCategoriaNueva"/>
+    <testcase name="Status 201 Created" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230706Hu21PostAdminCatalogosTipoCrearCategoriaNueva"/>
+    <testcase name="Ítem de catálogo creado" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230706Hu21PostAdminCatalogosTipoCrearCategoriaNueva"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.07 - HU21: DELETE /admin/catalogos/{tipo}/{id} - Desactivar ítem de catálogo (borrado lógico)" id="d8048bea-6908-456f-8f6f-efb656d5b6dd" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.012">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230707Hu21DeleteAdminCatalogosTipoIdDesactivarItemDeCatalogoBorradoLogico"/>
+    <testcase name="Status 200 OK (desactivación lógica)" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230707Hu21DeleteAdminCatalogosTipoIdDesactivarItemDeCatalogoBorradoLogico"/>
+    <testcase name="Ítem marcado como inactivo" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230707Hu21DeleteAdminCatalogosTipoIdDesactivarItemDeCatalogoBorradoLogico"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.08 - HU22: GET /admin/politicas - Consultar políticas de plazos" id="e6ce3348-91c0-49e0-bebb-6031b2aa6eb3" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.012">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230708Hu22GetAdminPoliticasConsultarPoliticasDePlazos"/>
+    <testcase name="Status 200 OK" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230708Hu22GetAdminPoliticasConsultarPoliticasDePlazos"/>
+    <testcase name="Lista de políticas retornada con versión vigente" time="0.012" classname="07AdministracionHu20Hu21Hu22Hu230708Hu22GetAdminPoliticasConsultarPoliticasDePlazos"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.09 - HU22: POST /admin/politicas - Validación 400 primera atención mayor que resolución" id="7f3a91f7-da88-40f4-8680-90da6b6834ee" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230709Hu22PostAdminPoliticasValidacion400PrimeraAtencionMayorQueResolucion"/>
+    <testcase name="Status 400 Bad Request" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230709Hu22PostAdminPoliticasValidacion400PrimeraAtencionMayorQueResolucion"/>
+    <testcase name="DATOS_INVALIDOS en matriz" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230709Hu22PostAdminPoliticasValidacion400PrimeraAtencionMayorQueResolucion"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.10 - HU23: GET /admin/auditoria - Consultar bitácora administrativa" id="10b90121-7c43-499c-b6cb-7356c602ecea" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.011" classname="07AdministracionHu20Hu21Hu22Hu230710Hu23GetAdminAuditoriaConsultarBitacoraAdministrativa"/>
+    <testcase name="Status 200 OK" time="0.011" classname="07AdministracionHu20Hu21Hu22Hu230710Hu23GetAdminAuditoriaConsultarBitacoraAdministrativa"/>
+    <testcase name="Lista de eventos de auditoría" time="0.011" classname="07AdministracionHu20Hu21Hu22Hu230710Hu23GetAdminAuditoriaConsultarBitacoraAdministrativa"/>
+  </testsuite>
+  <testsuite name="07 - Administración (HU20, HU21, HU22, HU23) / 07.11 - HU23: GET /admin/auditoria/opciones - Filtros de auditoría" id="2d4978f9-a204-460c-9894-a47cd39efc2a" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230711Hu23GetAdminAuditoriaOpcionesFiltrosDeAuditoria"/>
+    <testcase name="Status 200 OK" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230711Hu23GetAdminAuditoriaOpcionesFiltrosDeAuditoria"/>
+    <testcase name="Acciones y entidades disponibles" time="0.006" classname="07AdministracionHu20Hu21Hu22Hu230711Hu23GetAdminAuditoriaOpcionesFiltrosDeAuditoria"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.01 - Login como Solicitante para pruebas de RBAC" id="c1213542-b74e-45af-828c-b1347ca91ba5" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.056">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.056" classname="08SeguridadYControlDeAcceso401403Csrf0801LoginComoSolicitanteParaPruebasDeRbac"/>
+    <testcase name="Status 200 OK" time="0.056" classname="08SeguridadYControlDeAcceso401403Csrf0801LoginComoSolicitanteParaPruebasDeRbac"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.02 - RBAC: Solicitante intenta acceder a /admin/usuarios (403 Prohibido)" id="966b0fdf-c699-4182-950e-4a42feebf068" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.004" classname="08SeguridadYControlDeAcceso401403Csrf0802RbacSolicitanteIntentaAccederAAdminUsuarios403Prohibido"/>
+    <testcase name="Status 403 Forbidden" time="0.004" classname="08SeguridadYControlDeAcceso401403Csrf0802RbacSolicitanteIntentaAccederAAdminUsuarios403Prohibido"/>
+    <testcase name="ErrorApi ACCESO_DENEGADO" time="0.004" classname="08SeguridadYControlDeAcceso401403Csrf0802RbacSolicitanteIntentaAccederAAdminUsuarios403Prohibido"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.03 - RBAC: Solicitante intenta acceder a /indicadores (403 Prohibido)" id="8af59be5-1443-4d82-bdb6-7d3a16eef4ec" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0803RbacSolicitanteIntentaAccederAIndicadores403Prohibido"/>
+    <testcase name="Status 403 Forbidden" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0803RbacSolicitanteIntentaAccederAIndicadores403Prohibido"/>
+    <testcase name="ErrorApi ACCESO_DENEGADO" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0803RbacSolicitanteIntentaAccederAIndicadores403Prohibido"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.04 - HU24: Solicitante intenta acceder a solicitud ajena por ID (403 Prohibido)" id="57e8990d-d5d0-407c-8f86-31793d92ec2e" timestamp="2026-11-13T15:59:59.473Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.006" classname="08SeguridadYControlDeAcceso401403Csrf0804Hu24SolicitanteIntentaAccederASolicitudAjenaPorId403Prohibido"/>
+    <testcase name="Status 403 Forbidden" time="0.006" classname="08SeguridadYControlDeAcceso401403Csrf0804Hu24SolicitanteIntentaAccederASolicitudAjenaPorId403Prohibido"/>
+    <testcase name="ErrorApi ACCESO_DENEGADO" time="0.006" classname="08SeguridadYControlDeAcceso401403Csrf0804Hu24SolicitanteIntentaAccederASolicitudAjenaPorId403Prohibido"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.05 - CSRF: Petición con token CSRF inválido responde 403" id="960a8ac2-97f3-41b0-9c23-84906b2600d1" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0805CsrfPeticionConTokenCsrfInvalidoResponde403"/>
+    <testcase name="Status 403 Forbidden" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0805CsrfPeticionConTokenCsrfInvalidoResponde403"/>
+    <testcase name="Rechazo por CSRF inválido" time="0.003" classname="08SeguridadYControlDeAcceso401403Csrf0805CsrfPeticionConTokenCsrfInvalidoResponde403"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.06 - HU02: POST /auth/logout - Cerrar sesión y revocar JWT" id="bb56757f-ff80-4b67-aee9-cd9818ba5ec2" timestamp="2026-11-13T15:59:59.473Z" tests="2" failures="0" errors="0" time="0.017">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.017" classname="08SeguridadYControlDeAcceso401403Csrf0806Hu02PostAuthLogoutCerrarSesionYRevocarJwt"/>
+    <testcase name="Status 204 No Content" time="0.017" classname="08SeguridadYControlDeAcceso401403Csrf0806Hu02PostAuthLogoutCerrarSesionYRevocarJwt"/>
+  </testsuite>
+  <testsuite name="08 - Seguridad y Control de Acceso (401, 403, CSRF) / 08.07 - HU02: GET /me sin sesión responde 401 Sin Sesión" id="16b02e75-6bb3-4804-a5a0-15a029d476e5" timestamp="2026-11-13T15:59:59.473Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.002" classname="08SeguridadYControlDeAcceso401403Csrf0807Hu02GetMeSinSesionResponde401SinSesion"/>
+    <testcase name="Status 401 Unauthorized" time="0.002" classname="08SeguridadYControlDeAcceso401403Csrf0807Hu02GetMeSinSesionResponde401SinSesion"/>
+    <testcase name="ErrorApi SIN_SESION" time="0.002" classname="08SeguridadYControlDeAcceso401403Csrf0807Hu02GetMeSinSesionResponde401SinSesion"/>
+  </testsuite>
+</testsuites>

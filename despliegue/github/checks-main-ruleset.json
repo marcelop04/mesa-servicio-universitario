@@ -1,0 +1,25 @@
+{
+  "name": "main-ci",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {"ref_name": {"include": ["refs/heads/main"], "exclude": []}},
+  "bypass_actors": [],
+  "rules": [
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          {"context": "Backend (Spring Boot)"},
+          {"context": "Frontend (React)"},
+          {"context": "npm audit (incluye desarrollo)"},
+          {"context": "OWASP Dependency-Check"},
+          {"context": "Configuración de despliegue"},
+          {"context": "Imágenes Docker"},
+          {"context": "CodeQL (java-kotlin)"},
+          {"context": "CodeQL (javascript-typescript)"}
+        ]
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # mesa-servicios-universitarios
 Proyecto del curso Taller de Construcción de Software Web: mesa de servicios universitarios con plazos de atención.
 
-[![CI](https://github.com/marcelop04/mesa-servicios-universitarios/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelop04/mesa-servicios-universitarios/actions/workflows/ci.yml)
+[![CI](https://github.com/marcelop04/mesa-servicio-universitario/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelop04/mesa-servicio-universitario/actions/workflows/ci.yml)
 
 ## Opción 1 · Todo con Docker (recomendada)
 
@@ -42,10 +42,10 @@ docker compose logs -f backend
 `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD` y `JWT_SECRET` son obligatorios; no hay secretos por defecto.
 Si ya existían volúmenes de MySQL, conserva sus credenciales: cambiar `.env` no cambia sus contraseñas.
 No uses `docker compose down -v` como solución rutinaria: elimina la base y las evidencias.
-Este Compose solo expone puertos en localhost; David debe preparar el despliegue HTTPS por separado.
+Este Compose solo expone puertos en localhost; el despliegue HTTPS usa `despliegue/compose.yml`.
 La integración C sobre el main con B conserva perfiles y healthchecks; el perfil `prod` rechaza
 cuentas/solicitudes demo. Revisar [la transición y pruebas de seguridad](docs/seguridad/integracion-main-b.md)
-con David antes de activar CD o reutilizar un archivo de entorno anterior.
+antes de activar CD o reutilizar un archivo de entorno anterior.
 
 ## Opción 2 · Sin Docker (para desarrollar)
 
@@ -81,7 +81,8 @@ cd frontend && npm test      # Vitest
 ```
 
 El pipeline de GitHub Actions (`.github/workflows/ci.yml`) ejecuta ambas suites y construye las imágenes
-Docker si las pruebas y los análisis de dependencias pasan. Configura `NVD_API_KEY` en GitHub Secrets.
+Docker si las pruebas y los análisis de dependencias pasan. CI usa los feeds oficiales
+de NIST; `NVD_API_KEY` solo es necesaria para la alternativa local que consulta la API.
 
 ## Seguridad · paquete C de Marcelo
 
@@ -98,7 +99,7 @@ Docker si las pruebas y los análisis de dependencias pasan. Configura `NVD_API_
 - `prototipo/`: prototipo de la fase I con json-server.
 - `docs/`: informe, diagramas, diseño y avance por integrante (`fase-ii-*.md`).
 
-## Despliegue gratuito y entrega continua (paquete B · David)
+## Despliegue y CI/CD (paquete B)
 
 - [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
   y alternativa Always Free, HTTPS con Caddy,
@@ -106,10 +107,13 @@ Docker si las pruebas y los análisis de dependencias pasan. Configura `NVD_API_
 - [`despliegue/`](despliegue/): infraestructura Terraform y Compose de nube; MySQL y
   backend sin puertos públicos, imágenes desplegadas por digest tras CI exitoso.
 - [Pruebas de usuario/SUS y responsive](docs/pruebas/usuarios/Protocolo_SUS.md).
-- [Estado y evidencias de David](docs/fase-iii-iv-david.md).
+- [Cuestionario y mensaje para participantes](docs/pruebas/usuarios/Cuestionario_SUS.md).
+- [Estado y evidencias del despliegue](docs/fase-iii-iv-david.md).
 
 El stack de nube requiere configurar la cuenta OCI y GitHub; consultar la bitácora
 para el estado de la URL pública, primer CD y verificaciones realizadas.
+
+Demostración del curso: <https://msu-157-137-206-147.sslip.io> (servidor temporal Free Trial).
 
 ## Problemas comunes
 
@@ -117,4 +121,4 @@ para el estado de la URL pública, primer CD y verificaciones realizadas.
   `docker-compose.yml` (por ejemplo `"8082:80"`).
 - **`Cannot connect to the Docker daemon`**: abra Docker Desktop y espere a que indique que está en ejecución.
 - **Error de credenciales tras crear `.env`**: si MySQL ya tenía datos, conserva su contraseña anterior;
-  no borres volúmenes. Consulta a David para una rotación o restauración controlada.
+  no borres volúmenes. Coordina con el responsable del despliegue una rotación o restauración controlada.

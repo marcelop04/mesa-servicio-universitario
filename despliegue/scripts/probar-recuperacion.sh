@@ -6,8 +6,10 @@ trabajo="$(mktemp -d)"
 # El entorno del operador no puede seleccionar el proyecto/credenciales de producción.
 unset DB_USER DB_PASSWORD MYSQL_ROOT_PASSWORD JWT_SECRET DEMO_PASSWORD APP_HOST ACME_EMAIL
 unset DATOS_DEMO DATOS_DEMO_SOLICITUDES TAREAS_HABILITADAS
+unset MSU_PERFIL_ESPERADO
 export COMPOSE_PROJECT_NAME="msu-recuperacion-$$"
 export SPRING_PROFILES_ACTIVE=prueba
+export SEGURIDAD_DESPLIEGUE=false
 export BACKEND_IMAGE=msu-backend:prueba
 export FRONTEND_IMAGE=msu-frontend:prueba
 export MSU_LOCK_HELD=0
@@ -38,6 +40,11 @@ limpiar() {
 }
 trap limpiar EXIT
 validar_configuracion
+# Regresión: un .env de prueba con siembra no puede reutilizarse como prod.
+if (export SPRING_PROFILES_ACTIVE=prod SEGURIDAD_DESPLIEGUE=true; validar_configuracion); then
+    echo 'ERROR: se aceptó la configuración antigua prod con demo.' >&2
+    exit 1
+fi
 dc up -d --wait --wait-timeout 300 mysql backend frontend
 sql() {
     # shellcheck disable=SC2016

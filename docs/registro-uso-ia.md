@@ -84,17 +84,51 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Responsable | Marcelo; debe revisar el registro y las decisiones antes del cierre |
 ## Registros del paquete B conservados desde main
 
-Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
-Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
+**Proyecto:** Mesa de Servicios Universitarios (MSU)  
+**Curso:** Taller de Construcción de Software Web  
+**Equipo:** Emanuel, David, Marcelo, Gabriel, Alex  
+**Ciclo:** 2026-II
 
 | Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
 |---|---|---|---|---|---|---|---|
 | 12/11/2026 | David | OpenCode (asistente de programación) | Implementar paquete B del reparto desde main: nube/HTTPS, ambientes, GHCR/CD, respaldo, usuarios y manual con servicios gratuitos | Terraform OCI, Compose/Caddy, perfiles, workflows, herramientas RNF11/SUS/responsive y documentación | Sí | JUnit, Python, ShellCheck, actionlint, Terraform, Compose/Caddy; MySQL real y RNF11 aprobados en CI del PR #4 | Se corrigieron rutas ShellCheck en Docker y healthcheck IPv4; A1 quedó bloqueada por capacidad |
 | 12/11/2026 | David | OpenCode (asistente de programación) | Usar los créditos Free Trial para publicar la demo universitaria y entregar una URL web | Modo opt-in E5, transporte SSH compartido y entrega demo condicionada a CI | Sí | Promoción ACTIVE/FREE_TRIAL consultada, E5 creada, Terraform/ShellCheck/actionlint validados, Docker/SSH listos | Se separa bootstrap demo de CD main; HTTPS, recuperación en VM y sesiones reales se registran al ejecutarse |
 | 12/11/2026 | David | OpenCode (asistente de programación) | Verificar la publicación real y revisar responsive con todos los roles | Smoke de TLS/cookies/sesión y capturas de la URL pública | Sí | 8 pruebas Python aprobadas, smoke HTTPS con login/perfil/logout aprobado, 32 capturas web sin desbordes/5xx | El detector asumía un elemento `root`; se cambió a parsear la raíz real `raiz` y el módulo compilado con dos pruebas de regresión |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Completar entrega, respaldo y evidencias del paquete B | Imágenes GHCR por digest, entrega HTTPS y ensayo de recuperación en VM; actualización del manual/informe | Sí | CI/entrega aprobados, MySQL y archivo recuperados en proyecto aislado, cuatro SHA-256 de copia externa coinciden, timer activo | Se documentan los resultados reales y las dependencias de revisión de main y de cinco participantes SUS |
+| 12/11/2026 | David | OpenCode (asistente de programación) | Revisar correcciones de prod y evidenciar el flujo definitivo | Validación de entorno antes de transferir, builds nativos portables, gate CI/CodeQL y formulario CSV SUS | Sí | 5 pruebas Java de prod/guard aprobadas, 77 Vitest y 15 Python; reglas efectivas de rama consultadas por API | Se incorpora idéntico el VerificadorSeguridad de Marcelo (PR #3); no se atribuye ni se declara integrado el resto de C. Se rechaza prod con siembra; el ejemplo de cinco registros se marca SIMULADO y no acredita B5 |
+| 12/11/2026 (13/11 UTC) | David | OpenCode (asistente de programación) | Continuar la integración y resolver el bloqueo real de CI antes de CD main | Integración de main con PR #3/#7; precisión de fecha de políticas; fuente NIST por feeds 2.0 en CI y propuesta de ocho checks | Sí | Backend/frontend/CodeQL del PR aprobados; API NVD falló con HTTP 503; descarga nueva de todos los feeds y análisis Dependency-Check local aprobado | Se conserva CVSS ≥ 7, failOnError, actualización automática y excepciones existentes. La propuesta de reglas no se aplicó por falta de permisos; falta ejecución definitiva de CI/CD |
+| 13/11/2026 UTC | David | OpenCode (asistente de programación) | Completar la entrega tras la integración del PR #8 y registrar resultados comprobados | Evidencia CD main `df8cc39`, actualización de manual/informe/guion, capturas finales y copia externa | Sí | CI/CodeQL/CD aprobados; etiquetas de revisión y prod sin siembra verificados por SSH; sesión HTTPS, 32 capturas de roles y dos de SUS aprobadas; cuatro SHA-256 de nueva copia externa OK | `production` fue creado por el workflow sin reglas adicionales; se registran cinco alertas abiertas de `prototipo/` para revisión de Marcelo. Cinco sesiones SUS reales y ajustes administrativos siguen pendientes; no se respondieron cuestionarios técnicos como si fueran personas |
 
 No se generaron respuestas SUS ni se simularon participantes como evidencia de validación.
 Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-emanuel.md`.
+
+## IA-B-08 · Revisión del paquete B y preparación de sesiones reales
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026, America/Lima |
+| Responsable | David; revisión humana de la entrega y ejecución de las sesiones pendientes |
+| Herramienta | Codex, asistente de programación de OpenAI |
+| Prompt / alcance | Revisar repositorio y reparto actualizado, completar B, retirar el guion individual y las respuestas de ejemplo, integrar la sección técnica y preparar el cuestionario para cinco personas |
+| Resultado generado | Cuestionario web/escrito, protocolo de sesiones y cálculo sin modo de simulación; actualización del informe, manual, referencias y plantilla de checks |
+| ¿Se utilizó? | Incorporado al PR de actualización del paquete B; aceptación del equipo pendiente |
+| Validación realizada | Pruebas Python y frontend, compilación, revisión del formulario y consulta real de HTTPS/GitHub; resultados detallados en la bitácora B y los checks del PR |
+| Modificaciones | Se registra ancho real y fecha de Lima; se exige confirmación de uso; se rechazan otras procedencias, duplicados y aplicaciones distintas. Capturas históricas conservadas por decisión del responsable |
+| Límites | No se atribuyen respuestas a participantes, aprobación humana ni checks de main aplicados. Las cinco sesiones y la configuración administrativa siguen pendientes |
+
+## IA-B-09 · Integración de los cuestionarios recibidos
+
+| Campo | Valor |
+|---|---|
+| Fecha | 13/11/2026, America/Lima |
+| Responsable | David; aportó los cinco CSV y declaró las notas no registradas |
+| Herramienta | Codex, asistente de programación de OpenAI |
+| Prompt / alcance | Incorporar los cinco CSV de sesiones entregados y comprobar si los ocho checks de main ya están activos |
+| Resultado generado | Respuestas consolidadas sin cambiar valores, cálculo SUS y síntesis en protocolo, bitácora e informe; actualización de evidencia de protección |
+| ¿Se utilizó? | Incorporado a la rama de resultados para su revisión mediante PR |
+| Validación realizada | Cinco identificadores únicos, diez valores por persona entre 1 y 5 y mismo origen HTTPS; puntuaciones 75/95/85/90/90 y media 87/100; consulta de resumen de rama, reglas efectivas y rulesets |
+| Modificaciones | La prueba de entrada vacía usa una cabecera en memoria, independiente de los datos recibidos. El cálculo prioriza viewport_real con regresión para P01; respuestas y metadatos fuente se conservan |
+| Límites y pendientes | Por indicación del responsable, tareas, duraciones, ayuda y navegador constan como no registrados. Horas sin validar. Sin atribuir revisión humana no realizada. GitHub sigue mostrando checks obligatorios desactivados |
 
 ## IA-C-06 · Integración de seguridad sobre main con B
 

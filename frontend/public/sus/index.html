@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación SUS · Mesa de Servicios</title>
+    <link rel="stylesheet" href="/sus/sus.css">
+    <script type="module" src="/sus/sus.js"></script>
+  </head>
+  <body>
+    <main>
+      <a href="/">← Volver a la aplicación</a>
+      <h1>Evaluación de usabilidad</h1>
+      <p>Responde después de probar la Mesa de Servicios. Se evalúa el sistema, no a la persona.</p>
+      <p>Usa el identificador que te dio el facilitador (P01, P02…). No escribas nombres, correos ni contraseñas.</p>
+      <p>Responde desde el mismo dispositivo y navegador que utilizaste para probar la aplicación. Necesitarás unos 3 minutos.</p>
+      <noscript>Activa JavaScript para responder el cuestionario o solicita al facilitador la versión escrita.</noscript>
+      <form id="sus-form">
+        <section class="datos" aria-label="Datos de la sesión">
+          <label>Identificador del participante
+            <input name="participante" placeholder="P01" pattern="P[0-9]{2,3}" required autocomplete="off" maxlength="4">
+          </label>
+          <label>Rol que probaste
+            <select name="rol" required>
+              <option value="">Selecciona</option>
+              <option>Solicitante</option><option>Supervisor</option><option>Técnico</option><option>Administrador</option>
+            </select>
+          </label>
+        </section>
+        <p id="escala"><strong>Escala:</strong> 1 totalmente en desacuerdo; 2 en desacuerdo; 3 neutral; 4 de acuerdo; 5 totalmente de acuerdo.</p>
+        <div id="preguntas" aria-describedby="escala"></div>
+        <label>¿Qué fue difícil o qué mejorarías?
+          <textarea name="observaciones" rows="4" maxlength="1000"></textarea>
+        </label>
+        <label class="confirmacion"><input type="checkbox" name="tareas" required> He probado la aplicación antes de responder.</label>
+        <p id="error" role="alert"></p>
+        <button type="submit">Descargar mi respuesta CSV</button>
+        <p id="resultado" role="status"></p>
+      </form>
+      <p>Entrega el archivo descargado al facilitador. El formulario guarda la respuesta en tu descarga; no envía tus respuestas a un servidor.</p>
+    </main>
+  </body>
+</html>

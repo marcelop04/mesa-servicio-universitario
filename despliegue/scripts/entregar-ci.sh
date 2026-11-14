@@ -24,6 +24,16 @@ trap limpiar EXIT
 printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > "$temporal/clave"
 printf '%s\n' "$SSH_KNOWN_HOSTS" | tr -d '\r' > "$temporal/known_hosts"
 printf '%s\n' "$PRODUCTION_ENV" | tr -d '\r' > "$temporal/produccion.env"
+printf 'BACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\n' "$BACKEND_IMAGE" "$FRONTEND_IMAGE" > "$temporal/imagenes.env"
+# Valida el archivo recibido ANTES de reemplazar la configuración de la VM.
+(
+    export MSU_PERFIL_ESPERADO=prod
+    MSU_ENV_FILE="$temporal/produccion.env"
+    MSU_RELEASE_FILE="$temporal/imagenes.env"
+    # shellcheck source=comun.sh
+    source "$(dirname -- "${BASH_SOURCE[0]}")/comun.sh"
+    validar_configuracion
+)
 ssh-keygen -F "$DEPLOY_HOST" -f "$temporal/known_hosts" >/dev/null
 opciones=(-i "$temporal/clave" -o "UserKnownHostsFile=$temporal/known_hosts" -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20)
 destino="$DEPLOY_USER@$DEPLOY_HOST"

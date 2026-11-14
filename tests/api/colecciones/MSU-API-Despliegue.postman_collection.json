@@ -1,0 +1,444 @@
+{
+  "info": {
+    "_postman_id": "b3e94a81-d7f1-4c91-a1b2-msu-cloud-001",
+    "name": "Mesa de Servicios Universitarios - Suite de API Despliegue Nube (OCI)",
+    "description": "Suite de verificación de API automatizada ejecutada contra el entorno en la nube desplegado en Oracle Cloud Infrastructure (https://msu-157-137-206-147.sslip.io). Valida CSRF, registro dinámico, autenticación, perfil, catálogos, creación y consulta de solicitudes y logout.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "var sc = pm.response.headers.all().filter(function(h) { return h.key.toLowerCase() === 'set-cookie'; });",
+          "for (var i = 0; i < sc.length; i++) {",
+          "    var m = sc[i].value.match(/XSRF-TOKEN=([^;]+)/);",
+          "    if (m) {",
+          "        pm.environment.set('csrf_token', m[1]);",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "var method = pm.request.method;",
+          "var csrf = pm.environment.get('csrf_token');",
+          "if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {",
+          "    if (csrf) {",
+          "        pm.request.headers.upsert({ key: 'X-XSRF-TOKEN', value: csrf });",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Handshake CSRF y Cabeceras de Seguridad",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "pm.test('Cabecera X-Correlation-Id presente', function() { pm.expect(pm.response.headers.has('X-Correlation-Id')).to.be.true; });",
+              "pm.test('Token CSRF detectado', function() {",
+              "    pm.expect(pm.environment.get('csrf_token')).to.not.be.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/csrf",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "csrf"]
+        }
+      }
+    },
+    {
+      "name": "02 - Registro exitoso de nuevo Solicitante en la nube",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "var ts = Date.now();",
+              "var correo = 'alex.cloud.' + ts + '@unmsm.edu.pe';",
+              "pm.environment.set('usuario_correo', correo);",
+              "pm.environment.set('usuario_password', 'Password123!');"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201 Created', function() { pm.response.to.have.status(201); });",
+              "var json = pm.response.json();",
+              "pm.test('Usuario registrado con rol SOLICITANTE', function() {",
+              "    pm.expect(json.rol).to.eql('SOLICITANTE');",
+              "    pm.expect(json.correo).to.eql(pm.environment.get('usuario_correo'));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"nombre\": \"Alex SDET Nube QA\",\n    \"correo\": \"{{usuario_correo}}\",\n    \"password\": \"{{usuario_password}}\",\n    \"vinculo\": \"ESTUDIANTE\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/registro",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "registro"]
+        }
+      }
+    },
+    {
+      "name": "03 - Validación 400 por correo inválido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 400 Bad Request', function() { pm.response.to.have.status(400); });",
+              "pm.test('ErrorApi DATOS_INVALIDOS', function() {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.codigo).to.eql('DATOS_INVALIDOS');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"nombre\": \"Usuario Mal\",\n    \"correo\": \"correo-sin-arroba\",\n    \"password\": \"Pass123!\",\n    \"vinculo\": \"ESTUDIANTE\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/registro",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "registro"]
+        }
+      }
+    },
+    {
+      "name": "04 - Login con credenciales incorrectas (401)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 401 Unauthorized', function() { pm.response.to.have.status(401); });",
+              "pm.test('Error CREDENCIALES_INVALIDAS', function() {",
+              "    pm.expect(pm.response.json().codigo).to.eql('CREDENCIALES_INVALIDAS');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"correo\": \"{{usuario_correo}}\",\n    \"password\": \"ClaveIncorrecta999!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "05 - Login exitoso del usuario creado en la nube",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "pm.test('Cookie de sesión MSU_SESION emitida', function() {",
+              "    var cookie = pm.cookies.get('MSU_SESION');",
+              "    pm.expect(cookie).to.not.be.undefined;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"correo\": \"{{usuario_correo}}\",\n    \"password\": \"{{usuario_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "06 - Consultar perfil /me de la sesión activa",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('Perfil coincide con usuario autenticado', function() {",
+              "    pm.expect(json.correo).to.eql(pm.environment.get('usuario_correo'));",
+              "    pm.expect(json.rol).to.eql('SOLICITANTE');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "me"]
+        }
+      }
+    },
+    {
+      "name": "07 - Consultar opciones de catálogo para formulario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('Contiene categorias, ubicaciones y prioridades', function() {",
+              "    pm.expect(json.categorias).to.be.an('array');",
+              "    pm.expect(json.ubicaciones).to.be.an('array');",
+              "    pm.expect(json.prioridades).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/catalogos",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "catalogos"]
+        }
+      }
+    },
+    {
+      "name": "08 - Registrar nueva solicitud en la nube con plazos calculados",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201 Created', function() { pm.response.to.have.status(201); });",
+              "var json = pm.response.json();",
+              "pm.test('Código correlativo MSU-YYYY-XXXX generado', function() {",
+              "    pm.expect(json.codigo).to.match(/^MSU-\\d{4}-\\d{4}$/);",
+              "    pm.environment.set('solicitud_id', json.id);",
+              "});",
+              "pm.test('Límites de atención y resolución calculados', function() {",
+              "    pm.expect(json.limite_atencion).to.not.be.undefined;",
+              "    pm.expect(json.limite_resolucion).to.not.be.undefined;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"descripcion\": \"El equipo multimedia no proyecta imagen durante clase magistral.\",\n    \"categoria_id\": 2,\n    \"ubicacion_id\": 1,\n    \"urgencia\": \"Alta\",\n    \"impacto\": \"Alto\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/solicitudes",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "solicitudes"]
+        }
+      }
+    },
+    {
+      "name": "09 - Listar solicitudes paginadas del usuario en la nube",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('Estructura paginada items, total >= 1', function() {",
+              "    pm.expect(json.items).to.be.an('array');",
+              "    pm.expect(json.total).to.be.at.least(1);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/solicitudes?pagina=1&tamano=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "solicitudes"],
+          "query": [
+            { "key": "pagina", "value": "1" },
+            { "key": "tamano", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10 - Consultar detalle de la solicitud creada",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('Detalle coincide con ticket registrado', function() {",
+              "    pm.expect(json.id).to.eql(pm.environment.get('solicitud_id'));",
+              "    pm.expect(json.descripcion).to.include('El equipo multimedia no proyecta imagen');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/solicitudes/{{solicitud_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "solicitudes", "{{solicitud_id}}"]
+        }
+      }
+    },
+    {
+      "name": "11 - Consulta de especificación OpenAPI en producción",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 OK', function() { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('OpenAPI versión 3.0.x accesible', function() {",
+              "    pm.expect(json.openapi).to.match(/^3\\./);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/openapi",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "openapi"]
+        }
+      }
+    },
+    {
+      "name": "12 - Cierre de sesión (Logout)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 204 No Content', function() { pm.response.to.have.status(204); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/logout",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "auth", "logout"]
+        }
+      }
+    },
+    {
+      "name": "13 - Verificación de 401 Unauthorized sin sesión",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 401 Unauthorized tras logout', function() { pm.response.to.have.status(401); });",
+              "pm.test('Error SIN_SESION', function() {",
+              "    pm.expect(pm.response.json().codigo).to.eql('SIN_SESION');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "me"]
+        }
+      }
+    }
+  ]
+}
