@@ -1,0 +1,10 @@
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="5.068207">
+<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-14T03:30:08.659Z" hostname="desktop-1366" tests="1" failures="0" skipped="0" time="1.689" errors="0">
+<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="1.689">
+</testcase>
+</testsuite>
+<testsuite name="01-auth-identidad.spec.js" timestamp="2026-11-14T03:30:08.659Z" hostname="mobile-360" tests="1" failures="0" skipped="0" time="1.604" errors="0">
+<testcase name="Épica 1: Identidad y Acceso › @HU01 Registro público de nuevo solicitante" classname="01-auth-identidad.spec.js" time="1.604">
+</testcase>
+</testsuite>
+</testsuites>

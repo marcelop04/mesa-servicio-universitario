@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { outputFolder: 'reportes/html', open: 'never' }],
-    ['junit', { outputFile: 'reportes/junit-e2e.xml' }]
+    ['junit', { outputFile: process.env.PLAYWRIGHT_JUNIT_OUTPUT_NAME || 'reportes/junit-e2e.xml' }]
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:8081',

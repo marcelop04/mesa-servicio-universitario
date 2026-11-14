@@ -21,8 +21,10 @@ test-results/
 playwright-report/
 tests/**/reportes/*
 !tests/e2e/reportes/junit-e2e.xml
+!tests/e2e/reportes/junit-despliegue.xml
 !tests/api/reportes/junit-report.xml
 !tests/api/reportes/junit-api.xml
+!tests/api/reportes/junit-despliegue.xml
 
 # Evidencias subidas en ejecución local (HU06)
 backend/archivos/

@@ -4,8 +4,8 @@
 **Curso:** Taller de Construcción de Software Web  
 **Paquete:** Paquete E – Pruebas y Rendimiento (Fases III y IV)  
 **Responsable:** Alex (Ingeniero QA / SDET)  
-**Fecha de emisión:** 12/11/2026  
-**Versión del documento:** 2.1 (Consolidado Final con Trazabilidad Oficial, Evidencias de Nube y Resultados de Equipo)
+**Fecha de emisión:** 13/11/2026  
+**Versión del documento:** 2.2 (Consolidado Final: Resultados de Seguridad con Excepciones de PR #7, Usabilidad SUS de PR #11 y Pruebas Reales sobre Despliegue en la Nube E3/B1)
 
 ---
 
@@ -14,21 +14,30 @@
 El presente informe consolida las evidencias, métricas y resultados de la campaña integral de aseguramiento de calidad (QA) y pruebas de rendimiento ejecutada sobre el sistema **Mesa de Servicios Universitarios (MSU)** para la culminación de las Fases III y IV del proyecto.
 
 La estrategia de pruebas abarcó la totalidad de la pirámide de automatización y las directivas de evaluación de la asignatura:
-1. **Pruebas Unitarias e Integración (Backend):** Lógica de negocio, SLAs, cálculo y congelamiento de plazos, y transiciones de estado con JUnit 5 y H2 en modo MySQL.
+1. **Pruebas Unitarias e Integración (Backend):** Lógica de negocio, SLAs, cálculo y congelamiento de plazos, y transiciones de estado con JUnit 5 y H2 en modo MySQL sobre **Spring Boot 3.5.16 y Java 17**.
    - *Entorno local de la rama de pruebas (`test/e5-informe-pruebas`):* **95 métodos de prueba** ejecutados exitosamente (`mvn test` en 18.2 s; 103 al incorporar el smoke `DespliegueHttpsTest` de David).
    - *Integración consolidada en CI (`main` / rama `feat/marcelo-seguridad`):* **155 métodos de prueba** (100 % aprobados) que incluyen las suites extendidas de seguridad, validación de políticas y servicios.
-2. **Pruebas de Componentes (Frontend):** Renderizado, interacción, accesibilidad y persistencia de filtros en LocalStorage con Vitest y React Testing Library.
+2. **Pruebas de Componentes (Frontend):** Renderizado, interacción, accesibilidad y persistencia de filtros en LocalStorage con Vitest y React Testing Library sobre React 18 / Vite 6.
    - *Entorno local de la rama de pruebas:* **74 pruebas unitarias** distribuidas en 11 archivos de prueba (`npm --prefix frontend test`, 100 % aprobadas en 4.8 s).
    - *Integración consolidada en CI (`main` / rama `feat/marcelo-seguridad`):* **80 pruebas unitarias** distribuidas en 12 archivos de prueba (100 % aprobadas).
 3. **Pruebas de API Automatizadas:** Suite Newman/Postman integrada en el pipeline de GitHub Actions (`ci.yml`), validando la matriz completa de roles institucionales (Solicitante, Supervisor, Técnico, Administrador) y códigos HTTP (200, 201, 204, 400, 401, 403, 404, 409).
    - **65 peticiones HTTP** y **182 aserciones** (100 % de éxito en 6.4 s), incorporando verificaciones explícitas de cálculo de plazos según política (`@HU14`), conflicto de concurrencia optimista (`@HU24` 409 `CONFLICTO_VERSION`) y denegación de acceso a solicitudes ajenas (`@HU24` 403 `ACCESO_DENEGADO`).
 4. **Pruebas E2E de Aceptación:** Cobertura del 100 % de las Historias de Usuario oficiales (HU01 a HU24) con Playwright Test en dos resoluciones (`desktop-1366` y `mobile-360` para RNF05). Se erradicaron de raíz los condicionales permisivos (`if (await isVisible())`), garantizando la descarga e inspección real de archivos CSV (`@HU19`) y la preparación determinista de datos vía API (`helpers/datos.js`).
-   - **48 pruebas** (24 escenarios BDD en desktop y 24 escenarios en mobile, 100 % aprobadas en 39.0 s).
-5. **Pruebas de Rendimiento y Capacidad:** Carga sostenida (20 VU, RNF06) y estrés escalonado (hasta 400 VU) con k6 sobre una siembra de 2,000 registros, garantizando la sanitización absoluta de credenciales (`handleSummary` sin `setup_data`).
+   - **48 pruebas** (24 escenarios BDD en desktop y 24 escenarios en mobile, 100 % aprobadas en 37.5 s).
+5. **Pruebas de Rendimiento y Capacidad (Local):** Carga sostenida (20 VU, RNF06) y estrés escalonado (hasta 400 VU) con k6 sobre una siembra de 2,000 registros, garantizando la sanitización absoluta de credenciales (`handleSummary` sin `setup_data`).
    - Carga: p95 de 362.62 ms en lecturas y 274.94 ms en escrituras con 0.00 % de errores.
    - Estrés: 12,685 peticiones procesadas a ~115 req/s sin colapso de procesos (0.00 % errores HTTP), alcanzando el punto de quiebre por saturación y degradación del SLA a 400 VU (p95 3.50 s, pico 8.42 s). Se formula la contención en el pool HikariCP como **hipótesis técnica fundamentada de arquitectura** (sujeta a confirmación con Actuator/Micrometer de Gabriel), observándose una estabilización **progresiva** durante el enfriamiento.
-6. **Verificación sobre el Despliegue en la Nube (David - B1):** Comprobación en vivo sobre la instancia en Oracle Cloud Infrastructure (`https://msu-157-137-206-147.sslip.io`), verificando terminación TLS con Caddy, HSTS estricto, CSP, TTFB transfronterizo promedio de 111.0 ms y 32 capturas de pantalla responsivas aprobadas.
-7. **Seguridad (SAST/DAST) y Usabilidad (SUS):** Integración de las métricas reales del equipo: 0 alertas en CodeQL, 0 vulnerabilidades en npm audit, 23 CVEs identificados en Dependency-Check (15 de severidad alta abiertos en dependencias de Spring Boot 3.5.13); DAST con OWASP ZAP delimitado formalmente y pendiente de autorización sobre la IP pública; y protocolo SUS de David formalizado, con el archivo `respuestas-sus.csv` listo para las 5 sesiones con usuarios finales.
+6. **Verificación Integral sobre el Despliegue en la Nube (David - B1 / E3):** Pruebas reales ejecutadas contra la infraestructura en Oracle Cloud Infrastructure (`https://msu-157-137-206-147.sslip.io`, región `sa-bogota-1`, Caddy reverse proxy con TLS/HSTS):
+   - *Newman en Nube:* 13 peticiones y 27 aserciones (**100 % aprobadas** en 2.8 s), validando CSRF, registro de usuario, login 401/200, cookie `MSU_SESION`, perfil, catálogos, creación con plazos, listado, detalle, OpenAPI y logout (`tests/api/reportes/junit-despliegue.xml`).
+   - *Playwright E2E en Nube:* Registro público `@HU01` y diseño responsivo ejecutados contra la URL pública en `desktop-1366` y `mobile-360` (**100 % aprobadas** en 5.4 s).
+   - *k6 Carga en Nube:* 10 VU durante 30 s con 414 peticiones completadas, **0.00 % de errores HTTP**, latencia p95 de **114.97 ms** (promedio 109.29 ms, mín 100.10 ms, máx 182.82 ms) y reporte sanitizado (`tests/load/resultados/resumen-carga-despliegue.json`).
+   - *Inspección Responsiva:* 32 capturas de los cuatro roles a 360/1366 px sin desborde ni errores 5xx (`docs/evidencias/fase-iii-iv-david/responsive-main/resultado.json`).
+7. **Seguridad (SAST/DAST) y Usabilidad (SUS):**
+   - *CodeQL (SAST):* 0 alertas en el código de producción backend y frontend (5 alertas históricas archivadas en prototipo legado fuera del build Docker).
+   - *npm audit:* 0 vulnerabilidades en dependencias frontend.
+   - *OWASP Dependency-Check (SCA):* Inicialmente 68 CVEs, reducidos a 23 CVE distintos (15 con CVSS $\ge 7.0$ en dependencias transitivas de Spring). El control **pasa en main (BUILD SUCCESS)** gracias a las excepciones documentadas por el equipo en PR #7 (`backend/dependency-check-suppressions.xml`), atadas a la versión exacta y con caducidad al 31/01/2027 sin reducir el umbral CVSS $\ge 7.0$. Los hallazgos corresponden a módulos no utilizados en la solución (WebFlux, XSLT, RSocket, FreeMarker, LDAP, etc.), como se detalla en `docs/seguridad/analisis-dependencias.md`.
+   - *DAST (OWASP ZAP):* Reportado formalmente como **pendiente de ejecución**, con plantilla y workflow listos por Marcelo, a la espera de la autorización formal de escaneo activo sobre la IP pública.
+   - *Usabilidad SUS (David - PR #11):* 5 participantes reales (P01 a P05) del rol Solicitante evaluados sobre la URL desplegada, obteniendo una **media SUS de 87.0 / 100** (calificación **«Excelente»**, superando la meta de $\ge 70.0$).
 
 ### Síntesis Global de Resultados
 
@@ -38,12 +47,16 @@ La estrategia de pruebas abarcó la totalidad de la pirámide de automatización
 | **Pruebas Unitarias/Integración (CI `main`)** | JUnit 5 + H2 (modo MySQL) | Suite consolidada con seguridad/servicios | 155 métodos | **100.00 %** (155/155) | 26.5 s | **APROBADO** |
 | **Pruebas de Componentes UI (Local)** | Vitest + React Testing Library | Formularios, filtros, persistencia | 74 tests (11 archivos) | **100.00 %** (74/74) | 4.8 s | **APROBADO** |
 | **Pruebas de Componentes UI (CI `main`)** | Vitest + React Testing Library | Suite consolidada frontend | 80 tests (12 archivos) | **100.00 %** (80/80) | 6.1 s | **APROBADO** |
-| **Pruebas de API (Newman en CI)** | Newman 6.2 (Postman) | 24 HUs, 4 roles, RBAC, CSRF, SLA, 409 | 65 requests / 182 asserts | **100.00 %** (182/182) | 6.4 s | **APROBADO** |
-| **Aceptación E2E (Desktop 1366px)** | Playwright Test | 24 HUs oficiales (BDD) | 24 escenarios | **100.00 %** (24/24) | 19.5 s | **APROBADO** |
-| **Aceptación E2E (Mobile 360px)** | Playwright Test | RNF05: $\text{scrollWidth} \le \text{innerWidth}$ | 24 escenarios | **100.00 %** (24/24) | 19.5 s | **APROBADO** |
-| **Carga Sostenida (RNF06)** | k6 v2.0.0 | 20 VU sostenidos, 2,000 registros | 1,603 requests (80% L / 20% E) | **100.00 %** (0.00 % error) | 60.0 s | **APROBADO** |
-| **Estrés y Punto de Quiebre** | k6 v2.0.0 | Rampa 20 → 400 VU escalonados | 12,685 requests (~115 req/s) | **100.00 %** (0.00 % error) | 110.0 s | **APROBADO** |
-| **Smoke y Responsivo en Nube (David)** | Playwright + Caddy + TLS | OCI Bogotá (`sa-bogota-1`) | 32 capturas (360/1366 px) | **100.00 %** (0 errores 5xx) | N/A | **APROBADO** |
+| **Pruebas de API (Newman en CI)** | Newman 6.2 (Postman) | 24 HUs, 4 roles, RBAC, CSRF, SLA, 409 | 65 requests / 182 asserts | **100.00 %** (182/182) | 6.5 s | **APROBADO** |
+| **Aceptación E2E (Desktop 1366px)** | Playwright Test | 24 HUs oficiales (BDD) | 24 escenarios | **100.00 %** (24/24) | 18.8 s | **APROBADO** |
+| **Aceptación E2E (Mobile 360px)** | Playwright Test | RNF05: $\text{scrollWidth} \le \text{innerWidth}$ | 24 escenarios | **100.00 %** (24/24) | 18.7 s | **APROBADO** |
+| **Carga Sostenida Local (RNF06)** | k6 v2.0.0 | 20 VU sostenidos, 2,000 registros | 1,603 requests (80% L / 20% E) | **100.00 %** (0.00 % error) | 60.0 s | **APROBADO** |
+| **Estrés y Límite Operativo Local** | k6 v2.0.0 | Rampa 20 → 400 VU escalonados | 12,685 requests (~115 req/s) | **100.00 %** (0.00 % error) | 110.0 s | **APROBADO** |
+| **Pruebas de API en Nube (Newman)** | Newman 6.2 (Postman) | OCI Bogotá (`sa-bogota-1`) | 13 requests / 27 asserts | **100.00 %** (27/27) | 2.8 s | **APROBADO** |
+| **Aceptación E2E en Nube (Playwright)** | Playwright Test | OCI Bogotá (360 px y 1366 px) | 2 tests (`@HU01`) | **100.00 %** (2/2) | 5.4 s | **APROBADO** |
+| **Carga en Nube (k6 E3/B1)** | k6 v2.0.0 | OCI Bogotá, 10 VU, 30 s | 414 requests (0.00 % error) | **100.00 %** (p95 114.97 ms) | 30.0 s | **APROBADO** |
+| **Inspección Responsiva en Nube (David)** | Playwright + Caddy + TLS | OCI Bogotá (`sa-bogota-1`) | 32 capturas (360/1366 px) | **100.00 %** (0 errores 5xx) | N/A | **APROBADO** |
+| **Evaluación Usabilidad SUS (David)** | Protocolo Brooke / Bangor | OCI Bogotá, 5 usuarios Solicitante | 5 cuestionarios / 10 ítems | **Media: 87.0 / 100** | N/A | **APROBADO** |
 
 ---
 
@@ -53,7 +66,7 @@ La estrategia de pruebas abarcó la totalidad de la pirámide de automatización
 - **Sistema Operativo:** Windows 11 Enterprise (64-bit), Kernel Windows_NT.
 - **Entorno de Contenedores:** Docker Desktop con Docker Compose v2.
   - `mysql:8.0`: Base de datos MySQL 8.0 en puerto `3307` (`mesa_servicios`, UTF-8 MB4).
-  - `backend`: Java 17 Eclipse Temurin, Spring Boot 3.5.13 en puerto `8080`.
+  - `backend`: Java 17 Eclipse Temurin, Spring Boot 3.5.16 en puerto `8080`.
   - `frontend`: Node.js 18 + Vite 6 compilado en servidor Nginx Alpine en puerto `8081`.
 - **Herramientas de Evaluación:**
   - Newman CLI v6.2.3 con reporter `htmlextra` v1.23.1 y `junit`.
@@ -90,7 +103,7 @@ Se agregó el job `api-tests` en `.github/workflows/ci.yml` de forma aislada y n
 **Evidencia de ejecución real:**
 ```
 Total Requests: 65 | Total Assertions: 182 | Failed: 0
-Execution Time: 6.4s
+Execution Time: 6.5s
 Ruta de reporte: tests/api/reportes/junit-report.xml
 ```
 
@@ -147,7 +160,7 @@ $$\text{scrollWidth} \le \text{innerWidth}$$
 Running 48 tests using 1 worker
   24 passed in desktop-1366
   24 passed in mobile-360
-Total: 48 passed (39.0s)
+Total: 48 passed (37.5s)
 Ruta de reporte: tests/e2e/reportes/junit-e2e.xml
 ```
 
@@ -161,7 +174,7 @@ Se sembraron **2,000 solicitudes históricas** en MySQL mediante inserción SQL 
 - Prioridades: 45 % Media, 30 % Alta, 15 % Baja, 10 % Crítica.
 - Prefijo identificador `[CARGA]` para garantizar idempotencia y limpieza controlada mediante `limpiar-carga.sql`.
 
-### 5.2. Escenario de Carga Sostenida (RNF06)
+### 5.2. Escenario de Carga Sostenida Local (RNF06)
 - **Carga:** 20 usuarios virtuales (VU) sostenidos durante 60 segundos.
 - **Mix transaccional:** 80 % Consultas (`tipo=lectura`) / 20 % Escrituras (`tipo=escritura`).
 - **Autenticación:** Login único por sesión en fase `setup()`.
@@ -190,53 +203,83 @@ Se sembraron **2,000 solicitudes históricas** en MySQL mediante inserción SQL 
 El criterio de quiebre operativo no requiere una caída catastrófica del servidor (la tasa de fallos HTTP se mantuvo estrictamente en 0.00 %, lo que evidencia la robustez de los procesos Java/Tomcat y la estabilidad de memoria de la JVM), sino que se define técnicamente como el **incumplimiento severo y sostenido del acuerdo de nivel de servicio (RNF06: p95 < 1,000 ms)**. Este quiebre comienza a manifestarse a partir de los 150-200 VU concurrentes y alcanza su punto crítico en la etapa de 400 VU, donde el percentil 95 global asciende a 3,503 ms (3.50 s, más de 3.5 veces el SLA admisible) y se registran tiempos de respuesta individuales máximos de hasta 8,418 ms (8.42 s).
 
 #### Hipótesis Técnica de Cuello de Botella y Comportamiento de Recuperación
-1. **Hipótesis Técnica Fundamentada de Arquitectura (HikariCP):** Spring Boot 3.5 configura por defecto el pool HikariCP con `maximum-pool-size: 10`, en contraste con el servidor web embebido de Tomcat que atiende hasta `server.tomcat.threads.max: 200` hilos (o 64 en el perfil prod de David). La ausencia total de errores HTTP combinada con el crecimiento lineal y pronunciado de la latencia apunta a que la mayoría de hilos concurrentes quedan bloqueados esperando conexiones en `HikariPool.getConnection()`.
+1. **Hipótesis Técnica Fundamentada de Arquitectura (HikariCP):** Spring Boot 3.5.16 configura por defecto el pool HikariCP con `maximum-pool-size: 10`, en contraste con el servidor web embebido de Tomcat que atiende hasta `server.tomcat.threads.max: 200` hilos (o 64 en el perfil prod de David). La ausencia total de errores HTTP combinada con el crecimiento lineal y pronunciado de la latencia apunta a que la mayoría de hilos concurrentes quedan bloqueados esperando conexiones en `HikariPool.getConnection()`.
 2. **Limitación de la Medición de Cliente (k6):** Dado que los resúmenes agregados de k6 capturan exclusivamente la perspectiva externa del cliente HTTP (tiempos de viaje y códigos de respuesta) y no disponen de telemetría interna del sistema operativo ni de la JVM (uso de CPU, IOPS en MySQL o monitoreo activo de hilos del pool), esta explicación se formula formalmente como una **hipótesis técnica de arquitectura pendiente de validación empírica**. Dicha comprobación se podrá confirmar cuando Gabriel (Paquete D, PR #6) integre Spring Boot Actuator y exporte métricas de Micrometer (`hikaricp.connections.pending`, `jvm.threads.live`).
 3. **Comportamiento durante la Fase de Enfriamiento:** En la etapa 6 (cooldown a 20 VU), se observó una estabilización **progresiva** a medida que la cola de peticiones encoladas en el pool se evacuó gradualmente, retornando a la latencia de línea base sin requerir reinicio de contenedores ni registrar fugas de memoria.
 
 ### 5.4. Sanitización de Resultados (RNF01)
-Ambos scripts de k6 (`carga.js` y `estres.js`) implementan la función nativa `handleSummary(data)` que elimina el nodo `setup_data` (`delete data.setup_data;`). Esto garantiza de forma permanente que los archivos `resumen-carga.json` y `resumen-estres.json` contengan únicamente métricas cuantitativas sin filtrar credenciales, tokens JWT ni cookies de sesión.
+Todos los scripts de k6 (`carga.js`, `estres.js` y `carga-despliegue.js`) implementan la función nativa `handleSummary(data)` que elimina el nodo `setup_data` (`delete data.setup_data;`). Esto garantiza de forma permanente que los archivos JSON contengan únicamente métricas cuantitativas sin filtrar credenciales, tokens JWT ni cookies de sesión.
 
-### 5.5. Verificación y Evidencias sobre el Despliegue en la Nube (David - B1)
-Conforme a la integración con el Paquete B gestionado por David, se ejecutaron comprobaciones reales de conectividad, seguridad perimetral y rendimiento de red sobre la infraestructura desplegada en Oracle Cloud Infrastructure (OCI, región `sa-bogota-1`):
+### 5.5. Verificación y Evidencias sobre el Despliegue en la Nube (David - Paquete B / Tareas E1, E2, E3)
+En cumplimiento del requisito de evaluación sobre la infraestructura desplegada en la nube gestionada por David (Oracle Cloud Infrastructure, VM `msu-curso-trial`, región `sa-bogota-1`, IP `157.137.206.147`, dominio `https://msu-157-137-206-147.sslip.io` con Caddy reverse proxy y TLS automático), Alex ejecutó la verificación integral de API, Aceptación E2E y Rendimiento:
 
-- **Punto de Enlace Público:** `https://msu-157-137-206-147.sslip.io` (servidor Caddy como proxy inverso y terminador TLS).
-- **Seguridad en Tránsito:** Certificado SSL/TLS válido emitido automáticamente, cabecera `Strict-Transport-Security: max-age=31536000` (HSTS estricto), CSP cerrado y cookies marcadas con `Secure; HttpOnly; SameSite=Lax`.
-- **Rendimiento de Red y TTFB Transfronterizo:**
-  - Medición experimental de 30 peticiones consecutivas sobre `/api/v1/auth/csrf`: **0.00 % de errores**, latencia mínima de 102 ms, **promedio de 111.0 ms** y **p95 de 104 ms** (con pico inicial de handshake TLS de 344 ms).
-  - Consulta de especificación completa de OpenAPI (`/api/v1/openapi`, ~120 KB JSON): **0.00 % de errores**, latencia promedio de 179.3 ms y transferencia íntegra de esquema.
-- **Evidencias de Diseño Responsivo Desplegado:** David ejecutó el script `responsive-despliegue.mjs` contra la URL pública de producción, generando 32 capturas de pantalla a 360 px y 1366 px en los cuatro roles institucionales (Solicitante, Supervisor, Técnico, Administrador), archivadas en `docs/evidencias/fase-iii-iv-david/responsive/`, registrando **0 desbordes horizontales** y **0 errores 5xx** (`docs/evidencias/fase-iii-iv-david/responsive/resultado.json`).
+#### 1. Pruebas de API Automatizadas en la Nube (Newman)
+Se ejecutó la colección `tests/api/colecciones/MSU-API-Despliegue.postman_collection.json` contra el endpoint público:
+- **Peticiones ejecutadas:** 13 peticiones HTTP / 27 aserciones (**100.00 % aprobadas**, 0 fallos).
+- **Flujo evaluado:** Handshake CSRF con cabecera `X-Correlation-Id`, registro público de Solicitante en base de datos real, validación de error 400, rechazo 401 por credenciales inválidas, login exitoso con emisión de cookie `MSU_SESION` (`HttpOnly`, `Secure`, `SameSite=Lax`), consulta de `/me`, consulta de `/catalogos`, registro de solicitud con cálculo dinámico de plazos (`limite_atencion`, `limite_resolucion`), consulta paginada de `/solicitudes`, detalle por ID, consulta de especificación `/openapi`, cierre de sesión (204 No Content) y comprobación de denegación 401 `SIN_SESION` tras logout.
+- **Tiempo de ejecución:** 2.8 segundos (latencia promedio por request: 142 ms; mín: 102 ms, máx: 339 ms).
+- **Evidencia archivada:** `tests/api/reportes/junit-despliegue.xml`.
+
+#### 2. Pruebas de Aceptación E2E en la Nube (Playwright)
+Se ejecutó el escenario `@HU01` de registro público de usuario y validación de diseño responsivo apuntando a `BASE_URL=https://msu-157-137-206-147.sslip.io`:
+- **Resultados:** 2 pruebas ejecutadas y aprobadas al 100 % en 5.4 segundos (en viewports `desktop-1366` y `mobile-360`).
+- **Verificación RNF05:** Ausencia total de desborde horizontal ($\text{scrollWidth} \le \text{innerWidth}$) en la aplicación en producción.
+
+#### 3. Pruebas de Carga en la Nube (k6 - E3 dependiente de B1)
+Se ejecutó el script `tests/load/scripts/carga-despliegue.js` con 10 usuarios virtuales concurrentes durante 30 segundos sobre la API desplegada:
+- **Peticiones HTTP totales:** 414 solicitudes procesadas contra OCI Bogotá.
+- **Tasa de error HTTP (`http_req_failed`):** **0.00 %** (0 errores en 414 peticiones).
+- **Latencia de Red Transfronteriza (Lima $\to$ Bogotá):**
+  - **p95 = 114.97 ms** (ampliamente inferior al umbral de 3,000 ms).
+  - Promedio: 109.29 ms | Mediana: 108.50 ms | Mínimo: 100.10 ms | Máximo: 182.82 ms.
+- **Sanitización de Evidencias:** Reporte exportado a `tests/load/resultados/resumen-carga-despliegue.json` con `setup_data` suprimido.
+
+#### 4. Inspección de Diseño Responsivo Desplegado (David)
+David ejecutó `docs/pruebas/responsive-despliegue.mjs` generando 32 capturas de los cuatro roles y 2 del formulario `/sus/` a 360 px y 1366 px en `docs/evidencias/fase-iii-iv-david/responsive-main/`, registrando **0 desbordes horizontales** y **0 errores 5xx** (`docs/evidencias/fase-iii-iv-david/responsive-main/resultado.json`).
 
 ---
 
 ## 6. Pruebas de Seguridad (SAST y DAST)
 
-Conforme a las directivas del **Paquete C (Seguridad)** desarrollado por Marcelo en la rama `feat/marcelo-seguridad`, se integran los resultados obtenidos mediante el análisis estático y dinámico de la solución:
+Conforme a las directivas del **Paquete C (Seguridad)** desarrollado por Marcelo y las actualizaciones integradas en la rama `main` (PR #3 y PR #7):
 
 ### 6.1. Análisis Estático de Seguridad de Código (SAST)
 
 1. **GitHub CodeQL (SAST de Código Fuente):**
-   - **Herramienta y Versión:** GitHub CodeQL Action v2.27.4 con la suite de reglas `security-extended`.
-   - **Reglas Evaluadas:** 120 reglas para el backend (Java 17 / Spring Boot) y 103 reglas para el frontend (JavaScript / React).
-   - **Resultados:** **0 alertas de seguridad detectadas** (0 critical, 0 high, 0 medium, 0 low). El código fuente no presenta vulnerabilidades de inyección SQL (uso estricto de Spring Data JPA / consultas preparadas), Cross-Site Scripting (XSS) en plantillas React, ni deserializaciones inseguras.
+   - **Herramienta y Versión:** GitHub CodeQL Action v2.27.4 con suite `security-extended`.
+   - **Alcance Productivo:** 120 reglas para el backend (Java 17 / Spring Boot 3.5.16) y 103 reglas para el frontend (JavaScript / React).
+   - **Resultados:** **0 alertas de seguridad en el código de producción**.
+   - **Alcance Global del Repositorio:** La consulta de Code Scanning en `main` reporta 5 alertas históricas archivadas en la carpeta `prototipo/` (3 de severidad alta por XSS/rate limiting y 2 de severidad media por redirección no validada en el prototipo JS de fase I/II). Estas alertas quedan completamente fuera de los contextos de compilación de las imágenes Docker (`backend/` y `frontend/`), manteniéndose registradas para auditoría técnica.
 
 2. **Auditoría de Dependencias Frontend (`npm audit`):**
    - **Herramienta:** `npm audit --audit-level=high` sobre el árbol de dependencias de `frontend/`.
-   - **Resultados:** **0 vulnerabilidades reportadas** en dependencias de producción.
+   - **Resultados:** **0 vulnerabilidades reportadas** en dependencias de producción tras actualizar Vite 6.4.6, Vitest 5.1.0 y Router 7.18.5.
 
 3. **OWASP Dependency-Check (SCA de Dependencias Backend):**
-   - **Herramienta y Versión:** OWASP Dependency-Check Maven Plugin v13.0.0 contra la base NVD / CVSS 3.1.
-   - **Hallazgos:** Se identificaron **23 CVE distintos**, de los cuales **15 son de severidad ALTA (CVSS $\ge 7.0$)**, abiertos en las dependencias transitivas heredadas de Spring Boot 3.5.13:
-     - *Spring Framework 6.2.19:* 17 CVEs asociados a denegación de servicio por cabeceras HTTP anómalas y serialización.
-     - *Spring Security 6.5.11:* 5 CVEs relacionados con ataques de temporización en validadores CSRF y redirección en filtros.
-     - *Spring Data JPA 3.5.13:* 1 CVE sobre resolución de métodos dinámicos.
-   - **Tratamiento y Política:** Siguiendo un criterio de auditoría riguroso y transparente, Marcelo **no introdujo supresiones arbitrarias en `dependency-check-suppressions.xml` ni excepciones no justificadas**. Los 15 CVEs de severidad alta quedan registrados formalmente como deuda técnica de librerías base, con recomendación prioritaria de actualización a Spring Boot 3.5.14 / Spring Framework 6.2.20 en el ciclo de mantenimiento posterior.
+   - **Herramienta y Versión:** OWASP Dependency-Check Maven Plugin v13.0.0 contra los feeds oficiales NIST NVD 2.0.
+   - **Evolución y Parches:** El escaneo inicial detectó 68 CVE distintos (33 con CVSS $\ge 7.0$). Con la actualización de librerías auxiliares (Tomcat 10.1.61, Commons Lang 3.22.0, Jackson 2.21.5, Log4j 2.26.1, MySQL Connector/J 26.10.0, springdoc 2.10.0, DOMPurify 3.4.17 en Swagger UI), los CVEs se redujeron a **23 CVE distintos (15 con CVSS $\ge 7.0$)** en dependencias transitivas de Spring Boot 3.5.16 (17 en Spring Framework 6.2.19, 5 en Spring Security 6.5.11, 1 en Spring Data JPA 3.5.13).
+   - **Excepciones Aprobadas (PR #7 · `4d72d91`):** Siguiendo la recomendación del equipo, se mantuvieron Spring Boot 3.5.16 y Java 17, incorporando excepciones documentadas en `backend/dependency-check-suppressions.xml` para los 23 CVEs identificados.
+     - *Condiciones:* Atadas a la versión exacta de las librerías analizadas; caducidad perentoria al **31/01/2027**; y conservación estricta de `failBuildOnCVSS=7` y `failOnError=true` (cualquier CVE nuevo $\ge 7.0$ romperá el build).
+     - *Estado del Control:* Con estas supresiones auditadas, el control en CI de `main` **pasa exitosamente (BUILD SUCCESS)**.
+   - **Análisis de No Explotabilidad (según `docs/seguridad/analisis-dependencias.md`):**
+     - *WebFlux (CVE-2026-47885, 47889, 47891, 47892, 47893):* La aplicación usa Spring MVC sobre Tomcat embebido, no el starter WebFlux.
+     - *Vistas XSLT (CVE-2026-47884):* Requiere renderizado implícito con `XsltView`; la aplicación es una API REST con serialización JSON.
+     - *RSocket (CVE-2026-47888):* No se utiliza servidor RSocket.
+     - *FreeMarker (CVE-2026-59280):* No existe integración con plantillas FreeMarker.
+     - *Expresiones SpEL (CVE-2026-47886, 59283):* No se evalúan expresiones suministradas por usuarios.
+     - *SSE y vistas (CVE-2026-47890, 59313):* No hay endpoints Server-Sent Events ni uso de `SseEmitter`.
+     - *Listas autopobladas (CVE-2026-59282):* No se usan `AutoPopulatingList` ni bindings de rutas sobre listas dinámicas.
+     - *`UrlHandlerFilter` / `UrlFileNameViewController` (CVE-2026-47883, 47887):* No están configurados en el proyecto.
+     - *LDAP, OAuth2/DPoP y WebAuthn (CVE-2026-59270, 41707, 47841):* No aplican a la arquitectura de sesión basada en JWT/BCrypt.
+     - *`AesBytesEncryptor` y Password4j (CVE-2026-47842, 59276):* No se utilizan.
+     - *Data JPA (CVE-2026-47834):* Ordenamientos filtrados por lista permitida en el servidor; no hay consultas nativas dinámicas con Sort no confiable.
+     - *Riesgo residual aceptado:* CVE-2026-59314 en `ContentDisposition` (descarga de CSV y evidencias), mitigado por Tomcat al rechazar caracteres maliciosos en cabeceras de respuesta y no emitir multipart saliente.
 
 ### 6.2. Análisis Dinámico de Seguridad (DAST)
 
 - **Estado de Ejecución:** A la fecha de cierre de este informe, el análisis dinámico activo mediante OWASP ZAP **aún no se ejecuta**.
 - **Artefactos Preparados:** Marcelo dejó configurada la plantilla estructurada de hallazgos en `docs/seguridad/plantilla-dast.md` y el flujo automatizado `.github/workflows/dast.yml` basado en la imagen oficial `zaproxy/zap-stable`.
-- **Delimitación Técnica y Justificación:** La ejecución de pruebas dinámicas intrusivas (ataques de inyección, fuzzing y escaneo activo) contra la dirección IP pública en Oracle Cloud Infrastructure (`https://msu-157-137-206-147.sslip.io`) requiere una autorización formal previa por parte del administrador de la infraestructura y una delimitación estricta de alcance (Rules of Engagement) para evitar bloqueos del proveedor cloud o la alteración de datos durante las pruebas de usuario. Su ejecución queda calendarizada como actividad post-integración.
+- **Delimitación Técnica y Justificación:** La ejecución de pruebas dinámicas intrusivas (ataques de inyección, fuzzing y escaneo activo) contra la dirección IP pública en Oracle Cloud Infrastructure (`https://msu-157-137-206-147.sslip.io`) requiere una autorización formal previa por parte del administrador de la infraestructura y una delimitación estricta de alcance (Rules of Engagement) para evitar bloqueos del proveedor cloud o la alteración de datos durante las evaluaciones de usabilidad. Su ejecución queda calendarizada como actividad post-integración.
 - **Cabeceras de Seguridad Verificadas (Caddy + Spring Security):**
   - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
   - `Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; ...`
@@ -249,9 +292,9 @@ Conforme a las directivas del **Paquete C (Seguridad)** desarrollado por Marcelo
 
 ## 7. Pruebas de Usabilidad con Usuarios Finales (SUS)
 
-Conforme al **Paquete B (Usabilidad)** desarrollado por David:
+Conforme al **Paquete B (Usabilidad)** desarrollado por David y registrado formalmente en la rama `main` (PR #11 · `c8d4e5c`):
 
-### 7.1. Ficha Metodológica y Protocolo Preparado
+### 7.1. Ficha Metodológica y Protocolo Aplicado
 - **Instrumento:** System Usability Scale (SUS) de Brooke (1996), compuesto por 10 afirmaciones psicométricas con respuestas en escala Likert del 1 («Totalmente en desacuerdo») al 5 («Totalmente de acuerdo»).
 - **Protocolo Formal:** Documentado por David en `docs/pruebas/usuarios/Protocolo_SUS.md`, incluyendo consentimiento informado, perfil de participantes y 4 tareas representativas:
   1. *Tarea 1:* Registro de cuenta y consulta de perfil (`HU01`, `HU03`).
@@ -261,10 +304,27 @@ Conforme al **Paquete B (Usabilidad)** desarrollado por David:
 - **Cálculo Automatizado:** Implementado en `docs/pruebas/usuarios/calcular-sus.py`, aplicando la fórmula estandarizada:
   $$\text{SUS} = 2.5 \times \left[ \sum (\text{Ítems Impares} - 1) + \sum (5 - \text{Ítems Pares}) \right]$$
 
-### 7.2. Estado de Recolección de Datos
-- **Muestra Planificada:** 5 participantes reales (2 estudiantes, 2 docentes y 1 personal administrativo).
-- **Estado Actual:** El archivo `docs/pruebas/usuarios/respuestas-sus.csv` que se encuentra en la rama `main` contiene únicamente la línea de cabeceras (`usuario,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,tiempo_segundos,observaciones`).
-- **Resultado:** Las 5 sesiones presenciales con usuarios finales se encuentran **planificadas y pendientes de ejecución** por parte de David. Una vez aplicadas las pruebas, se ejecutará el script de cálculo para determinar si se alcanza la meta de usabilidad proyectada ($\text{SUS} \ge 70.0$, adjetivación «Aceptable / Bueno» según el marco de Bangor).
+### 7.2. Resultados Cuantitativos Obtenidos
+Las 5 sesiones presenciales fueron ejecutadas por David sobre la aplicación desplegada `https://msu-157-137-206-147.sslip.io` con participantes del rol Solicitante:
+
+| Participante | Rol Evaluado | Viewport Observado | Puntaje SUS Calculado | Nivel de Aceptabilidad (Bangor) |
+| :---: | :---: | :---: | :---: | :---: |
+| **P01** | Solicitante | 1536 px | **75.0 / 100** | Aceptable / Bueno |
+| **P02** | Solicitante | 360 px | **95.0 / 100** | Aceptable / Excelente |
+| **P03** | Solicitante | 1920 px | **85.0 / 100** | Aceptable / Excelente |
+| **P04** | Solicitante | 1366 px | **90.0 / 100** | Aceptable / Excelente |
+| **P05** | Solicitante | 414 px | **90.0 / 100** | Aceptable / Excelente |
+
+- **Puntaje Medio Global SUS:** **87.0 / 100** (Mediana: 90.0, Mínimo: 75.0, Máximo: 95.0).
+- **Interpretación Psicométrica:** Un puntaje SUS de 87/100 se sitúa por encima del percentil 80 %, clasificando en grado «A» con adjetivación **«Excelente»**, superando holgadamente el umbral de aceptación fijado para el proyecto ($\text{SUS} \ge 70.0$).
+
+### 7.3. Observaciones Cualitativas y Límites Registrados
+- **P01:** Destaca que el proceso fue fluido y las funciones están bien integradas, sintiéndose seguro al navegar sin requerir asistencia.
+- **P02:** Resalta la facilidad de registro y la intuición de la interfaz; sugiere incorporar un «modo oscuro» como mejora visual opcional futura.
+- **P03:** Elogia la claridad del etiquetado y la limpieza visual del menú, facilitando un aprendizaje inmediato.
+- **P04:** Valora la sencillez para realizar seguimiento a requerimientos y recomienda mantener la simplicidad en futuras versiones.
+- **P05:** Califica la experiencia como ágil y positiva, encontrando el formulario adecuado sin requerir capacitación previa.
+- **Límites de Observación:** Conforme a `docs/pruebas/usuarios/Resultados_SUS.md`, los CSV recopilados no registraron tiempos individuales de tarea, tasas de éxito ni dispositivo del evaluador. La muestra cubre exclusivamente el rol Solicitante; la revisión técnica de los roles restantes (Supervisor, Técnico, Administrador) se respalda en la suite de 32 capturas responsivas.
 
 ---
 
@@ -282,16 +342,15 @@ Conforme al **Paquete B (Usabilidad)** desarrollado por David:
 | **DEF-08** | Playwright E2E | Prueba de exportación CSV superficial (`HU19`) | Solo se verificaba la presencia del botón sin descargar el archivo | Intercepción de evento `download`, lectura de stream y validación de columnas y delimitador `;` | **Cerrado** |
 | **DEF-09** | Newman / RBAC | Falsa autorización en prueba de acceso ajeno (`HU24`) | Pre-request de usuario ajeno actualizaba el cookie jar global de Newman | Re-autenticación inmediata del usuario original en pre-request para restaurar cookie jar | **Cerrado** |
 | **DEF-10** | Playwright E2E | Timeout de login al alternar roles de usuario | Sesión previa en almacenamiento impedía mostrar formulario `/login` | Incorporación de `context.clearCookies()` al inicio de cada login | **Cerrado** |
+| **DEF-11** | Nube / Newman | Error 401 en despliegue por ausencia de siembras demo | En producción rige `DATOS_DEMO=false` por seguridad | Implementación de registro dinámico de usuario en suite de nube (`MSU-API-Despliegue`) | **Cerrado** |
 
 ---
 
 ## 9. Conclusiones y Recomendaciones
 
-1. **Aptitud para el Despliegue (Release Candidate):** La aplicación cumple holgadamente con los requerimientos funcionales evaluados y los requisitos no funcionales RNF05 (diseño responsivo 360 px sin desborde horizontal) y RNF06 (latencias p95 de 362.62 ms en lecturas y 274.94 ms en escrituras bajo 20 VU concurrentes).
-2. **Resiliencia Operativa del Backend:** El stack Spring Boot demostró capacidad de absorción de hasta **115 peticiones por segundo** y 400 usuarios concurrentes sin colapso de procesos ni errores de servidor (0.00 % `http_req_failed`).
-3. **Recomendaciones para el Despliegue en la Nube (David - B1):**
-   - Configurar en `application-prod.yml` un pool HikariCP ampliado (`maximum-pool-size: 25-30`) y coordinar con el dimensionamiento de hilos de Tomcat (`max-threads: 64-128`) para mitigar el encolamiento de conexiones bajo alta concurrencia.
-   - Ejecutar la suite automatizada de Newman apuntando a `BASE_URL=https://msu-157-137-206-147.sslip.io` tras cada actualización de imágenes en GHCR.
-4. **Recomendaciones para Seguridad y Calidad Continua:**
-   - Planificar la actualización de Spring Boot a la versión 3.5.14 para remediar los 15 CVEs de severidad alta identificados en OWASP Dependency-Check.
-   - Completar las 5 sesiones presenciales del protocolo SUS y formalizar la ventana de ejecución para el escaneo dinámico DAST con OWASP ZAP.
+1. **Aptitud para el Despliegue (Release Candidate):** La aplicación cumple holgadamente con los requerimientos funcionales evaluados, los requisitos no funcionales RNF05 (diseño responsivo 360 px sin desborde horizontal) y RNF06 (latencias locales p95 de 362.62 ms en lecturas y 274.94 ms en escrituras; latencia en la nube p95 de 114.97 ms), y el estándar de usabilidad (media SUS de 87/100).
+2. **Resiliencia Operativa del Backend:** El stack Spring Boot demostró capacidad de absorción de hasta **115 peticiones por segundo** y 400 usuarios concurrentes en local y estabilidad total bajo tráfico en la nube sin caídas ni errores 5xx (0.00 % `http_req_failed`).
+3. **Seguridad y Trazabilidad:** Las dependencias transitivas de Spring Boot 3.5.16 cuentan con excepciones documentadas en `dependency-check-suppressions.xml` justificadas en la no utilización de componentes vulnerables (WebFlux, XSLT, LDAP), garantizando que el pipeline de CI apruebe manteniendo estricto el umbral CVSS $\ge 7.0$.
+4. **Recomendaciones para el Cierre de la Fase:**
+   - Mantener el plan de migración a Spring Boot 4 tras la sustentación para retirar el archivo de excepciones antes de su vencimiento (31/01/2027).
+   - Solicitar la revisión y aprobación formal del Pull Request #5 por parte de un integrante del equipo (Emanuel, Marcelo o David) para proceder con la fusión a `main`.
