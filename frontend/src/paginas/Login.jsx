@@ -91,7 +91,7 @@ export function Login() {
           </form>
           {import.meta.env.DEV && (
             <div className="acceso__demo">
-              <p className="acceso__demo-titulo">CUENTAS DE PRUEBA · CONTRASEÑA Demo12345!</p>
+              <p className="acceso__demo-titulo">CUENTAS LOCALES · USA LA CONTRASEÑA CONFIGURADA EN TU ENTORNO</p>
               <div className="acceso__cuentas">
                 {CUENTAS_DEMO.map(([rol, nombre, c]) => (
                   <button key={c} type="button" className="acceso__cuenta" onClick={() => setCorreo(c)}>

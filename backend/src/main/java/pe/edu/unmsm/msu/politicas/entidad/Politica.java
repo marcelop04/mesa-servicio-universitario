@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import pe.edu.unmsm.msu.identidad.entidad.Usuario;
@@ -43,7 +44,8 @@ public class Politica {
 
     public Politica(int version, Instant vigenteDesde, Usuario publicadaPor) {
         this.version = version;
-        this.vigenteDesde = vigenteDesde;
+        // DATETIME(3): evita que la BD redondee hacia el futuro una publicación reciente.
+        this.vigenteDesde = vigenteDesde.truncatedTo(ChronoUnit.MILLIS);
         this.publicadaPor = publicadaPor;
     }
 

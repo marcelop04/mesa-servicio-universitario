@@ -12,6 +12,8 @@ function montar(ruta) {
       <Routes>
         <Route path="/login" element={<p>Pantalla de login</p>} />
         <Route path="/supervision" element={<p>Bandeja del supervisor</p>} />
+        <Route path="/solicitudes" element={<p>Mis solicitudes</p>} />
+        <Route path="/atencion" element={<p>Atención técnica</p>} />
         <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
           <Route path="/admin/usuarios" element={<p>Usuarios</p>} />
         </Route>
@@ -37,5 +39,16 @@ describe('rutas protegidas por rol', () => {
     sesion.actual = { usuario: { rol: 'ADMINISTRADOR' }, cargando: false };
     montar('/admin/usuarios');
     expect(screen.getByText('Usuarios')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['SOLICITANTE', 'Mis solicitudes'],
+    ['TECNICO', 'Atención técnica'],
+    ['SUPERVISOR', 'Bandeja del supervisor'],
+  ])('%s no puede abrir administración escribiendo la URL', (rol, inicio) => {
+    sesion.actual = { usuario: { rol }, cargando: false };
+    montar('/admin/usuarios');
+    expect(screen.queryByText('Usuarios')).not.toBeInTheDocument();
+    expect(screen.getByText(inicio)).toBeInTheDocument();
   });
 });

@@ -1,0 +1,77 @@
+{
+  "fecha_verificacion_utc": "2026-11-13T04:35:35.716529+00:00",
+  "repositorio": "marcelop04/mesa-servicio-universitario",
+  "commit": "df8cc39e32f1580b097295b8b003810435aee5ac",
+  "pr_integrado": "https://github.com/marcelop04/mesa-servicio-universitario/pull/8",
+  "url": "https://msu-157-137-206-147.sslip.io",
+  "estado": "OK",
+  "ci": {
+    "url": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136107",
+    "evento": "push",
+    "rama": "main",
+    "conclusion": "success",
+    "checks_aprobados": ["Backend (Spring Boot)", "Frontend (React)", "npm audit (incluye desarrollo)", "OWASP Dependency-Check", "Configuración de despliegue", "Imágenes Docker"],
+    "recuperacion_mysql_y_archivos": "Aprobada dentro de Imágenes Docker",
+    "sca": {
+      "version": "Dependency-Check 13.0.0",
+      "fuente": "https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{0}.json.gz",
+      "actualizacion_automatica": true,
+      "failBuildOnCVSS": 7,
+      "failOnError": true,
+      "excepciones": "backend/dependency-check-suppressions.xml, incorporadas por PR #7; el resultado aprobado no significa ausencia de CVE suprimidos"
+    }
+  },
+  "codeql": {
+    "url": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136281",
+    "evento": "push",
+    "conclusion": "success",
+    "alertas_abiertas_consultadas_en_main": [
+      {"numero": 1, "regla": "js/xss", "gravedad": "high", "archivo": "prototipo/public/js/paginas/acceso.js", "linea": 31},
+      {"numero": 2, "regla": "js/xss", "gravedad": "high", "archivo": "prototipo/public/js/paginas/acceso.js", "linea": 72},
+      {"numero": 3, "regla": "js/client-side-unvalidated-url-redirection", "gravedad": "medium", "archivo": "prototipo/public/js/paginas/acceso.js", "linea": 31},
+      {"numero": 4, "regla": "js/client-side-unvalidated-url-redirection", "gravedad": "medium", "archivo": "prototipo/public/js/paginas/acceso.js", "linea": 72},
+      {"numero": 5, "regla": "js/missing-rate-limiting", "gravedad": "high", "archivo": "prototipo/servidor/middleware.js", "lineas": "197-202"}
+    ],
+    "alcance_alertas": "Las cinco pertenecen a prototipo/. Las imágenes de esta entrega se construyen exclusivamente con contextos backend/ y frontend/. Revisión de estos hallazgos pendiente del responsable de seguridad; no se han descartado ni se declara SAST sin alertas."
+  },
+  "cd": {
+    "url": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850",
+    "evento": "workflow_run",
+    "conclusion": "success",
+    "gate_ci_y_codeql_mismo_sha": "success",
+    "publicacion": {"inicio_utc": "2026-11-13T04:27:38Z", "fin_utc": "2026-11-13T04:31:13Z", "conclusion": "success"},
+    "entrega": {"inicio_utc": "2026-11-13T04:31:17Z", "fin_utc": "2026-11-13T04:32:13Z", "conclusion": "success"},
+    "plataformas_publicadas": ["linux/amd64", "linux/arm64"],
+    "backend": "ghcr.io/marcelop04/mesa-servicio-universitario-backend@sha256:50a8850b68382baa4af23772fc23262abf4d75bf778fe88f60c00c4e06a6e1a2",
+    "frontend": "ghcr.io/marcelop04/mesa-servicio-universitario-frontend@sha256:964aec19b08a27752425b7f59342c1a182db7f40cd878b7b5087fe5944591008"
+  },
+  "vm_verificada_por_ssh": {
+    "fecha_utc": "2026-11-13T04:33:07.361920+00:00",
+    "entrega_actual": "/opt/msu/entregas/df8cc39e32f1580b097295b8b003810435aee5ac",
+    "registro_fecha_utc": "2026-11-13T04:32:09Z",
+    "revision_backend_y_frontend": "df8cc39e32f1580b097295b8b003810435aee5ac",
+    "backend_frontend_mysql": "running y healthy",
+    "caddy": "running; HTTPS público aprobado",
+    "puertos_publicos_stack": [80, 443],
+    "configuracion_backend": {"SPRING_PROFILES_ACTIVE": "prod", "DATOS_DEMO": "false", "DATOS_DEMO_SOLICITUDES": "false", "SEGURIDAD_DESPLIEGUE": "true", "COOKIE_SECURE": "true"},
+    "permisos_produccion_env": "0600",
+    "timer": {"nombre": "msu-backup.timer", "estado": "active", "habilitado": true, "siguiente_ejecucion_observada_utc": "2026-11-13T08:01:16Z"}
+  },
+  "github_production": {
+    "id_despliegue": 7757186740,
+    "estado_despliegue": "success",
+    "environment_creado_utc": "2026-11-13T04:31:14Z",
+    "protection_rules": [],
+    "deployment_branch_policy": null,
+    "CD_ENABLED": "true",
+    "nota": "Environment creado por el workflow, sin revisores o restricciones de rama configurados. Los Secrets se heredan del repositorio. La restricción de origen/SHA está en CI/CD; las reglas adicionales requieren administrador."
+  },
+  "verificacion_externa": {
+    "https_login_perfil_logout": "https.json: OK, repetido después del respaldo",
+    "responsive": "responsive-main/resultado.json: 32 capturas, cuatro roles, 360/1366 px, cero fallos",
+    "formulario_sus": "responsive-main/sus.json: HTTP 200, 10 preguntas/50 radios y sin desborde a ambos anchos; dos capturas adicionales",
+    "copia_externa": "recuperacion.json: copia posterior a CD descargada y cuatro SHA-256 comprobados",
+    "sesiones_sus_reales": "Pendientes; la verificación técnica no responde cuestionarios ni acredita participantes"
+  },
+  "fuentes": ["GitHub Actions y API de deployments/environments/rules/code-scanning", "docker inspect y systemctl por SSH con host fijado", "verificar-https.py", "responsive-despliegue.mjs y revisión técnica de /sus/", "sha256sum --check SHA256SUMS en copia externa"]
+}

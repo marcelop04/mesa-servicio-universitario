@@ -1,10 +1,14 @@
-# Manual técnico · Nube y CI/CD (David, paquete B)
+# Manual técnico · Nube y CI/CD
+
+> Nota de integración C (12/11/2026): los perfiles de B se conservan, pero ya no hay claves
+> predeterminadas en `dev` y `prod` rechaza las siembras demo. Revisar la configuración privada
+> antes de desplegar esta versión; no reutilizar un `prod --demo` anterior.
 
 ## 1. Arquitectura y costo
 
 ```text
-Rama de trabajo → PR → CI (JUnit, Vitest, build, recuperación, configuración)
-                         ↓ main aprobado / demo de PR habilitada explícitamente
+Rama de trabajo → PR → CI (JUnit, Vitest, SCA, build, recuperación, configuración)
+                         ↓ push a main aprobado + CodeQL del mismo SHA
                       GHCR (amd64 + arm64, digest SHA-256)
                          ↓ SSH con host verificado
 Internet → Caddy :443 → React/Nginx
@@ -57,7 +61,7 @@ del repositorio para Secrets y protección de ramas. La VM instala Docker y Pyth
 
 | Ambiente | Perfil Spring | Persistencia y uso |
 |---|---|---|
-| Desarrollo | `dev` (predeterminado) | Compose raíz, MySQL local, claves de demostración explícitas en `application-dev.yml` |
+| Desarrollo | `dev` (predeterminado) | Compose raíz, MySQL local y credenciales externas generadas en `.env` |
 | Pruebas unitarias/integración Java | `test` | H2 en memoria, migraciones reales; configuración en `src/test/resources` |
 | Prueba del stack / usuarios | `prueba` | MySQL y volúmenes aislados; mismo HTTPS que producción cuando se publica |
 | Producción académica | `prod` | Stack `despliegue/compose.yml`, GHCR, TLS y volúmenes persistentes |
@@ -68,15 +72,17 @@ Si se prueba el stack completo en la misma VM, hacerlo en una ventana acordada: 
 Caddy no pueden ocupar simultáneamente los mismos puertos 80/443. El costo previsto
 corresponde a **una** VM de nube; desarrollo y las pruebas automatizadas corren localmente/en CI.
 
-Para desarrollar, copiar `.env.example` como `.env` en la raíz y ejecutar:
+Para desarrollar con una base nueva, generar `.env` privado con
+`powershell -ExecutionPolicy Bypass -File scripts/preparar-entorno.ps1` y ejecutar:
 
 ```bash
 docker compose up --build
 ```
 
 App: `http://localhost:8081`, API: `http://localhost:8080/swagger-ui.html`.
-Sin Docker: seguir el README raíz. El perfil `dev` conserva las cuentas de demostración
-ya documentadas. Los perfiles de nube exigen las credenciales por entorno y fuerzan
+Sin Docker: seguir el README raíz. Si la base ya existe, conservar sus claves y configurar
+el entorno sin borrar volúmenes. `dev` requiere DB_PASSWORD/JWT_SECRET y contraseña demo explícitas.
+Los perfiles de nube exigen las credenciales por entorno y fuerzan
 la cookie de sesión `Secure`.
 
 ## 3. Crear la VM del curso
@@ -127,21 +133,53 @@ Generar el entorno **en una carpeta privada existente**, con Python 3.10+:
 ```bash
 python despliegue/scripts/crear-entorno.py \
   --host msu-IP-CON-GUIONES.sslip.io --email TU_CORREO \
-  --perfil prod --demo --salida /ruta/privada/produccion.env
+  --perfil prod --salida /ruta/privada/produccion.env
 ```
 
-`--demo` es útil para la entrega académica: crea las seis cuentas ficticias y sus
-solicitudes. La contraseña inicial es **aleatoria**, queda en `DEMO_PASSWORD` y debe
-comunicarse por un canal privado al equipo. Sin `--demo` no se crean esas cuentas.
-En una base vacía, inicializar primero las cuentas y la política con la demo para
-disponer de administrador; después cambiar las contraseñas desde el perfil y poner
-`DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`. Cambiar solo `DEMO_PASSWORD` no
-actualiza las cuentas que ya existen.
+**Prod exige `DATOS_DEMO=false`, `DATOS_DEMO_SOLICITUDES=false`, cookies seguras y
+`SEGURIDAD_DESPLIEGUE=true`.** El generador rechaza `--perfil prod --demo`; el transporte
+valida la configuración antes de copiarla al servidor y el backend también rechaza
+las opciones incompatibles. No se reutiliza el antiguo archivo de demostración como prod.
+
+La siembra solo se habilita expresamente para un entorno aislado de prueba:
+
+```bash
+python despliegue/scripts/crear-entorno.py \
+  --host prueba.example.org --email TU_CORREO --perfil prueba --demo \
+  --salida /ruta/privada/prueba.env
+```
+
+La migración de la VM existente conservó sus claves de DB/JWT y sus datos, cambiando
+solo las opciones de siembra/despliegue. Desactivar la siembra no borra usuarios o
+solicitudes previamente almacenados. La contraseña de las cuentas de evaluación
+existentes se comunica por el archivo local privado de acceso; no se regenera al arrancar.
+
+### Primera administración en una instalación prod vacía
+
+Con prod sin demo, las migraciones crean roles/catálogos, no cuentas. Registrar desde
+la web la cuenta institucional elegida por el responsable. Un operador con acceso
+SSH/DB la promueve una sola vez en la consola MySQL del contenedor:
+
+```sql
+UPDATE usuario
+SET rol_id = (SELECT id FROM rol WHERE codigo = 'ADMINISTRADOR'),
+    version_autorizacion = version_autorizacion + 1
+WHERE correo = 'correo-elegido@institucion.edu';
+```
+
+Usar el correo efectivamente registrado y comprobar que se actualizó una sola fila.
+Cerrar e iniciar sesión de nuevo. Desde P12 publicar la política inicial (por ejemplo,
+Crítica 4/24 h, Alta 8/48 h, Media 24/120 h, Baja 48/240 h). Después administrar usuarios
+desde P11. El hash lo genera el registro normal; no insertar contraseñas en texto plano.
+Este procedimiento de provisión corresponde a B; el paquete C aporta el guard.
+Cambiar `DEMO_PASSWORD` no rota contraseñas ya almacenadas: cualquier rotación se
+coordina mediante el perfil/administración y conserva los datos.
 
 | Variable | Significado |
 |---|---|
 | `COMPOSE_PROJECT_NAME` | `msu-prod` o `msu-prueba`; determina los volúmenes independientes |
 | `SPRING_PROFILES_ACTIVE` | `prod` o `prueba`; nunca `dev` en el stack de nube |
+| `SEGURIDAD_DESPLIEGUE` | `true` en prod; `false` en prueba con siembra autorizada |
 | `APP_HOST` | Nombre DNS, sin `https://`, ruta ni puerto |
 | `ACME_EMAIL` | Correo de contacto para los certificados |
 | `DB_USER`, `DB_PASSWORD` | Usuario y clave de la base `mesa_servicios` |
@@ -157,13 +195,14 @@ Compose de nube. MySQL conserva sus credenciales en el volumen inicial: para rot
 en una base existente hacer `ALTER USER` antes de actualizar el Secret; cambiar el
 `.env` por sí solo no cambia el usuario MySQL. Rotar JWT invalida las sesiones existentes.
 
-En GitHub crear el environment **`production`** y configurar:
+El workflow usa el environment **`production`**. En esta entrega se creó automáticamente
+al ejecutar CD y utiliza los siguientes Secrets del repositorio y variables:
 
 | Tipo | Nombre | Valor |
 |---|---|---|
-| Secret de environment | `PRODUCTION_ENV` | Contenido completo del archivo generado |
-| Secret de environment | `SSH_PRIVATE_KEY` | Clave privada dedicada al usuario `ubuntu` |
-| Secret de environment | `SSH_KNOWN_HOSTS` | Entrada OpenSSH verificada para la IP/nombre de conexión |
+| Secret del repositorio | `PRODUCTION_ENV` | Contenido completo del archivo generado |
+| Secret del repositorio | `SSH_PRIVATE_KEY` | Clave privada dedicada al usuario `ubuntu` |
+| Secret del repositorio | `SSH_KNOWN_HOSTS` | Entrada OpenSSH verificada para la IP/nombre de conexión |
 | Variable del repositorio | `DEPLOY_HOST` | IP pública o nombre usado en SSH, sin protocolo |
 | Variable del repositorio | `DEPLOY_USER` | `ubuntu` |
 | Variable del repositorio | `PRODUCTION_URL` | `https://` + `APP_HOST` |
@@ -172,7 +211,9 @@ En GitHub crear el environment **`production`** y configurar:
 Obtener las entradas con `ssh-keyscan -H IP_PUBLICA` y comparar la huella con
 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` visto en la consola OCI/una sesión
 ya verificada. No desactivar `StrictHostKeyChecking`. La clave usada en CD debe poder
-abrirse sin interacción. Los Secrets se crean desde Settings → Environments o con `gh secret set`.
+abrirse sin interacción. Los Secrets de esta entrega se gestionan con `gh secret set`.
+La API de `production` muestra `protection_rules=[]` y `deployment_branch_policy=null`;
+el administrador configura sus revisores y restricciones adicionales.
 
 ## 5. PR, protección de main y CD
 
@@ -180,28 +221,37 @@ Requiere que el propietario/administrador del repositorio ejecute, una vez auten
 
 ```bash
 gh auth login
-gh api --method PUT repos/marcelop04/mesa-servicio-universitario/environments/production
-gh api --method PUT repos/marcelop04/mesa-servicio-universitario/branches/main/protection \
-  --input despliegue/github/proteccion-main.json
+gh api --method POST repos/marcelop04/mesa-servicio-universitario/rulesets \
+  --input despliegue/github/checks-main-ruleset.json
 ```
 
-La protección exige PR, una aprobación, CI actualizado, historial lineal y los cuatro
-checks cuyos nombres están en el JSON. También impide force-push y borrar `main`.
-El equipo trabaja en ramas (`feat/david-despliegue` para este paquete) y hace squash
+El JSON propone un ruleset adicional de ocho checks, sin sustituir los rulesets existentes.
+`proteccion-main.json` contiene los mismos ocho checks como referencia para repositorios
+que usan protección clásica; no aplicarlo encima de reglas existentes sin revisarlas.
+La configuración **observada** por
+la API de reglas efectivas de main bloquea borrado/force-push y exige PR con una
+aprobación, con bypass configurado para el usuario actual. No declara checks de estado
+obligatorios. Ver `docs/evidencias/fase-iii-iv-david/proteccion.json`; no se atribuyen
+a la rama checks que la API no muestra. El propietario puede añadir los ocho checks de CI/CodeQL.
+El equipo trabaja en ramas y hace squash
 merge desde un PR. Primero ejecutar los nuevos checks en el PR para que GitHub los registre.
 
 Si `main` ya está protegida, el administrador debe conservar sus reglas y checks
 existentes e incorporar los del paquete B; el JSON es una referencia de configuración
-mínima, no una razón para borrar protecciones del equipo. La cuenta de David tiene
+mínima, no una razón para borrar protecciones del equipo. El intento de crear el ruleset
+adicional con la cuenta de David devolvió 404, sin cambiar las reglas. Esa cuenta tiene
 WRITE y pudo gestionar Secrets/variables del repositorio, pero crear el environment
 devolvió 403. Los Secrets también pueden guardarse a nivel de repositorio y ser usados
-por el job `production`; las preferencias de protección del environment las configura
-el administrador.
+por el job `production`; esa fue la configuración usada en la entrega definitiva.
+El workflow pudo crear el environment automáticamente, pero sus preferencias de
+protección las configura el administrador.
 
 El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 
 1. `CI` debe terminar con éxito **completo** para un push a `main` del mismo repositorio público.
    Incluye MySQL real y pérdida/restauración de datos/archivos, además de las suites existentes.
+   Antes de publicar, se verifica el último resultado CI del mismo SHA/push y se espera
+   también CodeQL si su workflow ya está integrado. Un fallo de seguridad impide entregar.
 2. CD verifica que el SHA aprobado sigue siendo la punta de `main` y publica dos imágenes
    multi-arquitectura (`linux/amd64`, `linux/arm64`) en GHCR, con etiqueta `sha-COMMIT`.
 3. Despliega por **digest**, no por `latest`. Un evento de PR no puede activar este CD.
@@ -212,26 +262,42 @@ El flujo `.github/workflows/cd.yml` funciona cuando forme parte de `main`:
 6. Actualiza `/opt/msu/actual`, instala el timer de respaldo y registra los digests y fecha
    en `/opt/msu/shared/ultimo-despliegue.txt`. Cierra la sesión de GHCR al terminar.
 
+### Fuente de vulnerabilidades Java
+
+CI descarga los feeds JSON 2.0 oficiales de NIST mediante `nvdDatafeedUrl`, compatible
+con Dependency-Check 13. La carga inicial incluye todos los años desde 2002 y el feed
+`modified`; la caché completa se mantiene separada de la caché API. Se conserva la
+actualización automática (vigencia predeterminada de cuatro horas), el umbral CVSS ≥ 7,
+`failOnError=true` y las excepciones versionadas/caducables del paquete C.
+Un fallo de descarga o análisis sigue bloqueando CI/CD.
+
+La API NVD devolvió HTTP 503 en los runs `43355639076` y `43358822956`; el cambio de
+transporte se verificó con una descarga nueva de los feeds y un análisis local exitoso.
+Referencia: [fuentes oficiales NVD](https://nvd.nist.gov/vuln/data-feeds).
+El lanzador local `scripts/analizar-dependencias.ps1` conserva la vía API con
+`NVD_API_KEY`; el Secret no se necesita para el transporte por feed de CI.
+
+El run CodeQL de main también terminó con éxito, pero la consulta de alertas registra
+cinco abiertas en `prototipo/` (dos XSS, dos redirecciones y una falta de rate limiting).
+Esos archivos están fuera de los contextos de las imágenes backend/frontend. El gate
+actual exige la finalización exitosa del workflow; no evalúa por sí mismo el listado
+de alertas. Su revisión corresponde al responsable de seguridad y queda documentada
+en `entrega-main.json`.
+
 `CD_ENABLED=false` permite publicar sin intentar SSH. GHCR puede crear los paquetes como
 privados inicialmente; el token temporal permite descargarlos. Para descarga anónima,
 el propietario puede poner ambos paquetes como públicos en Packages. La etiqueta de
 origen de las imágenes las vincula al repositorio para gestionar sus accesos desde GitHub.
 
-### Entrega académica inicial desde PR
+### Historial de la entrega académica inicial desde PR
 
-Para comprobar la nube antes de integrar `main`, CI incluye un job de demostración
-habilitado expresamente con variables de repositorio `DEMO_ENABLED=true` y
-`DEMO_BRANCH=feat/david-despliegue`. Solo admite PR del mismo repositorio y esa rama,
-y depende del éxito de los cuatro jobs de pruebas/configuración. Publica imágenes
-amd64 en GHCR y entrega los digests del mismo commit de merge probado por CI.
-Comprueba además que el PR sigue abierto y que su cabeza no cambió antes de entregar.
-
-El job usa `DEMO_ENV` (archivo de entorno privado), `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`
-y las variables de host/usuario. `entregar-ci.sh` comparte el transporte SSH con CD.
-La demo y la entrega posterior de `main` actualizan la misma instancia académica y
-usan exclusión mutua; las pruebas MySQL de CI mantienen sus volúmenes independientes.
-El workflow CD de `main` conserva su evento y el environment `production`.
-Desactivar `DEMO_ENABLED` después de la integración; `CD_ENABLED` controla la entrega de main.
+La primera comprobación cloud se ejecutó desde el PR #4 autorizado, con cuatro checks
+previos y digests de GHCR (ver `entrega.json`). Después de integrarse el PR, se retiró
+ese job de bootstrap y se eliminaron `DEMO_ENV` y sus variables de activación. La ruta
+definitiva es `CI main → gate del mismo SHA → GHCR → environment production → SSH`.
+Los builds de Maven/Node se hacen en `$BUILDPLATFORM`: JAR y assets son portables y así
+se evita el bloqueo observado al compilar el frontend ARM bajo QEMU. Los runtimes finales
+siguen siendo multi-arquitectura. `CD_ENABLED` se habilita después de revisar prod.
 
 En el primer despliegue, Caddy obtiene el certificado automáticamente y redirige HTTP a
 HTTPS. Sus certificados persisten en volúmenes. Si DNS/80/443 o la autoridad ACME fallan,
@@ -327,6 +393,12 @@ ni contraseñas. No usar opciones que deshabiliten la verificación TLS.
 
 El [protocolo de usuarios](../pruebas/usuarios/Protocolo_SUS.md) describe las cinco
 sesiones y la revisión responsive. Sus resultados reales son requisito para cerrar B5.
+El [cuestionario listo para compartir](../pruebas/usuarios/Cuestionario_SUS.md) incluye
+el mensaje de invitación y los diez ítems. `/sus/` descarga un CSV por participante;
+no almacena respuestas en el servidor. Las herramientas de combinación y cálculo
+aceptan respuestas de sesiones registradas y no ofrecen un modo de simulación.
+Los [resultados recibidos](../pruebas/usuarios/Resultados_SUS.md) incluyen cinco
+cuestionarios y media SUS 87/100; allí se documentan sus metadatos y límites.
 
 ## 8. Diagnóstico
 
@@ -336,6 +408,7 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 | SSH bloqueado | IP, clave, usuario ubuntu, regla 22 y `SSH_KNOWN_HOSTS` verificado |
 | Certificado no emitido | DNS hacia la VM, reglas OCI y firewall 80/443; logs de Caddy; límites ACME del dominio compartido |
 | GHCR 401/403 | Token con packages:read y acceso de Actions al paquete vinculado al repositorio |
+| Dependency-Check falla al actualizar NVD | Consultar disponibilidad de los feeds oficiales y logs; conservar CVSS ≥ 7 y failOnError; no aprobar un análisis incompleto |
 | MySQL «Access denied» después de cambiar el Secret | Las claves del volumen no cambian con `.env`; coordinar `ALTER USER` |
 | API 502 | Salud de MySQL/backend y memoria; `docker compose ... logs backend` usando ambos env files |
 | Cookie sin Secure | Perfil prod/prueba, proxy directo Caddy→backend y X-Forwarded-Proto |
@@ -345,7 +418,7 @@ sesiones y la revisión responsive. Sus resultados reales son requisito para cer
 
 ## 9. Evidencias y estado
 
-Consultar [la bitácora de David](../fase-iii-iv-david.md) para distinguir implementación,
+Consultar [la bitácora del paquete B](../fase-iii-iv-david.md) para distinguir implementación,
 comprobaciones locales, ejecución real de CI/CD y resultados con usuarios. Una validación
 Terraform no crea la VM; un cuestionario preparado no equivale a cinco sesiones completadas.
 
@@ -356,10 +429,34 @@ fault domains y todas devolvieron falta de capacidad. Se conserva el estado Terr
 local para reintentar el mismo plan; `CD_ENABLED=false` hasta disponer del servidor,
 sus Secrets completos y HTTPS verificado.
 
-Después se autorizó el uso de la prueba y se creó la E5 en Bogotá. DNS previsto:
-`https://msu-157-137-206-147.sslip.io`. La verificación HTTPS y la ejecución de entrega
-se registran en la bitácora al terminar. La huella SSH se obtuvo del historial de
+Después se autorizó el uso de la prueba y se creó la E5 en Bogotá. Dirección verificada:
+`https://msu-157-137-206-147.sslip.io`. La URL, TLS, cookies, login/perfil/logout y entrega
+automática ya se verificaron; ver `https.json` y `entrega.json` en las evidencias.
+El ensayo de pérdida/restauración de la VM y la copia externa están en `recuperacion.json`.
+La huella SSH se obtuvo del historial de
 consola por la API OCI autenticada y se fijó en `SSH_KNOWN_HOSTS`.
+
+La entrega definitiva desde main se completó el **13/11/2026 UTC** con el commit
+`df8cc39e32f1580b097295b8b003810435aee5ac`:
+
+- [CI 43365136107](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136107),
+  [CodeQL 43365136281](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365136281)
+  y [CD 43365661850](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43365661850)
+  aprobados para ese SHA.
+- Publicación amd64/arm64 en 3m35s y entrega por digest en 56s; etiquetas de revisión
+  coincidentes en la VM. Prod tiene guard activo, ambas siembras desactivadas y cookie Secure.
+- Revisión externa: sesión HTTPS aprobada, 32 capturas de roles y dos de `/sus/` a
+  360/1366 px sin fallos. `responsive-main/` y `https.json` conservan los resultados.
+- Copia `msu-20261113T043450Z-14914` descargada al equipo privado y sus cuatro sumas
+  verificadas. Timer diario activo; `CD_ENABLED=true`.
+
+La evidencia completa está en `docs/evidencias/fase-iii-iv-david/entrega-main.json`.
+
+Acceso de usuarios: abrir la URL y usar Registro o las cuentas ficticias por rol del
+README. En la nube sus contraseñas son aleatorias; `DEMO_PASSWORD` se conserva en el
+archivo privado del responsable y en GitHub Secrets. El responsable dispone además
+de un archivo local privado de acceso, separado del `.env`, para comunicar solo las
+credenciales de demostración al equipo. Las contraseñas no se incluyen en el manual.
 
 ## 10. Cierre del curso y conservación de evidencias
 

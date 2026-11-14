@@ -3,6 +3,8 @@ import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
 
 const BASE = process.env.BASE ?? 'http://localhost:8081';
+const PASSWORD = process.env.DEMO_PASSWORD;
+if (!PASSWORD) throw new Error('Configure DEMO_PASSWORD en el entorno; no se usa una contraseña por defecto.');
 const SALIDA = process.argv[2];
 mkdirSync(SALIDA, { recursive: true });
 // NAVEGADOR=chrome para usar Google Chrome en lugar de Microsoft Edge.
@@ -15,7 +17,7 @@ async function sesion(correo, ancho = 1366, alto = 900) {
   p.setDefaultTimeout(15000);
   await p.goto(`${BASE}/login`);
   await p.getByLabel('Correo institucional').fill(correo);
-  await p.getByLabel('Contraseña', { exact: true }).fill('Demo12345!');
+  await p.getByLabel('Contraseña', { exact: true }).fill(PASSWORD);
   await p.getByRole('button', { name: 'Iniciar sesión' }).click();
   await p.waitForURL((u) => !u.pathname.startsWith('/login'));
   return { contexto, p };

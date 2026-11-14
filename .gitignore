@@ -27,6 +27,12 @@ tests/**/reportes/*
 # Evidencias subidas en ejecución local (HU06)
 backend/archivos/
 
+# Informes automáticos de seguridad: conservar solo evidencias revisadas y sin datos sensibles.
+reports/
+frontend/npm-audit.json
+docs/pruebas/npm-audit.json
+alcance-dast.json
+*.sarif
 # Despliegue: credenciales, estado de infraestructura y copias con datos
 **/.terraform/
 *.tfstate

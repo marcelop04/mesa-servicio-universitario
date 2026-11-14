@@ -1,0 +1,39 @@
+{
+  "participantes": 5,
+  "media_sus": 87.0,
+  "resultados": [
+    {
+      "participante": "P01",
+      "rol": "Solicitante",
+      "ancho": 1536,
+      "sus": 75.0
+    },
+    {
+      "participante": "P02",
+      "rol": "Solicitante",
+      "ancho": 360,
+      "sus": 95.0
+    },
+    {
+      "participante": "P03",
+      "rol": "Solicitante",
+      "ancho": 1920,
+      "sus": 85.0
+    },
+    {
+      "participante": "P04",
+      "rol": "Solicitante",
+      "ancho": 1366,
+      "sus": 90.0
+    },
+    {
+      "participante": "P05",
+      "rol": "Solicitante",
+      "ancho": 414,
+      "sus": 90.0
+    }
+  ],
+  "meta_muestra_cumplida": true,
+  "tipo": "RESPUESTAS_REGISTRADAS",
+  "nota": "SUS usa escala 0–100, no porcentaje. El conteo del CSV no acredita por sí solo personas reales: el facilitador debe documentar las sesiones, sus tareas y la versión probada."
+}

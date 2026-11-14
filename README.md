@@ -1,15 +1,17 @@
 # mesa-servicios-universitarios
 Proyecto del curso Taller de Construcción de Software Web: mesa de servicios universitarios con plazos de atención.
 
-[![CI](https://github.com/marcelop04/mesa-servicios-universitarios/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelop04/mesa-servicios-universitarios/actions/workflows/ci.yml)
+[![CI](https://github.com/marcelop04/mesa-servicio-universitario/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelop04/mesa-servicio-universitario/actions/workflows/ci.yml)
 
 ## Opción 1 · Todo con Docker (recomendada)
 
 Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (o Docker Engine con Compose v2) en ejecución.
 
 ```bash
-git clone https://github.com/marcelop04/mesa-servicios-universitarios.git
-cd mesa-servicios-universitarios
+git clone https://github.com/marcelop04/mesa-servicio-universitario.git
+cd mesa-servicio-universitario
+# Antes del primer arranque, preparar .env (ver guía de seguridad; en Windows):
+# powershell -ExecutionPolicy Bypass -File .\scripts\preparar-entorno.ps1
 docker compose up --build
 ```
 
@@ -19,10 +21,10 @@ La primera vez tarda unos minutos (descarga dependencias). Cuando el backend mue
 |---|---|
 | Aplicación (React + Nginx) | <http://localhost:8081> |
 | API y Swagger (Spring Boot) | <http://localhost:8080/swagger-ui.html> |
-| MySQL 8.0 | `localhost:3307` · base `mesa_servicios` · usuario `msu` / `msu_local` |
+| MySQL 8.0 | `localhost:3307` · base `mesa_servicios` · credenciales en `.env` |
 
 Flyway crea todas las tablas (V1 a V4) y se cargan datos ficticios: una cuenta por rol y seis solicitudes de
-ejemplo. Contraseña de todas las cuentas: `Demo12345!`
+ejemplo en local. La contraseña de las cuentas nuevas es `DEMO_PASSWORD` de tu `.env` (no se publica).
 
 | Rol | Correo |
 |---|---|
@@ -33,25 +35,32 @@ ejemplo. Contraseña de todas las cuentas: `Demo12345!`
 
 ```bash
 docker compose down        # detener (conserva la base y las evidencias)
-docker compose down -v     # detener y borrar la base y las evidencias (se crean de nuevo)
 docker compose logs -f backend
 ```
 
-Variables opcionales (archivo `.env` junto a `docker-compose.yml`): `DB_USER`, `DB_PASSWORD`,
-`MYSQL_ROOT_PASSWORD`, `DATOS_DEMO`, `DEMO_PASSWORD` y `JWT_SECRET` (clave de los tokens de sesión, 32 bytes o
-más). Los valores por defecto son solo para desarrollo local; en un despliegue real cambie `JWT_SECRET`.
+**Antes de arrancar:** prepara `.env` según [la guía de Marcelo](docs/seguridad/GUIA_MARCELO.md).
+`DB_PASSWORD`, `MYSQL_ROOT_PASSWORD` y `JWT_SECRET` son obligatorios; no hay secretos por defecto.
+Si ya existían volúmenes de MySQL, conserva sus credenciales: cambiar `.env` no cambia sus contraseñas.
+No uses `docker compose down -v` como solución rutinaria: elimina la base y las evidencias.
+Este Compose solo expone puertos en localhost; el despliegue HTTPS usa `despliegue/compose.yml`.
+La integración C sobre el main con B conserva perfiles y healthchecks; el perfil `prod` rechaza
+cuentas/solicitudes demo. Revisar [la transición y pruebas de seguridad](docs/seguridad/integracion-main-b.md)
+antes de activar CD o reutilizar un archivo de entorno anterior.
 
 ## Opción 2 · Sin Docker (para desarrollar)
 
-Requisitos: Java 17+, Maven 3.9+ (o `./mvnw`), Node.js 20+ y MySQL 8.
+Requisitos: Java 17+, Maven 3.9+ (o `./mvnw`), Node.js 22.12+ y MySQL 8.
 
 1. Crear la base y el usuario en MySQL:
    ```sql
    CREATE DATABASE mesa_servicios CHARACTER SET utf8mb4;
-   CREATE USER 'msu'@'localhost' IDENTIFIED BY 'msu_local';
+   CREATE USER 'msu'@'localhost' IDENTIFIED BY '<tu DB_PASSWORD privada>';
    GRANT ALL ON mesa_servicios.* TO 'msu'@'localhost';
    ```
 2. Backend (puerto 8080):
+   Exporta primero `DB_PASSWORD` y `JWT_SECRET` al proceso. Spring Boot no lee `.env` automáticamente.
+   En PowerShell: `. .\scripts\cargar-entorno.ps1` desde la raíz. Para cuentas ficticias, configura también
+   `DATOS_DEMO=true` y `DEMO_PASSWORD` (ver guía).
    ```bash
    cd backend
    mvn spring-boot:run
@@ -72,7 +81,16 @@ cd frontend && npm test      # Vitest
 ```
 
 El pipeline de GitHub Actions (`.github/workflows/ci.yml`) ejecuta ambas suites y construye las imágenes
-Docker en cada pull request; si una prueba falla, el pull request queda marcado en rojo.
+Docker si las pruebas y los análisis de dependencias pasan. CI usa los feeds oficiales
+de NIST; `NVD_API_KEY` solo es necesaria para la alternativa local que consulta la API.
+
+## Seguridad · paquete C de Marcelo
+
+- [Guía paso a paso: herramientas, pruebas, GitHub y ZAP](docs/seguridad/GUIA_MARCELO.md).
+- [Avance, evidencias y dependencias del equipo](docs/fase-iii-iv-marcelo.md).
+- [Lista de control OWASP](docs/seguridad/checklist-owasp.md).
+- [Revisión de arquitectura y código](docs/seguridad/revision-arquitectura.md).
+- [Informe final consolidado (borrador; faltan aportes del equipo)](docs/informe/Informe_Final_Fases_III_IV.md).
 
 ## Estructura
 
@@ -81,7 +99,7 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 - `prototipo/`: prototipo de la fase I con json-server.
 - `docs/`: informe, diagramas, diseño y avance por integrante (`fase-ii-*.md`).
 
-## Despliegue gratuito y entrega continua (paquete B · David)
+## Despliegue y CI/CD (paquete B)
 
 - [Manual técnico](docs/manual/Manual_tecnico.md): demo temporal con créditos OCI Free Trial
   y alternativa Always Free, HTTPS con Caddy,
@@ -89,14 +107,18 @@ Docker en cada pull request; si una prueba falla, el pull request queda marcado 
 - [`despliegue/`](despliegue/): infraestructura Terraform y Compose de nube; MySQL y
   backend sin puertos públicos, imágenes desplegadas por digest tras CI exitoso.
 - [Pruebas de usuario/SUS y responsive](docs/pruebas/usuarios/Protocolo_SUS.md).
-- [Estado y evidencias de David](docs/fase-iii-iv-david.md).
+- [Cuestionario y mensaje para participantes](docs/pruebas/usuarios/Cuestionario_SUS.md).
+- [Estado y evidencias del despliegue](docs/fase-iii-iv-david.md).
 
 El stack de nube requiere configurar la cuenta OCI y GitHub; consultar la bitácora
 para el estado de la URL pública, primer CD y verificaciones realizadas.
+
+Demostración del curso: <https://msu-157-137-206-147.sslip.io> (servidor temporal Free Trial).
 
 ## Problemas comunes
 
 - **Puerto ocupado** (8080, 8081 o 3307): cierre el programa que lo usa o cambie el puerto izquierdo en
   `docker-compose.yml` (por ejemplo `"8082:80"`).
 - **`Cannot connect to the Docker daemon`**: abra Docker Desktop y espere a que indique que está en ejecución.
-- **La base quedó en un estado raro**: `docker compose down -v` y vuelva a levantar.
+- **Error de credenciales tras crear `.env`**: si MySQL ya tenía datos, conserva su contraseña anterior;
+  no borres volúmenes. Coordina con el responsable del despliegue una rotación o restauración controlada.

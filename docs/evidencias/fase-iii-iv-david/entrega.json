@@ -1,0 +1,15 @@
+{
+  "fecha_utc": "2026-11-12T22:50:01Z",
+  "url": "https://msu-157-137-206-147.sslip.io",
+  "run_ci": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43322815086",
+  "commit_rama": "8d92d51e4f0c34ec312122afd29d414fee602649",
+  "commit_merge_probado_y_entregado": "5b0a6aab9048669066ceabea2b032e56f2cae670",
+  "modalidad": "Demostración académica autorizada desde PR propio, tras cuatro checks aprobados",
+  "estado_ci_y_entrega": "SUCCESS",
+  "backend": "ghcr.io/marcelop04/mesa-servicio-universitario-backend@sha256:7de071cce3bed0d295b998d9abaa6c0662c57cc6c238d2352063e344e762c1d8",
+  "frontend": "ghcr.io/marcelop04/mesa-servicio-universitario-frontend@sha256:e117f7d1830bee52f1b6c2826b02019db784ba95ee1a2a13f5aa8b9ff3f83881",
+  "servicios": {"mysql": "healthy", "backend": "healthy", "frontend": "healthy", "caddy": "running, certificado HTTPS válido"},
+  "backup_timer": {"estado": "active", "siguiente_en_verificacion": "2026-11-13T08:01:42Z"},
+  "proteccion_main": "Activa con revisión requerida; ajustes de checks y environment corresponden al propietario",
+  "nota": "El CI/CD de main está preparado y habilitado para cuando el PR sea revisado e integrado. Este registro acredita la entrega demo ya ejecutada."
+}

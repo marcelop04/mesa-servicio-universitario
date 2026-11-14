@@ -16,28 +16,39 @@ def puntuacion(respuestas):
 
 
 def calcular(archivo):
+    filas = list(csv.DictReader(archivo))
     participantes = []
     ids = set()
-    for fila in csv.DictReader(archivo):
+    origenes = set()
+    for fila in filas:
+        if fila.get("origen") != "RESPUESTA_USUARIO":
+            raise ValueError("Solo se aceptan respuestas con origen=RESPUESTA_USUARIO recogidas en las sesiones.")
         participante = fila.get("participante", "")
         if not re.fullmatch(r"P\d{2,3}", participante) or participante in ids:
             raise ValueError("Cada participante debe tener un identificador P01, P02… único.")
         date.fromisoformat(fila["fecha"])
-        if fila["ancho"] not in ("360", "1366"):
-            raise ValueError(f"{participante}: registrar ancho 360 o 1366.")
-        if urlsplit(fila["url"]).scheme != "https" or not urlsplit(fila["url"]).hostname:
+        ancho = fila.get("viewport_real") or fila.get("ancho")
+        if not re.fullmatch(r"[1-9]\d*", ancho or ""):
+            raise ValueError(f"{participante}: registrar el ancho real de la pantalla en píxeles.")
+        url = urlsplit(fila["url"])
+        if url.scheme != "https" or not url.hostname or url.username or url.password:
             raise ValueError(f"{participante}: registrar la URL HTTPS desplegada.")
-        if not fila["rol"].strip():
-            raise ValueError(f"{participante}: falta el rol observado.")
+        origenes.add((url.scheme, url.netloc))
+        if len(origenes) > 1:
+            raise ValueError("Las respuestas deben corresponder a la misma aplicación HTTPS.")
+        if fila.get("rol") not in ("Solicitante", "Supervisor", "Técnico", "Administrador"):
+            raise ValueError(f"{participante}: registrar el rol observado.")
         valor = puntuacion([int(fila[f"q{i}"]) for i in range(1, 11)])
         ids.add(participante)
-        participantes.append({"participante": participante, "rol": fila["rol"], "ancho": int(fila["ancho"]), "sus": valor})
+        participantes.append({"participante": participante, "rol": fila["rol"], "ancho": int(ancho), "sus": valor})
     if not participantes:
         raise ValueError("No hay respuestas: realizar las sesiones con personas antes de calcular SUS.")
     return {
-        "participantes": len(participantes), "media_sus": mean(p["sus"] for p in participantes),
+        "participantes": len(participantes),
+        "media_sus": mean(p["sus"] for p in participantes),
         "resultados": participantes, "meta_muestra_cumplida": len(participantes) >= 5,
-        "nota": "SUS usa una escala de 0 a 100; no es un porcentaje. La meta de muestra es al menos 5 personas.",
+        "tipo": "RESPUESTAS_REGISTRADAS",
+        "nota": "SUS usa escala 0–100, no porcentaje. El conteo del CSV no acredita por sí solo personas reales: el facilitador debe documentar las sesiones, sus tareas y la versión probada.",
     }
 
 
@@ -48,7 +59,7 @@ def main():
     try:
         with args.csv.open(encoding="utf-8-sig", newline="") as archivo:
             print(json.dumps(calcular(archivo), ensure_ascii=False, indent=2))
-    except (KeyError, ValueError) as error:
+    except (OSError, KeyError, ValueError, TypeError) as error:
         parser.exit(1, f"Datos SUS inválidos: {error}\n")
 
 

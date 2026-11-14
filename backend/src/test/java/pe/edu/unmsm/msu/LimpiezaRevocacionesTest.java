@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.msu.seguridad.LimpiezaRevocacionesServicio;
 
 /** HU02 · Limpieza periódica de tokens revocados ya vencidos (Emanuel, fase III). */
@@ -48,6 +50,27 @@ class LimpiezaRevocacionesTest extends PruebaApi {
         mvc.perform(get("/api/v1/me").session(sesion)).andExpect(status().isUnauthorized());
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM auditoria WHERE accion = 'TOKENS_LIMPIEZA'", Long.class))
                 .isEqualTo(1);
+    }
+
+    /**
+     * Defecto A4: la tarea programada corre sin transacción previa. Aquí se suspende la transacción de la
+     * prueba para reproducir ese camino; antes fallaba con TransactionRequiredException.
+     */
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void laTareaProgramadaFuncionaSinTransaccionPrevia() {
+        long usuario = pruebas.usuarioId("solicitante@msu.test");
+        jdbc.update("INSERT INTO revocacion_sesion (token_id, usuario_id, revocado_en, expira_en) VALUES (?, ?, ?, ?)",
+                "a4-sin-transaccion", usuario, Timestamp.from(Instant.now().minus(Duration.ofDays(3))),
+                Timestamp.from(Instant.now().minus(Duration.ofDays(2))));
+        try {
+            limpieza.programado();
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM revocacion_sesion WHERE token_id = 'a4-sin-transaccion'",
+                    Long.class)).isZero();
+        } finally {
+            jdbc.update("DELETE FROM revocacion_sesion WHERE token_id = 'a4-sin-transaccion'");
+            jdbc.update("DELETE FROM auditoria WHERE accion = 'TOKENS_LIMPIEZA'");
+        }
     }
 
     @Test

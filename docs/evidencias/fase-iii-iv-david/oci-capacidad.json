@@ -1,6 +1,7 @@
 {
   "fecha_utc": "2026-11-12",
   "fuente": "API OCI autenticada y terraform apply",
+  "contexto": "Intento inicial A1 anterior a la autorización de usar créditos Free Trial para una E5",
   "region": "sa-bogota-1",
   "es_home_region": true,
   "plan_confirmado_en_consola": "Free Tier / Free Trial con recursos Always Free",
@@ -28,5 +29,5 @@
     "verificacion_posterior": "API OCI confirma cero instancias y cero volumenes"
   },
   "estado": "BLOQUEADO_POR_CAPACIDAD_DEL_PROVEEDOR",
-  "siguiente_accion": "Reintentar la misma configuracion Always Free en la home region cuando Oracle libere capacidad."
+  "continuacion": "La entrega del curso continuó con una E5 autorizada; ver oci-trial.json y entrega.json."
 }
