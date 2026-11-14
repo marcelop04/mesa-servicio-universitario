@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mesa de Servicios Universitarios - Suite de API Despliegue Nube (OCI)" tests="13" time="1.839">
+  <testsuite name="01 - Handshake CSRF y Cabeceras de Seguridad" id="730f7b8d-bfac-48ee-a299-4869a6fec42f" timestamp="2026-11-14T03:32:33.902Z" tests="3" failures="0" errors="0" time="0.343">
+    <testcase name="Status 200 OK" time="0.343" classname="01HandshakeCsrfYCabecerasDeSeguridad"/>
+    <testcase name="Cabecera X-Correlation-Id presente" time="0.343" classname="01HandshakeCsrfYCabecerasDeSeguridad"/>
+    <testcase name="Token CSRF detectado" time="0.343" classname="01HandshakeCsrfYCabecerasDeSeguridad"/>
+  </testsuite>
+  <testsuite name="02 - Registro exitoso de nuevo Solicitante en la nube" id="a826a78e-97c4-44ee-b3a2-0737fd0de9ef" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.173">
+    <testcase name="Status 201 Created" time="0.173" classname="02RegistroExitosoDeNuevoSolicitanteEnLaNube"/>
+    <testcase name="Usuario registrado con rol SOLICITANTE" time="0.173" classname="02RegistroExitosoDeNuevoSolicitanteEnLaNube"/>
+  </testsuite>
+  <testsuite name="03 - Validación 400 por correo inválido" id="32d223ae-307d-4401-ad96-ad4cee1487f0" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.103">
+    <testcase name="Status 400 Bad Request" time="0.103" classname="03Validacion400PorCorreoInvalido"/>
+    <testcase name="ErrorApi DATOS_INVALIDOS" time="0.103" classname="03Validacion400PorCorreoInvalido"/>
+  </testsuite>
+  <testsuite name="04 - Login con credenciales incorrectas (401)" id="fed895ef-aaca-4834-bd8a-4f2b368905d2" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.173">
+    <testcase name="Status 401 Unauthorized" time="0.173" classname="04LoginConCredencialesIncorrectas401"/>
+    <testcase name="Error CREDENCIALES_INVALIDAS" time="0.173" classname="04LoginConCredencialesIncorrectas401"/>
+  </testsuite>
+  <testsuite name="05 - Login exitoso del usuario creado en la nube" id="264f0280-8a9b-4c31-a1c3-0fe0eae5759d" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.174">
+    <testcase name="Status 200 OK" time="0.174" classname="05LoginExitosoDelUsuarioCreadoEnLaNube"/>
+    <testcase name="Cookie de sesión MSU_SESION emitida" time="0.174" classname="05LoginExitosoDelUsuarioCreadoEnLaNube"/>
+  </testsuite>
+  <testsuite name="06 - Consultar perfil /me de la sesión activa" id="1c917dde-7763-48b6-af99-6758939b2165" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.105">
+    <testcase name="Status 200 OK" time="0.105" classname="06ConsultarPerfilMeDeLaSesionActiva"/>
+    <testcase name="Perfil coincide con usuario autenticado" time="0.105" classname="06ConsultarPerfilMeDeLaSesionActiva"/>
+  </testsuite>
+  <testsuite name="07 - Consultar opciones de catálogo para formulario" id="463ff040-ee34-4e70-99e7-adf2520ef8bf" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.107">
+    <testcase name="Status 200 OK" time="0.107" classname="07ConsultarOpcionesDeCatalogoParaFormulario"/>
+    <testcase name="Contiene categorias, ubicaciones y prioridades" time="0.107" classname="07ConsultarOpcionesDeCatalogoParaFormulario"/>
+  </testsuite>
+  <testsuite name="08 - Registrar nueva solicitud en la nube con plazos calculados" id="7cb7175d-fac6-4c3e-bbba-34debd828d26" timestamp="2026-11-14T03:32:33.902Z" tests="3" failures="0" errors="0" time="0.118">
+    <testcase name="Status 201 Created" time="0.118" classname="08RegistrarNuevaSolicitudEnLaNubeConPlazosCalculados"/>
+    <testcase name="Código correlativo MSU-YYYY-XXXX generado" time="0.118" classname="08RegistrarNuevaSolicitudEnLaNubeConPlazosCalculados"/>
+    <testcase name="Límites de atención y resolución calculados" time="0.118" classname="08RegistrarNuevaSolicitudEnLaNubeConPlazosCalculados"/>
+  </testsuite>
+  <testsuite name="09 - Listar solicitudes paginadas del usuario en la nube" id="6c046ec7-9472-4dc5-96e9-1bb0c0dc34c7" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.108">
+    <testcase name="Status 200 OK" time="0.108" classname="09ListarSolicitudesPaginadasDelUsuarioEnLaNube"/>
+    <testcase name="Estructura paginada items, total >= 1" time="0.108" classname="09ListarSolicitudesPaginadasDelUsuarioEnLaNube"/>
+  </testsuite>
+  <testsuite name="10 - Consultar detalle de la solicitud creada" id="47ccfdc4-a8cc-417a-9aa7-5aa561d40f4b" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.111">
+    <testcase name="Status 200 OK" time="0.111" classname="10ConsultarDetalleDeLaSolicitudCreada"/>
+    <testcase name="Detalle coincide con ticket registrado" time="0.111" classname="10ConsultarDetalleDeLaSolicitudCreada"/>
+  </testsuite>
+  <testsuite name="11 - Consulta de especificación OpenAPI en producción" id="0a9bfb0d-a7b3-4d89-bc9f-c1815373436e" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.111">
+    <testcase name="Status 200 OK" time="0.111" classname="11ConsultaDeEspecificacionOpenApiEnProduccion"/>
+    <testcase name="OpenAPI versión 3.0.x accesible" time="0.111" classname="11ConsultaDeEspecificacionOpenApiEnProduccion"/>
+  </testsuite>
+  <testsuite name="12 - Cierre de sesión (Logout)" id="20ebd03e-1472-40d9-9832-3affa716f434" timestamp="2026-11-14T03:32:33.902Z" tests="1" failures="0" errors="0" time="0.111">
+    <testcase name="Status 204 No Content" time="0.111" classname="12CierreDeSesionLogout"/>
+  </testsuite>
+  <testsuite name="13 - Verificación de 401 Unauthorized sin sesión" id="e3d6ad70-3d85-406e-a944-1798646bcc25" timestamp="2026-11-14T03:32:33.902Z" tests="2" failures="0" errors="0" time="0.102">
+    <testcase name="Status 401 Unauthorized tras logout" time="0.102" classname="13VerificacionDe401UnauthorizedSinSesion"/>
+    <testcase name="Error SIN_SESION" time="0.102" classname="13VerificacionDe401UnauthorizedSinSesion"/>
+  </testsuite>
+</testsuites>

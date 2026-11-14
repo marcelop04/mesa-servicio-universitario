@@ -142,9 +142,10 @@ jobs:
       - name: RNF11 · Copia, pérdida y restauración de MySQL y evidencias
         run: bash despliegue/scripts/probar-recuperacion.sh
 
-  despliegue:
-    name: Configuración de despliegue
+  api-tests:
+    name: Pruebas de API (Newman)
     runs-on: ubuntu-latest
+    needs: [backend, frontend]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

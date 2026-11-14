@@ -84,8 +84,10 @@ conservados en documentos y avances. No sustituye una revisión humana ni atribu
 | Responsable | Marcelo; debe revisar el registro y las decisiones antes del cierre |
 ## Registros del paquete B conservados desde main
 
-Este archivo permite agregar entradas de cada integrante sin reemplazar sus bitácoras.
-Las verificaciones y resultados de participantes deben provenir de ejecuciones/personas reales.
+**Proyecto:** Mesa de Servicios Universitarios (MSU)  
+**Curso:** Taller de Construcción de Software Web  
+**Equipo:** Emanuel, David, Marcelo, Gabriel, Alex  
+**Ciclo:** 2026-II
 
 | Fecha | Responsable | Herramienta | Prompt / propósito | Resultado generado | ¿Se utilizó? | Validación realizada | Modificaciones realizadas / pendientes |
 |---|---|---|---|---|---|---|---|
@@ -141,3 +143,18 @@ Para el paquete A, Emanuel ya mantiene su registro detallado en `fase-iii-iv-ema
 | Modificaciones tras revisar | Se conservaron healthcheck, ensayos B y registros IA; prod no permite semillas demo; pruebas comprueban causas del guard y cabeceras únicas; se distingue CA local de HTTPS público |
 | Límites | Sin migración mayor ni supresiones; sin ZAP no autorizado, sin corrección de A4, sin implementar D/E, sin rotar cuentas/Secrets ni atribuir firmas o validaciones humanas |
 | Responsable | Marcelo: revisar código, asserts, pendientes y resultados antes del cierre |
+
+## IA-E-01 · Automatización de pruebas, rendimiento y auditoría (Alex)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 12/11/2026 – 13/11/2026 |
+| Responsable | Alex (Ingeniero QA / SDET); autoría, ejecución y auditoría humana completada |
+| Herramienta | Asistente de ingeniería de pruebas / Antigravity |
+| Prompt / alcance | Diseñar, auditar e implementar el Paquete E de aseguramiento de calidad (tareas E1 a E5); automatizar pruebas de API en Postman/Newman con CI, pruebas E2E de aceptación en Playwright con BDD, pruebas de rendimiento en k6, auditoría de pruebas generadas y redacción del informe consolidado |
+| Resultado generado | Colección Newman (`MSU-API.postman_collection.json`) y runner dinámico con `BASE_URL`; suite E2E Playwright determinista para 24 HUs oficiales (`specs/01` a `06`); scripts k6 de carga (20 VU) y estrés (400 VU) con `handleSummary` sanitizado; suite Newman y de carga sobre despliegue de nube en OCI; matriz de trazabilidad y auditoría de mutación (`docs/revision-pruebas-ia.md`); informe técnico consolidado v2.2 (`docs/informe-pruebas.md`) |
+| ¿Se utilizó? | Sí, incorporado en la rama `test/e5-informe-pruebas` (PR #5) y validado en ejecución local, CI remoto y sobre el despliegue en la nube de David |
+| Validación realizada | Ejecución efectiva: Newman local (65 reqs / 182 asserts) y nube (13 reqs / 27 asserts, 100% pass); Playwright local (48 tests pasados) y responsivo nube (2 tests pasados); k6 local (0% error, p95 362 ms lecturas y 274 ms escrituras) y nube (414 reqs, p95 114.97 ms); pruebas de mutación manual en lógica de plazos, soluciones y concurrencia; verificación de excepciones de dependencias (PR #7) y validación de las 5 sesiones SUS reales de David (media 87/100) |
+| Modificaciones tras revisar | Erradicación total del antipatrón `if (isVisible())` reemplazado por creación de fixtures deterministas (`helpers/datos.js`); intercepción y validación de stream en descarga CSV (`@HU19`); sanitización obligatoria de `setup_data` en k6 para prevenir fugas de JWT/CSRF; ajuste de trazabilidad a las 24 HUs oficiales de Fase I; manejo de sesiones dinámicas ante entornos con `DATOS_DEMO=false` |
+| Límites y pendientes | El análisis DAST con OWASP ZAP permanece delimitado y pendiente de autorización previa sobre la IP pública (dependencia de Marcelo); la integración definitiva a `main` requiere la aprobación formal de revisión (peer review) por parte de un compañero de equipo |
+
