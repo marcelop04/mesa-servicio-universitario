@@ -103,6 +103,10 @@ public class SolicitudesDePrueba {
         return usuarioId(correo);
     }
 
+    public String codigoDe(long solicitudId) {
+        return jdbc.queryForObject("SELECT codigo FROM solicitud WHERE id = ?", String.class, solicitudId);
+    }
+
     public long usuarioId(String correo) {
         return jdbc.queryForObject("SELECT id FROM usuario WHERE correo = ?", Long.class, correo);
     }

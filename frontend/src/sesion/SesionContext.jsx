@@ -6,6 +6,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { alRecibirError, api } from '../api/cliente.js';
 
+/** Los filtros guardados en el navegador son de una cuenta: no deben heredarse al cambiar de usuario. */
+function olvidarPreferencias() {
+  try {
+    window.localStorage.removeItem('msu.misSolicitudes.filtros');
+  } catch {
+    // Sin almacenamiento disponible no hay nada que limpiar.
+  }
+}
+
 const SesionContext = createContext(null);
 
 export function SesionProvider({ children }) {
@@ -30,6 +39,7 @@ export function SesionProvider({ children }) {
 
   const iniciarSesion = useCallback(async (correo, password) => {
     const perfil = await api.post('/auth/login', { correo, password });
+    olvidarPreferencias();
     setUsuario(perfil);
     return perfil;
   }, []);
@@ -38,6 +48,7 @@ export function SesionProvider({ children }) {
     try {
       await api.post('/auth/logout');
     } finally {
+      olvidarPreferencias();
       setUsuario(null);
     }
   }, []);

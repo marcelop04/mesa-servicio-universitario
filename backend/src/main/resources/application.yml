@@ -28,6 +28,10 @@ spring:
     time-zone: UTC
     # Mismos nombres que el diccionario de datos y la API simulada del prototipo (sección 12.4).
     property-naming-strategy: SNAKE_CASE
+    deserialization:
+      # Un número con decimales donde se espera un entero (calificación 4.9, 2.5 horas) es un error
+      # de formato (400); por defecto Jackson lo truncaría en silencio.
+      accept-float-as-int: false
 
 server:
   port: ${PORT:8080}

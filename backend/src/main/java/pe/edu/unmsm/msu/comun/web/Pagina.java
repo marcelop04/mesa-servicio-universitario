@@ -23,6 +23,9 @@ public record Pagina<T>(List<T> items, int pagina, @JsonProperty("tamaño") int 
     public static Pageable solicitud(Integer pagina, Integer tamano, Sort orden) {
         int p = pagina == null || pagina < 1 ? 1 : pagina;
         int t = tamano == null || tamano < 1 ? TAMANO_POR_DEFECTO : Math.min(tamano, TAMANO_MAXIMO);
+        // Una página enorme desbordaría el desplazamiento (offset) y acabaría en un error 500:
+        // se acota y el listado responde vacío, como cualquier página fuera de rango.
+        p = Math.min(p, Integer.MAX_VALUE / t);
         return PageRequest.of(p - 1, t, orden);
     }
 }

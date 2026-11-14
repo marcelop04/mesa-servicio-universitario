@@ -4,12 +4,13 @@
  * comentarios y evidencias (HU05, HU06). El servidor vuelve a comprobar el acceso en cada petición.
  *
  * Uso: <DetalleSolicitud id={7} acciones={(solicitud, recargar) => <MisBotones … />} />
+ * `llevarALaVista` desplaza la página hasta el detalle cuando se abre debajo de una bandeja.
  */
 import { useState } from 'react';
 import { api } from '../../api/cliente.js';
 import { useConsulta } from '../../api/useConsulta.js';
 import {
-  Campo, Cargando, EtiquetaEstado, EtiquetaPlazo, EtiquetaPrioridad, Mensaje,
+  Campo, Cargando, EtiquetaEstado, EtiquetaPlazo, EtiquetaPrioridad, Mensaje, useLlevarALaVista,
 } from '../../componentes/index.js';
 import { fechaLima } from '../../reglas/prioridad.js';
 import { Historial } from './Historial.jsx';
@@ -34,7 +35,7 @@ function tamano(bytes) {
   return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-function Comentarios({ id, activa }) {
+function Comentarios({ id, activa, onAporte }) {
   const lista = useConsulta(() => api.get(`/solicitudes/${id}/comentarios`), [id]);
   const [texto, setTexto] = useState('');
   const [error, setError] = useState(null);
@@ -50,6 +51,7 @@ function Comentarios({ id, activa }) {
       await api.post(`/solicitudes/${id}/comentarios`, { texto: limpio });
       setTexto('');
       lista.recargar();
+      onAporte?.();
     } catch (err) {
       setError(err.porCampo?.texto ?? err.message);
     } finally {
@@ -86,7 +88,7 @@ function Comentarios({ id, activa }) {
   );
 }
 
-function Evidencias({ id, activa }) {
+function Evidencias({ id, activa, onAporte }) {
   const lista = useConsulta(() => api.get(`/solicitudes/${id}/evidencias`), [id]);
   const [error, setError] = useState(null);
   const [subiendo, setSubiendo] = useState(false);
@@ -102,6 +104,7 @@ function Evidencias({ id, activa }) {
     try {
       await api.subir(`/solicitudes/${id}/evidencias`, { archivo });
       lista.recargar();
+      onAporte?.();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -134,9 +137,13 @@ function Evidencias({ id, activa }) {
   );
 }
 
-export function DetalleSolicitud({ id, acciones }) {
+export function DetalleSolicitud({ id, acciones, llevarALaVista = false }) {
   const detalle = useConsulta(() => api.get(`/solicitudes/${id}`), [id]);
   const s = detalle.datos;
+  // Comentar o adjuntar no cambia la versión del caso: este contador refresca el historial.
+  const [aportes, setAportes] = useState(0);
+  const alAportar = () => setAportes((n) => n + 1);
+  const contenedor = useLlevarALaVista({ listo: llevarALaVista && Boolean(s), enfocar: false });
 
   if (detalle.cargando && !s) return <Cargando texto="Cargando la solicitud…" />;
   if (detalle.error) {
@@ -150,7 +157,7 @@ export function DetalleSolicitud({ id, acciones }) {
 
   const activa = ACTIVA(s.estado_codigo);
   return (
-    <div className="detalle">
+    <div className="detalle" ref={contenedor}>
       <section className="panel detalle__cabecera" aria-labelledby="titulo-detalle">
         <div>
           <p className="antetitulo">Solicitud</p>
@@ -194,11 +201,11 @@ export function DetalleSolicitud({ id, acciones }) {
       </div>
 
       <div className="detalle__rejilla">
-        <Comentarios id={s.id} activa={activa} />
-        <Evidencias id={s.id} activa={activa} />
+        <Comentarios id={s.id} activa={activa} onAporte={alAportar} />
+        <Evidencias id={s.id} activa={activa} onAporte={alAportar} />
       </div>
 
-      <Historial key={s.version} id={s.id} />
+      <Historial key={`${s.version}-${aportes}`} id={s.id} />
     </div>
   );
 }

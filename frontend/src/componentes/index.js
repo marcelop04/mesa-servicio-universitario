@@ -9,3 +9,4 @@ export { EtiquetaPlazo } from './EtiquetaPlazo.jsx';
 export { Cargando, Mensaje } from './Mensaje.jsx';
 export { Paginacion } from './Paginacion.jsx';
 export { Tabla } from './Tabla.jsx';
+export { useLlevarALaVista } from './useLlevarALaVista.js';

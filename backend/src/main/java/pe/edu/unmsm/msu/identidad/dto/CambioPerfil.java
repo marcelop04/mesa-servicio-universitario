@@ -10,4 +10,9 @@ import jakarta.validation.constraints.Size;
 public record CambioPerfil(
         @NotBlank(message = "Ingrese su nombre.")
         @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres.") String nombre) {
+
+    /** Se recortan los espacios externos antes de validar, igual que en el registro (sección 6.3). */
+    public CambioPerfil {
+        nombre = nombre == null ? null : nombre.trim();
+    }
 }

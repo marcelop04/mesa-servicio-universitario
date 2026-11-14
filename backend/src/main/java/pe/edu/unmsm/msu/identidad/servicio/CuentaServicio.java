@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unmsm.msu.seguridad.LimiteClave;
 import pe.edu.unmsm.msu.auditoria.servicio.AuditoriaServicio;
 import pe.edu.unmsm.msu.comun.error.ErrorCampo;
 import pe.edu.unmsm.msu.comun.error.ExcepcionApi;
@@ -44,6 +45,7 @@ public class CuentaServicio {
     /** HU01 BDD 1: crea un solicitante. BDD 2: un correo ya registrado responde 409 sin duplicar. */
     @Transactional
     public Perfil registrar(RegistroCuenta datos) {
+        LimiteClave.exigir("password", datos.password());
         String correo = Usuario.normalizarCorreo(datos.correo());
         if (usuarios.existsByCorreo(correo)) {
             throw ExcepcionApi.conflicto("CORREO_DUPLICADO", "Ya existe una cuenta con ese correo.");
@@ -90,6 +92,7 @@ public class CuentaServicio {
         if (!errores.isEmpty()) {
             throw ExcepcionApi.datosInvalidos(errores);
         }
+        LimiteClave.exigir("nueva", datos.nueva());
         u.cambiarPasswordHash(encoder.encode(datos.nueva()));
         u.revocarAutorizacion();
         // Solo se registra que hubo un cambio: nunca la contraseña anterior, la nueva ni su hash.

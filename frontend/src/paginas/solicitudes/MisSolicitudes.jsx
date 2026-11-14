@@ -37,7 +37,11 @@ function guardarFiltros(filtros) {
 export function MisSolicitudes() {
   const [filtros, setFiltros] = useState(leerFiltros);
   const [pagina, setPagina] = useState(1);
-  const listado = useConsulta(() => api.get('/solicitudes', { ...filtros, pagina, tamano: TAMANO }), [filtros, pagina]);
+  const rangoInvalido = Boolean(filtros.desde && filtros.hasta && filtros.hasta < filtros.desde);
+  const listado = useConsulta(
+    () => (rangoInvalido ? Promise.resolve(null) : api.get('/solicitudes', { ...filtros, pagina, tamano: TAMANO })),
+    [filtros, pagina, rangoInvalido],
+  );
   const catalogos = useConsulta(() => api.get('/catalogos', { tipo: 'categorias' }), []);
   const hayFiltros = Object.entries(filtros).some(([c, v]) => v !== FILTROS_INICIALES[c]);
 
@@ -89,7 +93,8 @@ export function MisSolicitudes() {
           {Object.entries(NOMBRE_PRIORIDAD).map(([c, n]) => <option key={c} value={c}>{n}</option>)}
         </Campo>
         <Campo id="mis-desde" etiqueta="Registrada desde" type="date" value={filtros.desde} onChange={filtrar('desde')} />
-        <Campo id="mis-hasta" etiqueta="Registrada hasta" type="date" value={filtros.hasta} onChange={filtrar('hasta')} />
+        <Campo id="mis-hasta" etiqueta="Registrada hasta" type="date" value={filtros.hasta} onChange={filtrar('hasta')}
+          error={rangoInvalido ? 'La fecha final no puede ser anterior a la inicial.' : undefined} />
         <div className="filtros__acciones">
           {hayFiltros && (
             <button type="button" className="boton boton--enlace" onClick={() => { setFiltros(FILTROS_INICIALES); setPagina(1); }}>

@@ -122,14 +122,17 @@ public class AtencionServicio {
                 if (!errores.isEmpty()) {
                     throw ExcepcionApi.datosInvalidos(errores);
                 }
-                boolean tecnicoActivo = tecnico != null && tecnico.isActivo();
+                // Además de activo debe seguir siendo técnico del área: si cambió de rol o de área
+                // ya no podría atender el caso y quedaría bloqueado En atención.
+                boolean tecnicoActivo = tecnico != null && tecnico.isActivo() && tecnico.esTecnico()
+                        && tecnico.getArea() != null && tecnico.getArea().getId().equals(s.getArea().getId());
                 Map<String, Object> extra = new LinkedHashMap<>();
                 if (tecnicoActivo) {
                     transiciones.aplicar(s, Transicion.REABRIR, sesion.id(), motivo, extra);
                     notificador.avisar(tecnico, sesion.id(), s, "REAPERTURA",
                             "El solicitante reabrió la solicitud " + s.getCodigo() + ": el problema persiste.");
                 } else {
-                    // El técnico ya no está activo: vuelve a evaluación para una nueva asignación.
+                    // El técnico ya no puede atenderlo: vuelve a evaluación para una nueva asignación.
                     extra.put("tecnico_anterior", tecnico == null ? null : tecnico.getNombre());
                     s.asignar(null);
                     transiciones.aplicar(s, Transicion.REABRIR_SIN_TECNICO, sesion.id(), motivo, extra);

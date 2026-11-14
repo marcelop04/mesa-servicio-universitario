@@ -104,9 +104,10 @@ export function AccionesConformidad({ solicitud, recargar, ahora = Date.now() })
     const problema = validarMotivo(motivo);
     setError(problema);
     if (problema) return;
-    if (await accion.ejecutar('conformidad', { accion: 'REABRIR', motivo: motivo.trim() }, 'Solicitud reabierta: el técnico retomará la atención.')) {
-      setReabrir(false);
-    }
+    await accion.ejecutar('conformidad', { accion: 'REABRIR', motivo: motivo.trim() }, 'Solicitud reabierta: el técnico retomará la atención.');
+    // Se cierra también si falla: el aviso se muestra en el panel, que el diálogo abierto taparía.
+    // El motivo escrito se conserva para reintentar.
+    setReabrir(false);
   };
 
   return (
