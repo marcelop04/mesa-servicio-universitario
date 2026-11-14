@@ -2,3 +2,7 @@
 *.yml text eol=lf
 *.tf text eol=lf
 Dockerfile text eol=lf
+# Evidencias JSON: preservar hashes de los originales también al clonar en Windows.
+docs/seguridad/evidencias/*.json text eol=lf
+# El reporte original de ZAP incluye espacios finales: conservar sus bytes y SHA-256.
+docs/seguridad/evidencias/zap-c8d4e5c-inicial.json whitespace=-blank-at-eol

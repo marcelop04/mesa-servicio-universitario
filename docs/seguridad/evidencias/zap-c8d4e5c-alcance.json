@@ -1,0 +1,9 @@
+{
+  "origen": "https://msu-157-137-206-147.sslip.io",
+  "revision_desplegada": "c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8",
+  "tipo": "ZAP baseline pasivo, sin autenticación",
+  "autorizacion_confirmada": true,
+  "fecha_utc": "2026-11-14T03:38:08.340942+00:00",
+  "revision_herramientas": "local",
+  "run_url": ""
+}

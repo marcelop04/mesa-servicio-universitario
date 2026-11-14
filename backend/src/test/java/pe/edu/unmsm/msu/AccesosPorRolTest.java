@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.servlet.http.Cookie;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -51,13 +52,101 @@ class AccesosPorRolTest extends PruebaApi {
     void noAdministradorNoEscribeCatalogosNiPoliticas(String cuenta) throws Exception {
         var actor = sesion(cuenta + "@msu.test");
         long antes = jdbc.queryForObject("SELECT COUNT(*) FROM area", Long.class);
+        long politicas = jdbc.queryForObject("SELECT COUNT(*) FROM politica", Long.class);
+        long auditorias = jdbc.queryForObject("SELECT COUNT(*) FROM auditoria", Long.class);
         mvc.perform(post("/api/v1/admin/catalogos/areas").session(actor).with(xsrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"No debe crearse\"}"))
                 .andExpect(status().isForbidden());
         mvc.perform(post("/api/v1/admin/politicas").session(actor).with(xsrf())
-                .contentType(MediaType.APPLICATION_JSON).content("{}"))
-                .andExpect(status().isForbidden());
+                .contentType(MediaType.APPLICATION_JSON).content(PoliticasTest.NUEVA.formatted(",\"version_base\":1")))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ACCESO_DENEGADO"));
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM area", Long.class)).isEqualTo(antes);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM politica", Long.class)).isEqualTo(politicas);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM auditoria", Long.class))
+                .isEqualTo(auditorias);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"solicitante", "tecnico.soporte", "supervisor"})
+    void ningunRolNoAdministradorPuedeElevarSusPropiosPrivilegios(String cuenta) throws Exception {
+        long id = pruebas.usuarioId(cuenta + "@msu.test");
+        var actor = sesion(cuenta + "@msu.test");
+        var antes = jdbc.queryForMap("SELECT rol_id, version_autorizacion, activo FROM usuario WHERE id = ?", id);
+        long auditorias = jdbc.queryForObject("SELECT COUNT(*) FROM auditoria", Long.class);
+
+        mvc.perform(put("/api/v1/admin/usuarios/" + id).session(actor).with(xsrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"rol\":\"ADMINISTRADOR\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ACCESO_DENEGADO"));
+
+        assertThat(jdbc.queryForMap("SELECT rol_id, version_autorizacion, activo FROM usuario WHERE id = ?", id))
+                .isEqualTo(antes);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM auditoria", Long.class))
+                .isEqualTo(auditorias);
+        // La denegación tampoco convierte el JWT anterior en una sesión privilegiada.
+        mvc.perform(get("/api/v1/admin/auditoria").session(actor)).andExpect(status().isForbidden());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/solicitudes", "/notificaciones", "/admin/usuarios", "/admin/politicas",
+            "/admin/auditoria", "/indicadores"})
+    void lecturaPrivadaSinJwtNoExponeDatos(String ruta) throws Exception {
+        mvc.perform(get("/api/v1" + ruta))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.codigo").value("SIN_SESION"))
+                .andExpect(jsonPath("$.id_correlacion").isNotEmpty())
+                .andExpect(jsonPath("$.items").doesNotExist());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ajeno-c4", "tecnico.soporte", "supervisor", "admin"})
+    void ningunActorDistintoDelPropietarioInsertaEncuestas(String cuenta) throws Exception {
+        long id = pruebas.crearConEstado(pruebas.categoriaId("Proyector y multimedia"), "CERRADA",
+                pruebas.usuarioId("tecnico.soporte@msu.test"));
+        if (cuenta.equals("ajeno-c4")) pruebas.crearSolicitante(cuenta + "@msu.test");
+        var antes = jdbc.queryForMap("SELECT estado_codigo, version FROM solicitud WHERE id = ?", id);
+
+        mvc.perform(post("/api/v1/solicitudes/" + id + "/encuesta")
+                .session(sesion(cuenta + "@msu.test")).with(xsrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"calificacion\":4,\"comentario\":\"Intento ajeno\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ACCESO_DENEGADO"));
+
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM encuesta WHERE solicitud_id = ?", Long.class, id))
+                .isZero();
+        assertThat(jdbc.queryForMap("SELECT estado_codigo, version FROM solicitud WHERE id = ?", id))
+                .isEqualTo(antes);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ausente", "distinto"})
+    void cerrarSesionConCsrfInvalidoNoRevocaElJwt(String cabecera) throws Exception {
+        var actor = sesion("supervisor@msu.test");
+        long antes = jdbc.queryForObject("SELECT COUNT(*) FROM revocacion_sesion", Long.class);
+        var peticion = post("/api/v1/auth/logout").session(actor)
+                .cookie(new Cookie("XSRF-TOKEN", "fixture-c4-cookie"));
+        if (cabecera.equals("distinto")) peticion.header("X-XSRF-TOKEN", "fixture-c4-otro-token");
+
+        mvc.perform(peticion).andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("CSRF_INVALIDO"));
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM revocacion_sesion", Long.class)).isEqualTo(antes);
+        mvc.perform(get("/api/v1/me").session(actor)).andExpect(status().isOk());
+    }
+
+    @Test
+    void jwtRevocadoNoPermiteEscrituraAunqueElCsrfSeaValido() throws Exception {
+        var s = pruebas.crear("Proyector y multimedia", "MEDIO", "MEDIA", Instant.now());
+        var actor = sesion("solicitante@msu.test");
+        mvc.perform(post("/api/v1/auth/logout").session(actor).with(xsrf()))
+                .andExpect(status().isNoContent());
+        // Reenvía deliberadamente la cookie anterior, no una sesión anónima nueva.
+        mvc.perform(post("/api/v1/solicitudes/" + s.getId() + "/comentarios").session(actor).with(xsrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"texto\":\"No debe guardarse\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.codigo").value("SIN_SESION"));
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM comentario WHERE solicitud_id = ?",
+                Long.class, s.getId())).isZero();
     }
 
     @ParameterizedTest

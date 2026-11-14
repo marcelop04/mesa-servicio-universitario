@@ -1,24 +1,29 @@
 # Fases III y IV · Marcelo (paquete C: seguridad y revisión de calidad)
 
-Inicio: 11/11/2026; evidencias remotas revisadas el 12/11/2026. Alcance aprobado: CodeQL en repositorio público, secretos externos, limitador para
+Inicio: 11/11/2026; corte actualizado el **13/11/2026 (Lima; 14/11 UTC)** sobre main
+`c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8`. Alcance aprobado: CodeQL en repositorio público, secretos externos, limitador para
 una instancia y actualización puntual de dependencias vulnerables. Base recibida: incluye HU15–19 y paquete A.
 
 **Actualización tras B en main (12/11/2026):** se incorpora `5e83051` en la rama C,
 conservando los aportes A/B y los controles de seguridad. No se integran los PR D/E ni se despliega.
 Cambios, pruebas y límites en [integración C sobre main+B](seguridad/integracion-main-b.md).
 
-**No declarar el paquete entero terminado:** controles y pruebas locales implementados; CI/CodeQL del
-PR #3 revisados. Faltan resolver los hallazgos Java, DAST, revisión humana, configuración del despliegue
-y aportes finales del equipo.
+**Actualización actual:** PR #3 integrado; PR #7 incorporó excepciones C2 y arregló A4;
+PR #8/#9/#11 añadieron operación y evidencias B. CI/CodeQL/CD del main actual pasan.
+Se ejecutó ZAP real con autorización específica y se preparan correcciones C1/C3 en una
+rama nueva. No se fusiona ni despliega este avance, ni se incorporan los PR D/E.
+
+**No declarar C completo:** la reprueba pública de las correcciones, decisiones residuales
+de seguridad, revisión humana y aportes D/E al informe continúan pendientes.
 
 | ID | Tarea | Estado comprobable | Evidencia |
 |---|---|---|---|
-| C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | Integrado con perfiles y borde de B: secretos dev obligatorios, guard prod sin demo, cabeceras Caddy/Nginx y prueba de proxy aislada. Revalidación de la release pública pendiente | [Integración y evidencias](seguridad/integracion-main-b.md); [Checklist](seguridad/checklist-owasp.md) |
-| C2 | SAST, npm audit y Dependency-Check en CI | Ejecuciones remotas revisadas: CodeQL Java/JS con 0 resultados y sin alertas abiertas para la referencia analizada; npm audit 0. Dependency-Check completado con 23 CVE distintos, 15 bloqueantes. El 12/11/2026 se registraron excepciones documentadas por CVE, con versión exacta y caducidad al 31/01/2027 (`backend/dependency-check-suppressions.xml`). Falta confirmar el resultado en el CI | [Evidencias CI/CodeQL y hashes](seguridad/resultados-ci.md); [análisis y decisión Java](seguridad/analisis-dependencias.md); workflows y perfil `seguridad` |
-| C3 | ZAP baseline y corregir hallazgos | Workflow con autorización, origen controlado, SHA desplegado obligatorio y artifact de alcance; validación probada sin red. Falta autorización/versión y ZAP real sobre la release con C | `.github/workflows/dast.yml`; `scripts/validar-dast.py`; [guía, apartado 7](seguridad/GUIA_MARCELO.md#7-c3-ejecutar-zap-cuando-david-entregue-el-despliegue) |
-| C4 | Pruebas negativas por rol (RNF01) | Implementadas y ejecutadas con cadena real de seguridad | `AccesosPorRolTest` (34 casos), pruebas web/HTTPS/limitador y rutas React; [resultados](seguridad/resultados-locales.md) |
-| C5 | Arquitectura, patrones, errores y secretos | Revisión asistida realizada, correcciones puntuales aplicadas; aceptación humana pendiente | [Revisión](seguridad/revision-arquitectura.md), sanitización de auditoría y pruebas de errores |
-| C6 | Consolidar informe final | Sección B incorporada con referencias del main actualizado; faltan evidencias finales, aportes D/E y revisión del equipo | [Informe consolidado](informe/Informe_Final_Fases_III_IV.md) |
+| C1 | Checklist OWASP, Secure, CSP/HSTS, límite de login y hardcode | HTTPS/CSP/HSTS/CSRF Secure comprobados públicamente en main. Correcciones por ZAP: CSP sin unsafe-inline, hash limitado de Swagger y COOP/COEP/CORP. Falta desplegar/revalidar la nueva política y una sesión real de esa release | [Checklist](seguridad/checklist-owasp.md); [DAST y correcciones](seguridad/dast-2026-11-13.md) |
+| C2 | SAST, npm audit y Dependency-Check en CI | CI main aprobado; artifacts descargados: npm 0, Java 0 no suprimidas/23 suprimidas. Cinco alertas CodeQL del prototipo analizadas, sin descartarlas. Se conservan las excepciones del PR #7 y sus riesgos/caducidad | [Resultados actuales y hashes](seguridad/resultados-ci.md); [triage CodeQL](seguridad/alertas-codeql-main.md) |
+| C3 | ZAP baseline y corregir hallazgos | Baseline real sobre c8d4e5c: salida 2, un grupo medio, tres bajos y tres informativos. Correcciones en este PR; **reprueba pública pendiente de integración/CD**, no sustituida por pruebas locales | [Registro C3](seguridad/dast-2026-11-13.md); [reporte original](seguridad/evidencias/zap-c8d4e5c-inicial.json) |
+| C4 | Pruebas negativas por rol (RNF01) | 50 casos en AccesosPorRolTest (antes 34): 16 nuevos, JWT/filtros/servicios reales y asserts sin cambios de datos. Fortalecidas denegaciones de publicación de políticas con payload válido | `AccesosPorRolTest`; [avance actual](seguridad/avance-main-2026-11-13.md) |
+| C5 | Arquitectura, patrones, errores y secretos | Revisión actualizada con A4 corregido, CD real, hallazgos ZAP y riesgos de prototipo/logs. Sin rediseñar ni sustituir A/B/D/E; aceptación humana pendiente | [Revisión C5](seguridad/revision-arquitectura.md); [triage](seguridad/alertas-codeql-main.md) |
+| C6 | Consolidar informe final | Informe actualizado con main actual, estado real C2/C3/C4 y referencias A/B; faltan secciones integradas D/E y aprobación del equipo | [Informe consolidado](informe/Informe_Final_Fases_III_IV.md) |
 
 ## Cómo verificar / qué explicar
 
@@ -27,6 +32,10 @@ demo 429 sin bloquear al administrador, ajuste a 30 segundos, secretos GitHub, C
 No necesitas SonarCloud ni una cuenta cloud propia para C.
 
 ## Cambios que tocan archivos compartidos
+
+El detalle siguiente conserva el historial del primer PR. El nuevo avance se limita
+a políticas de seguridad, pruebas C, revisión de evidencias y consolidación documental;
+no modifica las excepciones Java, CD, infraestructura ni datos desplegados.
 
 - Autenticación/configuración de David: limitador, tamaño de entrada, flags de cookies y secretos sin defaults.
   No se cambió el contrato de sesión JWT/CSRF ni se añadieron roles.
@@ -52,16 +61,20 @@ Las evidencias del head `30bc5b2` ya se revisaron; consultar en GitHub los check
 
 ## Pendientes para cerrar, en orden
 
-1. Marcelo/equipo: revisar el código generado en la rama publicada y su PR; no integrar antes de resolver los controles bloqueantes.
-2. **Decidido el 12/11/2026:** excepciones documentadas por CVE (ver [análisis](seguridad/analisis-dependencias.md)); falta que el equipo las confirme en el PR y que el CI las valide. Texto original: decidir el tratamiento de los hallazgos Spring (migración mayor coordinada, parches de
-   soporte si están disponibles o revisión de aplicabilidad por CVE). NVD funcionó en CI; CodeQL y los
-   artifacts ya tienen evidencias revisadas. Repetir/revisar los controles tras cambios: un análisis completado
-   con hallazgos bloqueantes no cuenta como aprobado.
-3. David: el entorno HTTPS existe en B; falta validar la nueva release con C, sus secretos/cookies/HSTS/proxy y autorizar el escaneo.
-   Acordar bootstrap de administrador/política sin demo y condicionamiento de CD a los controles.
-4. Marcelo: ZAP baseline real, análisis de hallazgos, corrección/reprueba y evidencia de release/fecha/alcance.
-5. Gabriel: validar logs sin secretos; Alex: incorporar resultados al informe de pruebas.
-6. Todos: enviar secciones verificadas; Marcelo consolida y solicita aprobación del informe antes de exportar/entregar.
+1. Marcelo/equipo: revisar este PR, sus asserts, CSP/hash y decisiones de riesgo. Validación
+   automática no equivale a aprobación humana. Consultar CI/CodeQL de este nuevo head.
+2. Tras su eventual integración, David/CD: desplegar el SHA aprobado y confirmar revisión
+   de ambas imágenes. Este avance **no autoriza ni realiza** merge/despliegue por sí mismo.
+3. Marcelo: con esa versión identificada y ventana autorizada, repetir cabeceras y ZAP público.
+   Confirmar desaparición de 10055/90004; revisar los avisos restantes. Revalidar cookie de sesión
+   con una cuenta de pruebas autorizada, sin publicar valores ni bloquear cuentas reales.
+4. Equipo: confirmar el tratamiento de las cinco alertas del prototipo y los supuestos/riesgos
+   de las excepciones Spring. No reabrir el antiguo fallo SCA como si PR #7 no existiera;
+   revisar caducidad 31/01/2027 y repetir análisis al integrar nuevas dependencias.
+5. Gabriel/Alex: entregar sus secciones y evidencias revisadas; preservar seguridad al integrar
+   observabilidad y llevar los resultados C al informe de pruebas. No se implementa su paquete.
+6. Todos: validar secciones y usos de IA; Marcelo consolida, solicita aprobación y solo entonces
+   exporta/entrega el informe sin campos pendientes.
 
 ## Guion breve de tu demostración
 

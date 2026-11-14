@@ -13,10 +13,14 @@ for (const ruta of ['/', '/api/v1/auth/csrf', '/api/v1/me']) {
   const csp = r.headers.get('content-security-policy') ?? '';
   assert(csp.includes("default-src 'none'") && csp.includes("frame-ancestors 'none'"), `CSP ausente/incompleta en ${ruta}`);
   assert(!/script-src[^;]*('unsafe-inline'|'unsafe-eval')/.test(csp), 'No permitir JavaScript inline/eval.');
+  assert(csp.includes("style-src 'self' 'sha256-") && !csp.includes("'unsafe-inline'"), 'No permitir estilos inline arbitrarios.');
   assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
   assert.equal(r.headers.get('x-frame-options'), 'DENY');
   assert.equal(r.headers.get('referrer-policy'), 'no-referrer');
   assert(r.headers.get('permissions-policy'), 'Falta Permissions-Policy.');
+  assert.equal(r.headers.get('cross-origin-opener-policy'), 'same-origin');
+  assert.equal(r.headers.get('cross-origin-embedder-policy'), 'require-corp');
+  assert.equal(r.headers.get('cross-origin-resource-policy'), 'same-origin');
   if (url.protocol === 'https:') {
     assert(/max-age=[1-9]\d*/.test(r.headers.get('strict-transport-security') ?? ''), 'Falta HSTS en HTTPS.');
   }

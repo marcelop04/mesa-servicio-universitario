@@ -1,10 +1,12 @@
 # Sistema Web para la Gestión Integral de Servicios Universitarios
 ## Informe consolidado · fases III y IV
 
-**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre main+B `5e83051`: 12/11/2026.
+**Estado: BORRADOR DE INTEGRACIÓN, no listo para entregar.** Corte C actualizado sobre
+main `c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8`: 13/11/2026 Lima (14/11 UTC).
 Actualización del paquete B: 13/11/2026 (Lima), con main `f8d8c9e` y cinco cuestionarios SUS recibidos.
-Esta revisión actualiza la sección B y sus filas de trazabilidad. Los demás aportes
-conservan su corte anterior para que los revisen sus responsables.
+Esta revisión C conserva la sección B recibida y actualiza seguridad, trazabilidad y
+el pendiente A4 ya resuelto por PR #7. Las correcciones propuestas en el nuevo PR C
+no se presentan como desplegadas. D/E siguen en PR abiertos, no integrados en este corte.
 
 Responsable de consolidación: Marcelo. Equipo: Emanuel, David, Marcelo, Gabriel y Alex.
 Los campos pendientes no son resultados: deben completarse con evidencia real y revisión del equipo.
@@ -51,8 +53,9 @@ La base recibida contiene el avance funcional de fase II, HU15–19 y el paquete
 
 **Pendiente A:** revisar esta síntesis, confirmar la revisión final de API/ejemplos y adjuntar evidencia de la
 versión integrada. Los cambios C en auditoría, documentación y credenciales de recorridos requieren su revisión.
-La tarea programada A4 conserva un defecto de transacción documentado en la revisión C5; sus pruebas
-actuales no cubren ese camino de ejecución. Su corrección corresponde coordinarla con Emanuel.
+El defecto de transacción de la tarea programada A4 se corrigió en PR #7 con
+TransactionTemplate y una regresión sin transacción previa. Está integrado en main;
+no se reimplementó desde C ni se mantiene como bloqueo ficticio del informe.
 
 ## 4. Nube, ambientes y CI/CD · Paquete B
 
@@ -197,28 +200,48 @@ CodeQL se configura para Java y JavaScript con consultas `security-extended` en 
 OWASP Dependency-Check se incorporan al CI, con artifacts y fallo ante gravedad alta/crítica (npm) o
 CVSS ≥ 7 (Java), sin ocultar fallas técnicas.
 
-**Resultados reales/limitaciones:** npm audit posterior a las correcciones no reportó vulnerabilidades.
-Marcelo completó la descarga NVD y Dependency-Check generó informes. Se aplicaron parches compatibles sin
-migrar Boot 3.5/Java 17: los CVE distintos bajaron de 68 a 23; quedan 15 con CVSS ≥ 7 en Spring y el
-control continúa fallando. La regresión y el empaquetado pasan con 155 pruebas. No existe análisis Java
-aprobado todavía ni excepciones autorizadas; [evidencia y decisión pendiente](../seguridad/analisis-dependencias.md).
-Se revisó la ejecución real de CodeQL del PR #3, head `30bc5b2` y referencia `refs/pull/3/merge`:
-Java y JavaScript/TypeScript finalizaron sin errores, con **0 resultados en ambos SARIF** y sin alertas
-abiertas para esa referencia. CI confirmó 155 pruebas backend, 80 frontend y npm audit 0; Dependency-Check
-reprodujo los 23 CVE, 15 bloqueantes, con NVD consultado correctamente. [Evidencias, URLs y hashes](../seguridad/resultados-ci.md).
-El resultado SAST no certifica ausencia absoluta de vulnerabilidades. David debe integrar los controles
-con protección de ramas y CD; C2 no se cierra hasta resolver el tratamiento de los hallazgos Java.
+**Resultados actuales comprobados:** el [CI de main 43522856043](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43522856043)
+aprueba. Se descargaron los artifacts: npm audit 0 tanto en frontend como en herramientas;
+Dependency-Check 13.0.0 analizó 61 entradas y registra **0 vulnerabilidades no suprimidas y
+23 entradas suprimidas** por las excepciones del PR #7. NVD comprobado el
+`2026-11-13T22:53:21Z`, mediante feeds oficiales NIST 2.0. Se conservan CVSS ≥ 7 y failOnError.
+Las excepciones están atadas a versiones y caducan el 31/01/2027; **no son parches ni
+permiten afirmar ausencia de CVE**. [Análisis y riesgo residual](../seguridad/analisis-dependencias.md).
+
+CodeQL Java y JavaScript aprobaron en [43522856218](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43522856218),
+pero la consulta de main devuelve cinco alertas de `prototipo/`: tres high y dos medium.
+Se revisó cada una: cuatro tienen un guard de redirección que fundamenta una propuesta de
+falso positivo, pendiente de confirmar; la quinta es la falta real de límite en el reset
+del mock. Esas fuentes no forman parte de las imágenes del despliegue. No se descartaron
+alertas ni se excluyó el prototipo de SAST. [Triage](../seguridad/alertas-codeql-main.md).
+
+El [CD 43523245472](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43523245472)
+publicó y entregó el mismo `c8d4e5c` después de CI/CodeQL exitosos. El gate por éxito de
+análisis no equivale a bloqueo por hallazgos ni a checks de rama obligatorios.
+[Fuentes, artifacts y hashes](../seguridad/resultados-ci.md). Las validaciones antiguas
+del PR #3 se conservan como historial, no como resultados del main actual.
 
 ### 5.3 DAST
 
 Preparado workflow ZAP baseline manual con autorización, origen HTTPS configurado en un environment y
 reportes; sin escaneos automáticos de URLs aportadas por PR ni ataques activos.
 
-**Pendiente:** validar release con C en el ambiente HTTPS ya existente, autorización explícita, ejecución,
-revisión de hallazgos, corrección y reprueba. Se exige SHA desplegado y se conserva el artifact de alcance.
-No se presenta un
-escaneo local de pruebas como resultado DAST de la aplicación publicada. Baseline no prueba toda la SPA
-autenticada ni sustituye los casos RNF01.
+**Ejecutado:** baseline ZAP 2.17.0 real contra el origen público, con autorización
+específica y versión `c8d4e5c` contrastada con el CD/deployment antes y después. No se
+inició sesión ni se enviaron formularios o ataques activos. Salida 2 por avisos: un
+grupo medio (CSP CSS unsafe-inline), tres bajos (COOP/COEP/CORP) y tres informativos
+(caché/SPA), agrupados en cinco reglas. El spider alcanzó solo cinco endpoints GET.
+[Reporte original, hash, análisis y alcance](../seguridad/dast-2026-11-13.md).
+
+El nuevo PR C retira unsafe-inline, permite por hash únicamente el estilo estático del
+logo de Swagger y añade las tres cabeceras de aislamiento. Se conservan protecciones
+de caché y se corrige duplicación de cabeceras en Swagger. Las pruebas backend/proxy
+y de navegador local validan estas correcciones sin atribuirles cobertura de nube.
+
+**C3 permanece parcial:** falta integrar eventualmente el PR, desplegar su SHA aprobado,
+repetir ZAP/cabeceras públicos y revisar hallazgos/riesgos con el equipo. No se afirma
+que el servidor público ya ejecute estas correcciones. El baseline tampoco prueba toda
+la SPA autenticada ni sustituye los casos RNF01.
 
 ### 5.4 Revisión y riesgos residuales
 
@@ -229,9 +252,18 @@ Persisten límites explícitos: contadores de una instancia, confianza/configura
 segura de administrador/política sin demo, controles cloud, validación limitada de imágenes y ejecución de
 escáneres externos. Detalle y responsables en la [revisión C5](../seguridad/revision-arquitectura.md).
 
+Se amplió `AccesosPorRolTest` de 34 a **50 casos**: escalamiento de privilegios propio,
+encuestas por actores no propietarios, lecturas anónimas, logout CSRF inválido y
+reutilización de JWT revocado en una escritura. Se verifican también filas, versión y
+auditoría sin cambios; no solo HTTP. La publicación de políticas denegada usa ahora
+un cuerpo válido. Estas pruebas son de integración H2 con JWT/filtros reales, no
+sesiones de usuarios ni pruebas remotas. [Validación del nuevo avance](../seguridad/avance-main-2026-11-13.md).
+
 ## 6. Observabilidad · Gabriel (D)
 
-**Pendiente de aporte y validación del responsable:** Actuator/Micrometer/Prometheus, logs JSON sin secretos
+**Pendiente de integración y validación del responsable:** el [PR D #6](https://github.com/marcelop04/mesa-servicio-universitario/pull/6)
+continúa abierto en el corte consultado. No se copian como aprobados sus entregables
+ni resultados a este main. Debe aportar Actuator/Micrometer/Prometheus, logs JSON sin secretos
 con correlación, OpenTelemetry y Jaeger/Tempo, Grafana, alertas demostrables, Compose de observabilidad
 y simulacro de incidente RNF08. El filtro de correlación existente no acredita por sí solo estas tareas.
 
@@ -243,7 +275,8 @@ con petición, identificación y resolución, evitando incluir datos sensibles.
 Resultados locales de seguridad y regresión disponibles en
 [resultados-locales.md](../seguridad/resultados-locales.md). No equivalen a resultados de carga o nube.
 
-**Pendiente E:** colección Newman en CI; E2E BDD por historia; k6 con 2000 casos/20 VU; p95 y criterios
+**Pendiente E:** integrar y validar los aportes del [PR #5](https://github.com/marcelop04/mesa-servicio-universitario/pull/5),
+todavía abierto en el corte: colección Newman en CI; E2E BDD por historia; k6 con 2000 casos/20 VU; p95 y criterios
 RNF06, estrés hasta el límite con recursos medidos; revisión humana de pruebas asistidas por IA y
 consolidación del informe de pruebas, incluyendo seguridad aportada por C y usuario aportado por B.
 
@@ -267,7 +300,7 @@ roles o una tasa de éxito. [Datos, método y alcance](../pruebas/usuarios/Resul
 | Requisito / producto | Fuente actual | Cierre pendiente |
 |---|---|---|
 | HU y RN/RF detallados | Informes I/II y avances por integrante | Validación del equipo sobre release final |
-| RNF01/RNF02 y calidad C | Checklist, código y pruebas C | Borde HTTPS, escáneres externos, aceptación humana |
+| RNF01/RNF02 y calidad C | HTTPS/CSRF Secure públicos, pruebas C4 ampliadas y baseline real | CD/reprueba pública de las correcciones, sesión de la nueva release y aceptación humana |
 | RNF06 rendimiento | Por aportar Alex | Mediciones k6 y análisis de estrés |
 | RNF08 operación/observabilidad | Por aportar Gabriel | Simulacro y evidencias |
 | RNF10 CI/CD | CI/CodeQL y CD main aprobados; sección 4 | Activación administrativa de checks obligatorios |
@@ -276,6 +309,8 @@ roles o una tasa de éxito. [Datos, método y alcance](../pruebas/usuarios/Resul
 | Manual de usuario | Documento de Emanuel enlazado arriba | Revisión de la release |
 | Manual técnico, repositorio y URL final | Manual actualizado y URL HTTPS operativa | Verificar la futura release con D/E integrados |
 | Informe de pruebas | Aportes de seguridad disponibles | Consolidación de Alex |
+| C2 · SAST/SCA | CI aprobado; 23 excepciones Spring y cinco alertas del prototipo analizadas | Decisiones humanas residuales, caducidad de excepciones y reanálisis tras integrar D/E |
+| C3 · DAST | ZAP público c8d4e5c con reporte/hash y correcciones propuestas | Desplegar SHA corregido, repetir escaneo público y registrar revisión |
 | Presentación/demo y registro IA | Aportes C disponibles | Consolidación de Gabriel y aportes de todos |
 
 ## 9. Uso responsable de IA y lecciones de seguridad

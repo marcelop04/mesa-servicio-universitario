@@ -1,0 +1,217 @@
+{
+  "fecha_utc": "2026-11-14T04:07:27.885Z",
+  "entorno": "local, H2 y datos ficticios",
+  "url": "http://127.0.0.1:62957",
+  "navegador": "msedge",
+  "resultados": [
+    {
+      "ruta": "/login",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/registro",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/sus/",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/swagger-ui.html",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true,
+      "estilo_ajeno_bloqueado": true
+    },
+    {
+      "ruta": "/solicitudes",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/solicitudes/nueva",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/atencion",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/supervision",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/dashboard",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/usuarios",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion#Políticas de plazos",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion#Auditoría administrativa",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 360,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/login",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/registro",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/sus/",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/swagger-ui.html",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true,
+      "estilo_ajeno_bloqueado": true
+    },
+    {
+      "ruta": "/solicitudes",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/solicitudes/nueva",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/atencion",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/supervision",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/dashboard",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/usuarios",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion#Políticas de plazos",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/admin/configuracion#Auditoría administrativa",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    },
+    {
+      "ruta": "/perfil",
+      "ancho": 1366,
+      "csp_sin_violaciones": true,
+      "aislamiento": true
+    }
+  ],
+  "fallos": [],
+  "estado": "OK",
+  "limite": "No acredita HTTPS público, DAST de la release desplegada, E2E por HU ni sesiones SUS."
+}

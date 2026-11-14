@@ -1,9 +1,10 @@
-# C2 · Dependency-Check: correcciones y decisión pendiente
+# C2 · Dependency-Check: correcciones, excepciones y revalidación
 
-Fecha local: **11/11/2026 (UTC−05)**. Revisión asistida; aceptación humana pendiente.
-**El análisis Java se completó, pero el control de seguridad sigue NO aprobado.**
-No es un problema de la clave NVD. No se bajó el umbral CVSS, no se desactivaron analizadores
-adicionales y no se añadieron reglas de supresión.
+Historial inicial: **11/11/2026 (UTC−05)**. Revisión asistida; aceptación humana pendiente.
+**Estado actual, 13/11 (Lima):** el CI de main `c8d4e5c` aprueba con las 23 excepciones
+incorporadas por PR #7. Se descargó y revisó el artifact real; véase el cierre de este
+documento. Los apartados iniciales describen el análisis anterior a esas excepciones,
+que efectivamente fallaba; no son un bloqueo actual ni un problema de la clave NVD.
 
 ## Evidencia antes y después
 
@@ -140,17 +141,34 @@ referenciado desde el perfil `seguridad` de `backend/pom.xml`.
 dependencias y clases que cada CVE necesita para ser explotable: WebFlux, RSocket, `SseEmitter`,
 `text/event-stream`, XSLT, FreeMarker, `UrlHandlerFilter`, `UrlFilenameViewController`,
 `SpelExpressionParser`, `AutoPopulatingList`, LDAP, OAuth2/DPoP, WebAuthn, `AesBytesEncryptor`, Password4j
-y `nativeQuery`. **No hubo ninguna coincidencia.** Todos los `Sort` se construyen en el servidor con
-propiedades fijas.
+y `nativeQuery`. No se encontraron esas configuraciones en la revisión registrada;
+esto no demuestra por sí solo ausencia de aplicabilidad de todo CVE. `ContentDisposition`
+sí se usa y requiere el tratamiento específico descrito a continuación. El ordenamiento
+del listado se restringe en el servidor; revisar de nuevo si cambian dependencias o consultas.
 
 **Riesgo residual aceptado:** CVE-2026-59314 es la única excepción en la que la clase afectada
 (`ContentDisposition`) sí se usa, en la descarga del CSV y de las evidencias. Se acepta por la mitigación
 que indica el proveedor (Tomcat rechaza los caracteres maliciosos en cabeceras de respuesta) y porque no se
 genera multipart saliente.
 
-**Pendiente de verificar:** el análisis con las excepciones no se pudo ejecutar en local (no hay base NVD
-descargada en esta máquina). El resultado debe confirmarse en el CI del PR al subir estos cambios; hasta
-entonces C2 no se da por cerrado.
+**Pendiente histórico resuelto:** el análisis con excepciones se confirmó después en CI;
+no se necesita volver a crear las supresiones. La comprobación actual se detalla abajo.
 
 **Trabajo futuro:** planificar la migración a Spring Boot 4 después de la sustentación y retirar entonces
 este archivo.
+
+## Confirmación del main actual · 13/11/2026 (Lima; 14/11 UTC)
+
+Las excepciones se incorporaron mediante [PR #7](https://github.com/marcelop04/mesa-servicio-universitario/pull/7).
+En `c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8`, el
+[CI 43522856043](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43522856043)
+aprobó Dependency-Check. El artifact `14083412107` se descargó: 61 dependencias,
+0 entradas de vulnerabilidades no suprimidas y 23 entradas suprimidas. Fuente NVD
+comprobada `2026-11-13T22:53:21Z`, con transporte por feeds oficiales NIST 2.0.
+Hash y fuentes en [resultados CI, apartado 6](resultados-ci.md).
+
+Se conservan íntegros POM, umbrales y XML de excepciones recibidos. **No significa
+«Java sin CVE»** ni una nueva aprobación humana de los supuestos. El riesgo de
+`ContentDisposition`, la caducidad al 31/01/2027 y la migración posterior siguen vigentes.
+El resultado de una futura integración de D/E se debe volver a comprobar: no hereda
+este análisis, que no incluye sus nuevas dependencias.

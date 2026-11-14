@@ -67,12 +67,17 @@ public class SeguridadConfig {
                 })
                 .headers(h -> h
                         .contentSecurityPolicy(c -> c.policyDirectives("default-src 'none'; script-src 'self'; "
-                                + "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; "
+                                // Único estilo embebido permitido: SVG estático del logo de Swagger UI 5.34.1.
+                                + "style-src 'self' 'sha256-RL3ie0nH+Lzz2YNqQN83mnU0J1ot4QL7b99vMdIX99w='; "
+                                + "img-src 'self' data: blob:; font-src 'self'; "
                                 + "connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; "
                                 + "object-src 'none'"))
                         .httpStrictTransportSecurity(s -> s.includeSubDomains(false).maxAgeInSeconds(31536000))
                         .frameOptions(f -> f.deny())
                         .referrerPolicy(r -> r.policy(ReferrerPolicy.NO_REFERRER))
+                        .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin"))
+                        .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"))
+                        .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Resource-Policy", "same-origin"))
                         .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy",
                                 "camera=(), microphone=(), geolocation=()")))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

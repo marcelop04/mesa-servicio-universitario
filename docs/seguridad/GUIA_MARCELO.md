@@ -207,9 +207,9 @@ La vía API del lanzador local sigue requiriendo la clave NVD.
 Los PR de forks no reciben secrets: requieren revisión y ejecución en una rama interna de confianza;
 no uses `pull_request_target` para ejecutar código no confiable con secretos.
 
-David debe configurar protección de `main`, exigir los checks y revisar los resultados de CodeQL antes de
-publicar. **CodeQL es un workflow separado y no bloquea automáticamente el job Docker del CI ni el CD.**
-Su integración con el CD y, si está disponible, las reglas de code scanning, pertenecen a B3.
+El CD actual exige CI y CodeQL exitosos del mismo SHA/push antes de publicar. **Ese gate no
+significa ausencia de alertas CodeQL.** Los checks obligatorios de main y, si está disponible,
+el bloqueo por hallazgos de code scanning pertenecen a B3/propietario y no se activan desde C.
 No suprimas vulnerabilidades ni uses `continue-on-error` para obtener un verde artificial.
 
 Dependency-Check local: usa el lanzador para evitar pegar comandos en la pregunta de la clave.
@@ -231,9 +231,10 @@ Si escribiste la clave real como parte visible de un comando, puede quedar en el
 solicita su reemplazo en NVD y actualiza el secret `NVD_API_KEY`. No publiques tu historial ni la clave.
 
 Primera descarga de NVD: puede tardar varios minutos. Informes: `backend/target/dependency-check-report.html`
-y `backend/target/dependency-check-report.json`. **Estado actual:** Marcelo ya completó esa descarga;
-el análisis terminó pero el control falla por hallazgos Spring, no por la clave. No repetir el registro NVD
-para solucionar vulnerabilidades. Véanse [parches, comparación y decisión pendiente](analisis-dependencias.md).
+y `backend/target/dependency-check-report.json`. **Estado actual:** main aprueba con las
+23 excepciones incorporadas por PR #7, verificadas en el artifact real de CI; no significa
+ausencia de CVE. No repetir el registro NVD para solucionar vulnerabilidades.
+Véanse [parches, excepciones y revalidación](analisis-dependencias.md).
 
 ## 7. C3: ejecutar ZAP cuando David entregue el despliegue
 
@@ -265,8 +266,16 @@ ni asumir que está permitido escanear producción. Baseline no envía ataques a
    Corrige código en C; si es TLS/proxy/configuración del proveedor, coordina con David. Repite hasta cerrar
    o justificar formalmente el riesgo: una advertencia no desaparece del informe por aceptarla.
 
-No se ejecutó ZAP contra ningún dominio en esta intervención. No puede declararse C3 terminado hasta
-adjuntar el escaneo real y su revisión. Tampoco se afirma cobertura autenticada/E2E de toda la SPA.
+**Actualización 13/11 (Lima):** ya se ejecutó el baseline autorizado sobre la release
+`c8d4e5c`. [Reporte, hallazgos y límites](dast-2026-11-13.md). Este PR prepara correcciones,
+pero C3 no está cerrado: falta su integración/CD y la nueva ejecución sobre la release
+corregida. No se afirma cobertura autenticada/E2E de toda la SPA.
+
+Regresión de las cabeceras nuevas en navegador **solo local**, sin cuentas del despliegue:
+seguir el encabezado de `docs/pruebas/csp-local.py`; requiere el JAR, frontend Docker,
+H2 del classpath de pruebas, Node/Playwright y un navegador Chromium (`NAVEGADOR=msedge`
+por defecto). Los contenedores/red son efímeros y solo se publica el frontend en loopback.
+No ejecuta sesiones SUS ni sustituye pruebas E2E de Alex.
 
 ## 8. Qué debes pedir a cada compañero
 

@@ -1,0 +1,37 @@
+{
+  "imagen": "ghcr.io/zaproxy/zaproxy@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af",
+  "fin_utc": "2026-11-14T03:41:36.2427342Z",
+  "codigo_salida": 2,
+  "inicio_utc": "2026-11-14T03:38:09.7239865Z",
+  "alcance": {
+    "origen": "https://msu-157-137-206-147.sslip.io",
+    "revision_desplegada": "c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8",
+    "tipo": "ZAP baseline pasivo, sin autenticación",
+    "autorizacion_confirmada": true,
+    "fecha_utc": "2026-11-14T03:38:08.340942+00:00",
+    "revision_herramientas": "local",
+    "run_url": ""
+  },
+  "parametros_baseline": [
+    "-m",
+    "1",
+    "-T",
+    "5",
+    "-z",
+    "-config spider.processForm=false -config spider.postForm=false -config spider.threadCount=2 -config spider.maxChildren=20"
+  ],
+  "registro_herramienta": {
+    "pass": 63,
+    "warn_reglas": 5,
+    "fail_reglas": 0,
+    "ignore": 0
+  },
+  "version_desplegada_fuente": {
+    "deployment": 7778459482,
+    "sha": "c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8",
+    "estado": "success",
+    "fecha_utc": "2026-11-13T22:57:44Z",
+    "cd": "https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43523245472",
+    "nota": "GitHub mantuvo el mismo deployment/main antes y despu?s del escaneo; ZAP no lee la revisi?n de las im?genes."
+  }
+}

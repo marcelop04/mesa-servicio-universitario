@@ -42,7 +42,13 @@ class SeguridadWebTest extends PruebaApi {
     void erroresYRespuestasTienenCabecerasYHstsSoloEnHttps() throws Exception {
         mvc.perform(get("/api/v1/me"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(header().exists("Content-Security-Policy"))
+                .andExpect(header().string("Content-Security-Policy", org.hamcrest.Matchers.allOf(
+                        org.hamcrest.Matchers.containsString("style-src 'self' 'sha256-"),
+                        org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("unsafe-inline")),
+                        org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("unsafe-eval")))))
+                .andExpect(header().string("Cross-Origin-Opener-Policy", "same-origin"))
+                .andExpect(header().string("Cross-Origin-Embedder-Policy", "require-corp"))
+                .andExpect(header().string("Cross-Origin-Resource-Policy", "same-origin"))
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"))
                 .andExpect(header().string("X-Frame-Options", "DENY"))
                 .andExpect(header().string("Referrer-Policy", "no-referrer"))

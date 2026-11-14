@@ -1,8 +1,9 @@
 # C2 · Evidencias revisadas de CI y CodeQL
 
-Revisión técnica asistida del **12/11/2026**. No sustituye la aceptación humana de Marcelo.
-**C2 continúa abierto por los hallazgos de dependencias Java.** No se modificó ningún umbral,
-no se suprimieron alertas y no se presenta este resultado como un pentest ni como una release aprobada.
+Última revisión: **13/11/2026 (Lima; 14/11 UTC)**. No sustituye la aceptación humana de Marcelo.
+**Estado actual:** los controles de main pasan con las excepciones de Spring incorporadas por PR #7.
+CodeQL mantiene cinco alertas del prototipo, [analizadas aquí](alertas-codeql-main.md).
+Los apartados 1–5 conservan el corte histórico del PR #3, no el estado actual.
 
 ## 1. Versión y ejecuciones comprobadas
 
@@ -77,3 +78,29 @@ completos. Este resumen conserva identificadores, resultados y hashes SHA-256 de
 3. **Revisión / C4–C5:** Marcelo debe validar los asserts y decisiones del aporte; la IA no marca su
    aprobación humana como realizada. Los defectos de A se coordinan con Emanuel, no se implementan por C.
 4. **Informe / C6:** recibir las secciones y evidencias de los responsables antes de cerrar el consolidado.
+
+## 6. Revalidación actual de main después de PR #7/#8/#9/#11
+
+Commit: `c8d4e5c7c5acedf03ba7f029e3a1b934531b1ee8`.
+
+| Control | Ejecución / artifact | Resultado comprobado |
+|---|---|---|
+| CI de push main | [43522856043](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43522856043) | Backend, frontend, npm audit, Dependency-Check, configuración e imágenes: success |
+| CodeQL Java/JS | [43522856218](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43522856218) | Ambos success; **cinco alertas abiertas** en la consulta de main, no cero |
+| Dependency-Check 13.0.0 | Artifact `14083412107`, HTML/JSON descargados | 61 entradas; **0 vulnerabilidades no suprimidas y 23 entradas suprimidas**. NVD comprobado `2026-11-13T22:53:21Z`, modificación `2026-11-13T16:00:06-05`. Conserva CVSS ≥ 7/failOnError y usa feeds NIST 2.0 |
+| npm audit | Artifact `14082929311`, los dos JSON descargados | 0 en todas las gravedades para frontend y `docs/pruebas`, incluidas herramientas de desarrollo |
+| CD del mismo SHA | [43523245472](https://github.com/marcelop04/mesa-servicio-universitario/actions/runs/43523245472) | Publicación y entrega HTTPS success; deployment `7778459482` exitoso a las `2026-11-13T22:57:44Z` |
+
+SHA-256 de los JSON originales descargados:
+
+| Archivo del artifact | SHA-256 |
+|---|---|
+| `dependency-check-report.json` | `4a4f16cb9a98bf9f63cad73600420b5c0646910066a57cb1c7ab5eef0e4f190f` |
+| `frontend/npm-audit.json` | `f38b5b604795ea3c50140b33b5e1a8c18217aa8540a9b509f5df8f549fa4bbfb` |
+| `docs/pruebas/npm-audit.json` | `6d31e957dc14f2847573c528dd4fdfd3b80883e8f4d401404880b25afa9bf1b6` |
+
+Los originales quedan en `reports/seguridad/c-main/` (ignorado). Las supresiones no
+son parches ni eliminan los 23 CVE; sus condiciones/caducidad siguen en
+[`analisis-dependencias.md`](analisis-dependencias.md). Este PR no las amplía,
+no baja umbrales y no certifica explotabilidad a partir del color del CI.
+La revisión final de riesgos/clasificaciones sigue requiriendo al equipo.
