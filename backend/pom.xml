@@ -32,8 +32,8 @@
     <logstash-logback.version>8.0</logstash-logback.version>
     <!-- D3: trazabilidad distribuida -->
     <opentelemetry.version>1.43.0</opentelemetry.version>
-    <!-- D3: versión de Kotlin alineada para dependencias transitivas de telemetría (OkHttp / OTLP) -->
-    <kotlin.version>2.0.21</kotlin.version>
+    <!-- D3: versión de Kotlin corregida para CVE-2026-53914 (corregido a partir de 2.4.20) -->
+    <kotlin.version>2.4.21</kotlin.version>
   </properties>
 
   <dependencyManagement>
@@ -44,7 +44,14 @@
         <artifactId>swagger-ui</artifactId>
         <version>${swagger-ui.version}</version>
       </dependency>
-      <!-- D3: alinear kotlin-stdlib a 2.0.21 para resolver hallazgo en dependencias transitivas de OTLP -->
+      <!-- D3: alinear dependencias transitivas de Kotlin a 2.4.21 para resolver CVE-2026-53914 -->
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-bom</artifactId>
+        <version>${kotlin.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-stdlib</artifactId>
