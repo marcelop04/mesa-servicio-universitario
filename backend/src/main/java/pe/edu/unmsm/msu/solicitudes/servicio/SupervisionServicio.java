@@ -142,6 +142,10 @@ public class SupervisionServicio {
         if (!s.getPrioridadCodigo().equals(prioridadAnterior)) {
             notificador.avisar(s.getSolicitante(), actor.id(), s, "PRIORIDAD", "La prioridad de su solicitud "
                     + s.getCodigo() + " ahora es " + s.getPrioridad().getNombreVisible() + ".");
+            // El técnico asignado también debe saberlo: cambian sus límites de atención y resolución.
+            notificador.avisar(s.getTecnico(), actor.id(), s, "PRIORIDAD", "La prioridad de la solicitud "
+                    + s.getCodigo() + " ahora es " + s.getPrioridad().getNombreVisible()
+                    + "; se recalcularon sus plazos.");
         }
         return SolicitudDetalle.de(s, Instant.now(reloj));
     }
@@ -225,6 +229,10 @@ public class SupervisionServicio {
                     errores.add(new ErrorCampo("codigo_original", "No existe una solicitud con el código " + codigo + "."));
                 } else if (original.getId().equals(s.getId())) {
                     errores.add(new ErrorCampo("codigo_original", "El caso original debe ser distinto del que se cancela."));
+                } else if (Solicitud.CANCELADA.equals(original.getEstadoCodigo())) {
+                    // Evita que dos casos queden cancelados apuntándose entre sí y el solicitante sin caso vigente.
+                    errores.add(new ErrorCampo("codigo_original", "La solicitud " + original.getCodigo()
+                            + " está cancelada: indique un caso vigente como original."));
                 }
             }
         }

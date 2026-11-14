@@ -20,6 +20,7 @@ import pe.edu.unmsm.msu.identidad.entidad.Rol;
 import pe.edu.unmsm.msu.identidad.entidad.Usuario;
 import pe.edu.unmsm.msu.identidad.repositorio.RolRepositorio;
 import pe.edu.unmsm.msu.identidad.repositorio.UsuarioRepositorio;
+import pe.edu.unmsm.msu.seguridad.LimiteClave;
 import pe.edu.unmsm.msu.solicitudes.servicio.ConsultaSolicitudes;
 
 /**
@@ -70,6 +71,7 @@ public class UsuarioAdminServicio {
         if (usuarios.existsByCorreo(correo)) {
             throw ExcepcionApi.conflicto("CORREO_DUPLICADO", "Ya existe una cuenta con ese correo.");
         }
+        LimiteClave.exigir("password", datos.password());
         Rol rol = rol(datos.rol());
         Area area = Rol.TECNICO.equals(datos.rol()) ? areaActivaObligatoria(datos.areaId()) : null;
         Usuario nuevo = usuarios.save(new Usuario(datos.nombre().trim(), correo, encoder.encode(datos.password()),
@@ -101,7 +103,7 @@ public class UsuarioAdminServicio {
             Long areaId = cambio.areaId() != null ? cambio.areaId()
                     : usuario.getArea() == null ? null : usuario.getArea().getId();
             boolean mismaArea = usuario.getArea() != null && usuario.getArea().getId().equals(areaId);
-            areaNueva = mismaArea && !cambiaRol ? usuario.getArea() : areaActivaObligatoria(areaId);
+            areaNueva = mismaArea && !cambiaRol && !reactiva ? usuario.getArea() : areaActivaObligatoria(areaId);
         }
         boolean cambiaArea = usuario.esTecnico() && areaNueva != usuario.getArea();
 
@@ -115,6 +117,16 @@ public class UsuarioAdminServicio {
                 throw ExcepcionApi.conflicto("TECNICO_CON_CARGA", "El técnico tiene " + pendientes
                         + (pendientes == 1 ? " solicitud pendiente" : " solicitudes pendientes")
                         + ". Pida al supervisor que las reasigne antes de desactivarlo o cambiar su rol o área.");
+            }
+        }
+
+        if (cambiaRol && Rol.SOLICITANTE.equals(usuario.getRol().getCodigo())) {
+            long abiertas = solicitudes.contarAbiertasDeSolicitante(id);
+            if (abiertas > 0) {
+                throw ExcepcionApi.conflicto("SOLICITANTE_CON_CASOS", "La cuenta tiene " + abiertas
+                        + (abiertas == 1 ? " solicitud sin cerrar" : " solicitudes sin cerrar")
+                        + ". Con otro rol ya no podría seguirlas ni confirmar la solución: cambie el rol cuando estén"
+                        + " cerradas o canceladas.");
             }
         }
 

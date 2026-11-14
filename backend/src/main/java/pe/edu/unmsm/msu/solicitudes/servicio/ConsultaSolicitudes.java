@@ -17,4 +17,7 @@ public interface ConsultaSolicitudes {
 
     /** Indica si alguna solicitud usa la categoría (en ese caso no puede cambiar de área). */
     boolean categoriaUsada(long categoriaId);
+
+    /** Solicitudes del solicitante que aún no están Cerradas ni Canceladas. */
+    long contarAbiertasDeSolicitante(long solicitanteId);
 }

@@ -194,7 +194,7 @@ public class CatalogoServicio {
                 Estado estado = estados.findById(id).orElseThrow(() -> noExiste(tipo));
                 rechazarDesactivacion(tipo, e);
                 if (e.nombre() != null) {
-                    estado.setNombreVisible(requerido("nombre", e.nombre(), 2));
+                    estado.setNombreVisible(nombreVisible(e.nombre()));
                 }
                 yield CatalogoItem.de(estado);
             }
@@ -202,7 +202,7 @@ public class CatalogoServicio {
                 Prioridad prioridad = prioridades.findById(id).orElseThrow(() -> noExiste(tipo));
                 rechazarDesactivacion(tipo, e);
                 if (e.nombre() != null) {
-                    prioridad.setNombreVisible(requerido("nombre", e.nombre(), 2));
+                    prioridad.setNombreVisible(nombreVisible(e.nombre()));
                 }
                 yield CatalogoItem.de(prioridad);
             }
@@ -280,6 +280,15 @@ public class CatalogoServicio {
         if (Boolean.FALSE.equals(e.activo())) {
             throw fijo(tipo);
         }
+    }
+
+    /** La columna nombre_visible de estados y prioridades admite 60 caracteres, no los 100 del resto. */
+    private static String nombreVisible(String valor) {
+        String limpio = requerido("nombre", valor, 2);
+        if (limpio.length() > 60) {
+            throw ExcepcionApi.datoInvalido("nombre", "Use como máximo 60 caracteres.");
+        }
+        return limpio;
     }
 
     private static String requerido(String campo, String valor, int minimo) {

@@ -64,6 +64,22 @@ public class ConsultaSolicitudesJdbc implements ConsultaSolicitudes {
         }
     }
 
+    @Override
+    public long contarAbiertasDeSolicitante(long solicitanteId) {
+        return contar("SELECT COUNT(*) FROM solicitud WHERE solicitante_id = ?"
+                + " AND estado_codigo NOT IN ('CERRADA','CANCELADA')", solicitanteId);
+    }
+
+    private long contar(String sql, long id) {
+        try {
+            Long total = jdbc.queryForObject(sql, Long.class, id);
+            return total == null ? 0 : total;
+        } catch (BadSqlGrammarException e) {
+            avisarTablaAusente();
+            return 0;
+        }
+    }
+
     private void avisarTablaAusente() {
         log.debug("La tabla solicitud aún no existe; se asume que no hay casos registrados.");
     }
