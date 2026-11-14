@@ -32,6 +32,10 @@
     <logstash-logback.version>8.0</logstash-logback.version>
     <!-- D3: trazabilidad distribuida -->
     <opentelemetry.version>1.43.0</opentelemetry.version>
+    <!-- D3: kotlin-stdlib viene transitivamente de OkHttp (usado por opentelemetry-exporter-otlp).
+         Se fuerza 2.0.21 para evitar que el escáner lo marque por CVE-2026-53914 (falso positivo
+         en kotlin-stdlib; el CVE afecta a kotlin-gradle-plugin, no a la stdlib en runtime). -->
+    <kotlin.version>2.0.21</kotlin.version>
   </properties>
 
   <dependencyManagement>
@@ -41,6 +45,14 @@
         <groupId>org.webjars</groupId>
         <artifactId>swagger-ui</artifactId>
         <version>${swagger-ui.version}</version>
+      </dependency>
+      <!-- D3: kotlin-stdlib es transitiva de OkHttp (usado por opentelemetry-exporter-otlp).
+           Se sube a 2.0.21 (compatible binariamente con 1.9.x) para evitar falsos positivos del
+           escáner OWASP sobre CVE-2026-53914, que afecta al plugin de Gradle, no a la stdlib. -->
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlin.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -98,13 +98,12 @@
 > - *Logs estructurados en formato JSON con correlación (`idCorrelacion`) y enmascaramiento de secretos.*
 > - *Tablero unificado en Grafana aprovisionado automáticamente.*
 > 
-> *(Demostración del simulacro de incidente en vivo):*
-> 1. *Provocamos una petición con fallo interno simulado enviando `X-Correlation-Id: incidente-demo-001`.*
-> 2. *Observamos en terminal cómo el log JSON captura el error con su `idCorrelacion` y `traceId`, enmascarando cualquier token o secreto.*
-> 3. *En Jaeger buscamos por `traceId` y mostramos la traza en cascada con el punto exacto de la falla.*
-> 4. *En Prometheus (`:9090/alerts`) visualizamos las reglas de alerta configuradas: tasa de errores 5xx, latencia p95 y detección de solicitudes vencidas.*
-> 5. *En Grafana (`:3000`) mostramos el panel institucional con histogramas percentiles, tasa de fallos y solicitudes con plazos vencidos.*
-> 6. *Ejecutamos la recuperación del sistema y confirmamos la normalización de las alertas.*
+> *(Demostración del simulacro de incidente — evidencias capturadas en `docs/evidencias/fase-iii-iv-gabriel/`):*
+> 1. *Mostramos el log JSON (`04-logs-json-correlacion.png`) con `idCorrelacion`, `traceId` y enmascaramiento de secretos tras inyectar el fallo simulado.*
+> 2. *En Jaeger (`03-jaeger-trazas.png`) buscamos por `traceId` y mostramos la traza en cascada con el punto exacto de la falla.*
+> 3. *En Prometheus (`01-prometheus-alertas-firing.png`) visualizamos las tres alertas en estado FIRING: tasa de errores 5xx, latencia p95 y casos vencidos.*
+> 4. *En Grafana (`02-grafana-dashboard.png`) mostramos el panel institucional con histogramas percentiles, tasa de fallos y solicitudes vencidas.*
+> 5. *Ejecutamos la mitigación y mostramos la normalización de alertas (`05-recuperacion-errores-5xx.png`).*
 > 
 > *Finalmente, Alex presentará las pruebas del sistema."*
 

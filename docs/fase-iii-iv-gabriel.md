@@ -58,7 +58,7 @@ La observabilidad de la Mesa de Servicios Universitarios se diseñó de forma de
 2. **Hardening de Contenedores y Red en Docker Compose (D6):**
    - Todas las interfaces administrativas de Prometheus, Jaeger y Grafana están vinculadas exclusivamente a `127.0.0.1` (bucle local), impidiendo accesos no deseados desde redes externas o públicas.
    - Los puertos de recepción OTLP (4317 y 4318) **no se publican al host**, permaneciendo aislados en la red interna de Docker para uso exclusivo del contenedor `backend`.
-   - La contraseña de Grafana está externalizada mediante `${GRAFANA_ADMIN_PASSWORD:-AdminObservabilidad2026!}`.
+   - La contraseña de Grafana está externalizada mediante la variable de entorno `GRAFANA_ADMIN_PASSWORD` (obligatoria, sin valor por defecto en el compose).
 
 3. **Separación de Métricas Operativas y Simulación (D1, D4):**
    - `msu_solicitudes_vencidas`: métrica real calculada desde la base de datos.
@@ -159,20 +159,23 @@ cd backend
 docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --build
 ```
 
-### Coordinación para Despliegue en la Nube (VM de David · OCI Always Free)
+### Demostración para Sustentación
 
-Conforme a la bitácora de David ([docs/fase-iii-iv-david.md](fase-iii-iv-david.md) y [docs/informe/Seccion_David_Nube_CD.md](informe/Seccion_David_Nube_CD.md)), el aprovisionamiento de la VM ARM en Oracle Cloud Infrastructure Always Free reportó `Out of host capacity` por cupo de capacidad del proveedor.
+La demostración del Paquete D se realiza en entorno local, mostrando las **evidencias capturadas** almacenadas en `docs/evidencias/fase-iii-iv-gabriel/`. El stack de observabilidad está diseñado como una extensión desacoplada que se levanta localmente con:
 
-El stack de observabilidad (`docker-compose.observabilidad.yml`) fue diseñado como una extensión desacoplada lista para operar en la nube:
-1. **Despliegue conjunto en la VM:** En la máquina virtual de David, el stack se levanta con:
-   ```bash
-   docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up -d
-   ```
-2. **Hardening de red en producción:** Los servicios de Prometheus, Grafana y Jaeger están configurados para escuchar únicamente en `127.0.0.1`. El acceso administrativo durante la demostración en la nube se realiza mediante túnel SSH seguro:
-   ```bash
-   ssh -L 9090:127.0.0.1:9090 -L 3000:127.0.0.1:3000 -L 16686:127.0.0.1:16686 ubuntu@<IP_VM>
-   ```
-3. **Plan de contingencia para sustentación:** Si la VM gratuita experimenta indisponibilidad o falta de capacidad durante la evaluación, se presentará la demostración local idéntica y las evidencias registradas en `docs/evidencias/fase-iii-iv-gabriel/`, tal como prevé la guía de sustentación.
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.observabilidad.yml up --build
+```
+
+Las 5 capturas de pantalla documentan el ciclo completo del simulacro:
+
+| Archivo | Muestra |
+|---|---|
+| `01-prometheus-alertas-firing.png` | Alertas `TasaErroresHttp5xxAlta` y `LatenciaP95HttpAlta` en estado FIRING |
+| `02-grafana-dashboard.png` | Tablero institucional con histogramas percentiles y tasa de fallos |
+| `03-jaeger-trazas.png` | Traza distribuida en Jaeger con `traceId` correlacionado al incidente |
+| `04-logs-json-correlacion.png` | Log JSON con `idCorrelacion`, `traceId` y enmascaramiento de secretos |
+| `05-recuperacion-errores-5xx.png` | Alertas retornando a estado OK tras la mitigación |
 
 ---
 

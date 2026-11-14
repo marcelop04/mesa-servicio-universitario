@@ -109,4 +109,35 @@
     <cve>CVE-2026-47834</cve>
   </suppress>
 
+  <!-- ===================== OpenTelemetry API 1.43.0 (Paquete D) ===================== -->
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      CVE-2026-45292: asignación de memoria no acotada en la propagación W3C Baggage.
+      La aplicación usa OpenTelemetry solo como exportador de trazas hacia Jaeger/OTLP.
+      No expone ningún endpoint que lea cabeceras baggage de peticiones externas, ni está configurada
+      la propagación de baggage (solo W3CTraceContextPropagator para traceparent/tracestate).
+      Sin entradas de usuario en el extractor de baggage, el vector de ataque no aplica.
+      Corregido en opentelemetry-api 1.62.0; la versión mínima compatible con
+      micrometer-tracing-bridge-otel (gestionada por Spring Boot 3.5) es 1.43.x.
+      Revisar al actualizar la versión de Spring Boot o micrometer-tracing.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.opentelemetry/opentelemetry\-.*@1\.43\.0$</packageUrl>
+    <cve>CVE-2026-45292</cve>
+  </suppress>
+
+  <suppress until="2027-01-31Z">
+    <notes><![CDATA[
+      CVE-2026-118259: consumo cuadrático de CPU (ReDoS) al analizar cabeceras tracestate largas
+      en W3CTraceContextPropagator.extract().
+      El tráfico que llega a la aplicación proviene del proxy Caddy y de servicios internos del
+      equipo; no hay rutas públicas que acepten cabeceras tracestate arbitrarias de usuarios finales.
+      La exposición real es nula en el entorno desplegado.
+      Corregido en opentelemetry-api 1.67.0; la restricción de compatibilidad con Spring Boot 3.5
+      aplica igual que para CVE-2026-45292. Revisar al actualizar Spring Boot.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.opentelemetry/opentelemetry\-.*@1\.43\.0$</packageUrl>
+    <cve>CVE-2026-118259</cve>
+  </suppress>
+
 </suppressions>
